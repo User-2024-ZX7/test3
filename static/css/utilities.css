@@ -1,0 +1,164 @@
+/* utilities.css
+   Small utility library: spacing, grid, buttons, colors, simple cards.
+   Use this across pages for layout primitives.
+*/
+
+/* Color tokens */
+:root{
+  --brand-500: #0d6efd;
+  --brand-600: #0b5ed7;
+  --success-500: #27ae60;
+  --danger-500: #e03131;
+  --muted: #6c757d;
+  --bg: #f7f9fb;
+  --card-bg: #ffffff;
+  --text: #222;
+  --glass: rgba(255,255,255,0.7);
+  --shadow-1: 0 6px 18px rgba(11,20,40,0.06);
+  --radius: 0.5rem;
+  --max-width: 1100px;
+  --container-pad: 1.25rem; /* 20px */
+}
+
+/* Box sizing & base font */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html,body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height: 1.45;
+  font-size: 16px;
+}
+
+/* Container */
+.container {
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-pad);
+  padding-right: var(--container-pad);
+  width: 100%;
+}
+
+/* Utility display helpers */
+.flex { display:flex; }
+.grid { display:grid; gap:1rem; }
+.text-center { text-align:center; }
+
+/* Simple responsive grid helpers */
+.grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: .6rem 1.1rem;
+  border-radius: .5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: transform .08s ease, box-shadow .12s ease;
+  box-shadow: var(--shadow-1);
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus { outline: 3px solid rgba(13,110,253,0.18); outline-offset: 3px; }
+
+/* Button variants */
+.btn-primary { background: var(--brand-500); color: #fff; }
+.btn-primary:hover { background: var(--brand-600); }
+.btn-light { background: #ffffff; color: var(--brand-500); border: 1px solid rgba(13,110,253,0.08); }
+.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.18); }
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+  padding: 1rem;
+}
+
+/* Typography helpers */
+.lead { font-size: 1.05rem; color: var(--muted); }
+.hint { color: var(--muted); font-size: .95rem; }
+
+/* Small responsive helpers */
+.sm { font-size: .9rem; }
+.md { font-size: 1.25rem; }
+
+/* Utility spacing (small subset) */
+.my-1 { margin: 0.5rem 0; }
+.my-2 { margin: 1rem 0; }
+.my-3 { margin: 1.5rem 0; }
+.mt-2 { margin-top: 1rem; }
+.mb-2 { margin-bottom: 1rem; }
+.p-2 { padding: 1rem; }
+
+/* Form basics */
+.form-control {
+  margin-bottom: .9rem;
+}
+.form-control label {
+  display:block;
+  margin-bottom:.35rem;
+  font-weight:600;
+}
+.form-control input[type="text"],
+.form-control input[type="email"],
+.form-control input[type="password"],
+.form-control input[type="number"],
+.form-control input[type="date"],
+.form-control textarea,
+.form-control select {
+  width:100%;
+  padding:.55rem .65rem;
+  border:1px solid #e6e9ef;
+  border-radius:.4rem;
+  background: #fff;
+  font-size: 1rem;
+}
+.form-control input:focus,
+.form-control textarea:focus,
+.form-control select:focus {
+  outline: 3px solid rgba(13,110,253,0.12);
+}
+
+/* Lists */
+.list-group { list-style:none; padding:0; margin:0; }
+.list-group-item {
+  background: #fff;
+  padding: .75rem 1rem;
+  border-radius: .4rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:.6rem;
+  box-shadow: 0 4px 12px rgba(11,20,40,0.03);
+}
+
+/* Small utility: visually-hidden (for accessibility) */
+.visually-hidden {
+  position: absolute!important;
+  height: 1px;width:1px;overflow:hidden;
+  clip: rect(1px,1px,1px,1px);white-space:nowrap;
+}
+
+/* Responsive rules: mobile-first */
+@media (min-width: 700px) {
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

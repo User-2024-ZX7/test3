@@ -1,0 +1,48 @@
+/* style-fixes.css - small targeted fixes for hero/cards/animations */
+
+/* Hero visuals */
+#hero {
+  background: linear-gradient(135deg,#007bff 0%,#00c6ff 100%);
+  position: relative;
+  padding: 6rem 0;
+  overflow: hidden;
+}
+.hero-title { text-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+.hero-sub  { color: rgba(255,255,255,0.92); }
+
+/* subtle overlay texture (non-blocking) */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.06), transparent 15%),
+                    radial-gradient(circle at 90% 80%, rgba(0,0,0,0.06), transparent 20%);
+  pointer-events: none;
+}
+
+/* Feature cards */
+.feature-card {
+  border-radius: 1rem;
+  transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s;
+  box-shadow: 0 12px 30px rgba(10,20,40,0.06);
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 30px 70px rgba(10,20,40,0.12);
+}
+
+/* Buttons */
+.btn { transition: transform .18s ease, box-shadow .18s ease; }
+.btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+
+/* Navbar spacing */
+.navbar { padding: .85rem 1rem; }
+
+/* make sure icons are visible */
+.feature-card .icon i { opacity: 0.95; }
+
+/* small responsive tweaks */
+@media (max-width: 768px) {
+  #hero { padding: 4rem 0; }
+  .hero-title { font-size: 2rem; }
+}

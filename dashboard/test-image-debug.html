@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Image debug</title>
+  <style>
+    .profile-img { width: 48px !important; height: 48px !important; object-fit:cover !important; border-radius:50% !important; border:2px solid #007bff !important; }
+    .avatar { width:48px; height:48px; border-radius:50%; background-size:cover; background-position:center; border:2px solid #007bff; }
+  </style>
+</head>
+<body style="font-family:Arial;padding:20px;">
+  <h2>Image debug</h2>
+  <p>Inline-style img (guaranteed):</p>
+  <img src="behruz.png" id="img-inline" style="width:48px;height:48px;object-fit:cover;border-radius:50%;border:2px solid #007bff;">
+
+  <p>Class-based img:</p>
+  <img src="behruz.png" id="img-class" class="profile-img">
+
+  <p>Div avatar:</p>
+  <div id="div-avatar" class="avatar" style="background-image:url('behruz.png')"></div>
+
+  <hr>
+  <pre id="output"></pre>
+
+  <script>
+    function inspect(el) {
+      const cs = getComputedStyle(el);
+      return {
+        tag: el.tagName,
+        width: cs.width,
+        height: cs.height,
+        objectFit: cs.objectFit || 'n/a',
+        inlineStyle: el.getAttribute('style') || '',
+        attrs: {
+          widthAttr: el.getAttribute('width'),
+          heightAttr: el.getAttribute('height'),
+          src: el.getAttribute('src')
+        }
+      };
+    }
+
+    (async function(){
+      const out = document.getElementById('output');
+      const imgInline = document.getElementById('img-inline');
+      const imgClass = document.getElementById('img-class');
+      const div = document.getElementById('div-avatar');
+
+      // show network status for the image resource
+      async function getStatus(url) {
+        try {
+          const res = await fetch(url, {method:'HEAD'});
+          return res.status + ' ' + res.statusText;
+        } catch(e) { return 'fetch failed: ' + e.message; }
+      }
+
+      const src = imgInline.getAttribute('src');
+      const status = await getStatus(src);
+
+      out.textContent = 'Image fetch status: ' + status + '\n\n'
+        + 'INLINE IMG -> ' + JSON.stringify(inspect(imgInline), null, 2) + '\n\n'
+        + 'CLASS IMG -> ' + JSON.stringify(inspect(imgClass), null, 2) + '\n\n'
+        + 'DIV AVATAR -> ' + JSON.stringify(inspect(div), null, 2) + '\n\n'
+        + 'Tip: open DevTools Elements panel and select the element to see matched CSS rules.';
+    })();
+  </script>
+</body>
+</html>

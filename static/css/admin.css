@@ -1,0 +1,39 @@
+body { background: #f7f9fc; font-family: 'Segoe UI', sans-serif; }
+.navbar { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.dashboard-header { margin-top: 4rem; margin-bottom: 2rem; }
+
+.summary-card {
+  border-radius: 1rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  background: #fff;
+}
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 1rem 2rem rgba(0,0,0,0.15);
+}
+.summary-card h6 { font-weight: 500; color: #555; }
+.summary-card .stat { font-size: 2rem; font-weight: 700; color: #222; }
+
+.table-responsive {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+}
+table thead { background: #343a40; color: #fff; }
+table tbody tr:nth-child(even) { background: #f1f3f6; }
+table tbody tr.active-user { background-color: #d4edda; font-weight: 500; }
+.badge-status { font-size: 0.85rem; }
+.btn-export { min-width: 130px; }
+.table-actions button { margin-right: 0.3rem; }
+
+footer {
+  background: #222;
+  color: #ccc;
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+@media(max-width:768px){ 
+  .summary-card { margin-bottom: 1rem; } 
+}

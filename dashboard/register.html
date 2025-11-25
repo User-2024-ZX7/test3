@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register | FitTrack</title>
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="static/css/style.css">
+  <link rel="stylesheet" href="static/css/style-fixes.css">
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .register-container {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      max-width: 450px;
+      width: 100%;
+      padding: 2.5rem;
+      position: relative;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .register-header h2 {
+      font-weight: 700;
+      color: #333;
+    }
+
+    .register-header p {
+      color: #666;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2);
+    }
+
+    .btn-register {
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      border: none;
+      color: #fff;
+      transition: 0.3s;
+      width: 100%;
+      font-weight: 600;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+    }
+
+    .btn-register:hover {
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #007bff;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    #register-feedback {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-container">
+    <div class="register-header">
+      <h2><i class="fas fa-user-plus text-primary me-2"></i>Create Account</h2>
+      <p>Join FitTrack to start your fitness journey</p>
+    </div>
+
+    <form id="register-form" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-user"></i></span>
+          <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+          <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-lock"></i></span>
+          <input type="password" class="form-control" id="password" placeholder="Create a password" required minlength="6">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-register mt-3">Register</button>
+      <div id="register-feedback" class="mt-3"></div>
+    </form>
+
+    <div class="text-center mt-3">
+      Already have an account? <a href="login.html" class="back-link">Login here</a>
+    </div>
+  </div>
+
+  <script src="static/js/register.js"></script>
+  <script>
+    // Basic UI animation feedback
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("register-form");
+      const feedback = document.getElementById("register-feedback");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        feedback.textContent = "Processing registration...";
+        feedback.style.color = "#007bff";
+
+        setTimeout(() => {
+          feedback.textContent = "Account created successfully!";
+          feedback.style.color = "green";
+          form.reset();
+        }, 1200);
+      });
+    });
+  </script>
+</body>
+</html>
