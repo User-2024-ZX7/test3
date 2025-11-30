@@ -5,102 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register | FitTrack</title>
 
-  <!-- Bootstrap & Icons -->
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="static/css/style.css">
-  <link rel="stylesheet" href="static/css/style-fixes.css">
-
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #007bff, #00c6ff);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .register-container {
-      background: #fff;
-      border-radius: 1.5rem;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-      max-width: 450px;
-      width: 100%;
-      padding: 2.5rem;
-      position: relative;
-      animation: fadeInUp 0.8s ease;
-    }
-
-    .register-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .register-header h2 {
-      font-weight: 700;
-      color: #333;
-    }
-
-    .register-header p {
-      color: #666;
-    }
-
-    .form-control:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2);
-    }
-
-    .btn-register {
-      background: linear-gradient(135deg, #007bff, #00c6ff);
-      border: none;
-      color: #fff;
-      transition: 0.3s;
-      width: 100%;
-      font-weight: 600;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-    }
-
-    .btn-register:hover {
-      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 1rem;
-      color: #007bff;
-      font-weight: 500;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
-
-    #register-feedback {
-      text-align: center;
-      margin-top: 1rem;
-      font-weight: 500;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../static/css/register.css">
 </head>
+
 <body>
 
   <div class="register-container">
@@ -119,7 +36,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
+        <label for="email" class="form-label">Email</label>
         <div class="input-group">
           <span class="input-group-text"><i class="fas fa-envelope"></i></span>
           <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
@@ -139,29 +56,14 @@
     </form>
 
     <div class="text-center mt-3">
-      Already have an account? <a href="login.html" class="back-link">Login here</a>
+      Already have an account?  
+      <a href="login.html" class="back-link">Login here</a>
     </div>
   </div>
 
-  <script src="static/js/register.js"></script>
-  <script>
-    // Basic UI animation feedback
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("register-form");
-      const feedback = document.getElementById("register-feedback");
+  <!-- JS -->
+  <script src="../static/js/register.js"></script>
 
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        feedback.textContent = "Processing registration...";
-        feedback.style.color = "#007bff";
-
-        setTimeout(() => {
-          feedback.textContent = "Account created successfully!";
-          feedback.style.color = "green";
-          form.reset();
-        }, 1200);
-      });
-    });
-  </script>
 </body>
 </html>
+

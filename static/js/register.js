@@ -1,20 +1,17 @@
-// register.js
-document.getElementById("registerForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("register-form");
+  const feedback = document.getElementById("register-feedback");
 
-  let users = JSON.parse(localStorage.getItem("fittrack_users")) || [];
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-  if (users.some((u) => u.email === email)) {
-    alert("User already exists");
-    return;
-  }
+    feedback.textContent = "Processing registration...";
+    feedback.style.color = "#007bff";
 
-  const newUser = { name, email, password, isAdmin: false };
-  users.push(newUser);
-  localStorage.setItem("fittrack_users", JSON.stringify(users));
-  alert("Registration successful!");
-  window.location.href = "login.html";
+    setTimeout(() => {
+      feedback.textContent = "Account created successfully!";
+      feedback.style.color = "green";
+      form.reset();
+    }, 1200);
+  });
 });
