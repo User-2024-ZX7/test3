@@ -1,15 +1,13 @@
-create tables if not exists users (
+use my_db;
+
+create table users (
     id int auto_increment primary key,
-    username varchar(50) not null unique,
-    email varchar(100) not null unique,
+    name varchar(80),
+    email varchar(120) unique,
+    password varchar(255),
+    role varchar(20) default 'user'
 );
 
-INSERT INTO users (name, email) values
-    ( 'alice', 'alice2hgamil.com'),
-    ( 'bob', 'bob2hgamail.com'),
-    ( 'charlie', 'charlie2hgamail.com');
-
+create table my_db.data
 select * from users;
-
-
 
