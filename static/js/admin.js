@@ -1,11 +1,3 @@
-/* =======================================================
-   FitTrack Admin Panel - Senior-Level JavaScript
-   Author: 500000005 (Senior-Level UI Development)
-   ======================================================= */
-
-/* ------------------------------
-   GLOBAL ELEMENTS
------------------------------- */
 const userTableBody = document.getElementById("userTableBody");
 const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
@@ -13,213 +5,134 @@ const clearSearch = document.getElementById("clearSearch");
 const exportCSV = document.getElementById("exportCSV");
 const exportJSON = document.getElementById("exportJSON");
 const logoutBtn = document.getElementById("logout-btn");
-
-/* Mobile sidebar */
 const sidebar = document.getElementById("sidebar");
-const menuToggle = document.getElementById("menuToggle"); // exists only on mobile topbar
+const menuToggle = document.getElementById("menuToggle");
 
-/* Dashboard stats */
 const statTotalUsers = document.getElementById("totalUsers");
 const statActiveUsers = document.getElementById("activeUsers");
 const statTotalWorkouts = document.getElementById("totalWorkouts");
 const statTotalCalories = document.getElementById("totalCalories");
 
-let USERS = []; // will store loaded users
+let USERS = [];
 
-/* =======================================================
-   SECTION 1 — FETCH USERS (Flask API → fallback localStorage)
-======================================================= */
-async function loadUsers() {
-    try {
-        const res = await fetch("/admin/get_users"); // your upcoming Flask route
-        if (!res.ok) throw new Error("API error");
-        const data = await res.json();
-        USERS = data.users;
-    } catch {
-        console.warn("Backend unavailable — using localStorage fallback.");
-
-        USERS = JSON.parse(localStorage.getItem("fittrack_users") || "[]").map(u => ({
-            username: u.username,
-            email: u.email,
-            status: "active",
-            workouts: u.workouts || 0,
-            calories: u.calories || 0,
-            lastLogin: u.lastLogin || "Unknown"
-        }));
-    }
-    renderTable(USERS);
-    updateStats();
+// ==================== FETCH USERS ====================
+const loadUsers = async () => {
+try {
+const res = await fetch("/admin/get_users");
+if (!res.ok) throw new Error("API error");
+const data = await res.json();
+USERS = data.users;
+} catch {
+console.warn("Backend unavailable — using localStorage fallback.");
+USERS = JSON.parse(localStorage.getItem("fittrack_users") || "[]").map(u => ({
+username: u.username,
+email: u.email,
+status: "active",
+workouts: u.workouts || 0,
+calories: u.calories || 0,
+lastLogin: u.lastLogin || "Unknown"
+}));
 }
-
-/* =======================================================
-   SECTION 2 — RENDER USER TABLE
-======================================================= */
-function renderTable(users) {
-    userTableBody.innerHTML = "";
-
-    if (users.length === 0) {
-        userTableBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center p-4 text-muted">No users found</td>
-            </tr>`;
-        return;
-    }
-
-    users.forEach(user => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td><strong>${user.username}</strong></td>
-            <td>${user.email}</td>
-            <td>
-                <span class="badge ${user.status === "active" ? "bg-success" : "bg-secondary"}">
-                    ${user.status}
-                </span>
-            </td>
-            <td>${user.workouts ?? 0}</td>
-            <td>${user.calories ?? 0}</td>
-            <td>${user.lastLogin ?? "—"}</td>
-
-            <td class="text-center">
-                <button class="btn btn-sm btn-warning me-1 action-btn" onclick="toggleStatus('${user.username}')">
-                    <i class="fa-solid fa-user-gear"></i>
-                </button>
-                <button class="btn btn-sm btn-danger action-btn" onclick="deleteUser('${user.username}')">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </td>
-        `;
-
-        userTableBody.appendChild(row);
-    });
-}
-
-/* =======================================================
-   SECTION 3 — SEARCH USER
-======================================================= */
-function searchUsers() {
-    const query = searchInput.value.toLowerCase().trim();
-    const filtered = USERS.filter(
-        u =>
-            u.username.toLowerCase().includes(query) ||
-            u.email.toLowerCase().includes(query)
-    );
-    renderTable(filtered);
-}
-
-searchBtn.onclick = searchUsers;
-clearSearch.onclick = () => {
-    searchInput.value = "";
-    renderTable(USERS);
+renderTable(USERS);
+updateStats();
 };
 
-/* Live search */
-searchInput.addEventListener("keyup", () => {
-    if (searchInput.value.trim() === "") renderTable(USERS);
+// ==================== RENDER TABLE ====================
+const renderTable = (users) => {
+userTableBody.innerHTML = users.length
+? users.map(user => `             <tr>                 <td><strong>${user.username}</strong></td>                 <td>${user.email}</td>                 <td><span class="badge ${user.status === "active" ? "bg-success" : "bg-secondary"}">${user.status}</span></td>                 <td>${user.workouts ?? 0}</td>                 <td>${user.calories ?? 0}</td>                 <td>${user.lastLogin ?? "—"}</td>                 <td class="text-center">                     <button class="btn btn-sm btn-warning me-1 toggle-status-btn" data-username="${user.username}">                         <i class="fa-solid fa-user-gear"></i>                     </button>                     <button class="btn btn-sm btn-danger delete-btn" data-username="${user.username}">                         <i class="fa-solid fa-trash"></i>                     </button>                 </td>             </tr>
+        `).join('')
+: `<tr><td colspan="7" class="text-center p-4 text-muted">No users found</td></tr>`;
+};
+
+// ==================== SEARCH ====================
+const searchUsers = () => {
+const query = searchInput.value.toLowerCase().trim();
+renderTable(USERS.filter(u => u.username.toLowerCase().includes(query) || u.email.toLowerCase().includes(query)));
+};
+
+searchBtn.addEventListener("click", searchUsers);
+clearSearch.addEventListener("click", () => {
+searchInput.value = "";
+renderTable(USERS);
+});
+searchInput.addEventListener("input", searchUsers);
+
+// ==================== EXPORT ====================
+const exportData = (format) => {
+let blob, filename;
+if (format === "csv") {
+const csv = ["Username,Email,Status,Workouts,Calories,Last Login",
+...USERS.map(u => `${u.username},${u.email},${u.status},${u.workouts},${u.calories},${u.lastLogin}`)].join("\n");
+blob = new Blob([csv], { type: "text/csv" });
+filename = "fittrack_users.csv";
+} else {
+blob = new Blob([JSON.stringify(USERS, null, 2)], { type: "application/json" });
+filename = "fittrack_users.json";
+}
+const link = document.createElement("a");
+link.href = URL.createObjectURL(blob);
+link.download = filename;
+link.click();
+};
+
+exportCSV.addEventListener("click", () => exportData("csv"));
+exportJSON.addEventListener("click", () => exportData("json"));
+
+// ==================== USER ACTIONS ====================
+userTableBody.addEventListener("click", (e) => {
+const username = e.target.closest("button")?.dataset.username;
+if (!username) return;
+
+```
+if (e.target.closest(".delete-btn")) deleteUser(username);
+if (e.target.closest(".toggle-status-btn")) toggleStatus(username);
+```
+
 });
 
-/* =======================================================
-   SECTION 4 — EXPORT FUNCTIONS
-======================================================= */
-exportCSV.onclick = () => {
-    let csv = "Username,Email,Status,Workouts,Calories,Last Login\n";
-    USERS.forEach(u => {
-        csv += `${u.username},${u.email},${u.status},${u.workouts},${u.calories},${u.lastLogin}\n`;
-    });
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "fittrack_users.csv";
-    link.click();
+const deleteUser = (username) => {
+if (!confirm(`Delete user "${username}"?`)) return;
+USERS = USERS.filter(u => u.username !== username);
+localStorage.setItem("fittrack_users", JSON.stringify(USERS));
+renderTable(USERS);
+updateStats();
 };
 
-exportJSON.onclick = () => {
-    const blob = new Blob([JSON.stringify(USERS, null, 2)], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "fittrack_users.json";
-    link.click();
+const toggleStatus = (username) => {
+USERS = USERS.map(u => u.username === username ? { ...u, status: u.status === "active" ? "inactive" : "active" } : u);
+renderTable(USERS);
+updateStats();
 };
 
-/* =======================================================
-   SECTION 5 — USER ACTIONS (Delete, Toggle Status)
-======================================================= */
-function deleteUser(username) {
-    if (!confirm(`Delete user "${username}"?`)) return;
-
-    USERS = USERS.filter(u => u.username !== username);
-
-    // Update localStorage fallback
-    localStorage.setItem("fittrack_users", JSON.stringify(USERS));
-
-    renderTable(USERS);
-    updateStats();
-}
-
-function toggleStatus(username) {
-    USERS = USERS.map(u =>
-        u.username === username
-            ? { ...u, status: u.status === "active" ? "inactive" : "active" }
-            : u
-    );
-
-    renderTable(USERS);
-    updateStats();
-}
-
-/* =======================================================
-   SECTION 6 — DASHBOARD STATS
-======================================================= */
-function updateStats() {
-    animateNumber(statTotalUsers, USERS.length);
-
-    const activeCount = USERS.filter(u => u.status === "active").length;
-    animateNumber(statActiveUsers, activeCount);
-
-    const totalWorkouts = USERS.reduce((a, b) => a + (b.workouts ?? 0), 0);
-    animateNumber(statTotalWorkouts, totalWorkouts);
-
-    const totalCalories = USERS.reduce((a, b) => a + (b.calories ?? 0), 0);
-    animateNumber(statTotalCalories, totalCalories);
-}
-
-/* Smooth counter animation */
-function animateNumber(el, value) {
-    let start = 0;
-    const duration = 900;
-    const step = value / (duration / 16);
-
-    function update() {
-        start += step;
-        if (start >= value) {
-            el.textContent = value;
-        } else {
-            el.textContent = Math.floor(start);
-            requestAnimationFrame(update);
-        }
-    }
-    update();
-}
-
-/* =======================================================
-   SECTION 7 — SIDEBAR (Mobile Toggle)
-======================================================= */
-if (menuToggle) {
-    menuToggle.addEventListener("click", () => {
-        sidebar.classList.toggle("open");
-    });
-}
-
-/* =======================================================
-   SECTION 8 — LOGOUT
-======================================================= */
-logoutBtn.onclick = () => {
-    localStorage.removeItem("fittrack_session");
-    window.location.href = "login.html";
+// ==================== DASHBOARD STATS ====================
+const updateStats = () => {
+animateNumber(statTotalUsers, USERS.length);
+animateNumber(statActiveUsers, USERS.filter(u => u.status === "active").length);
+animateNumber(statTotalWorkouts, USERS.reduce((a, u) => a + (u.workouts ?? 0), 0));
+animateNumber(statTotalCalories, USERS.reduce((a, u) => a + (u.calories ?? 0), 0));
 };
 
-/* =======================================================
-   INIT
-======================================================= */
+const animateNumber = (el, value) => {
+let start = 0;
+const duration = 900;
+const step = value / (duration / 16);
+const update = () => {
+start += step;
+el.textContent = start >= value ? value : Math.floor(start);
+if (start < value) requestAnimationFrame(update);
+};
+update();
+};
+
+// ==================== SIDEBAR (MOBILE) ====================
+menuToggle?.addEventListener("click", () => sidebar.classList.toggle("open"));
+
+// ==================== LOGOUT ====================
+logoutBtn.addEventListener("click", () => {
+localStorage.removeItem("fittrack_session");
+window.location.href = "logout.html";
+});
+
+// ==================== INIT ====================
 loadUsers();

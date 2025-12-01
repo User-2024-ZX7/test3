@@ -5,7 +5,7 @@ FitTrack Admin Panel - Fully Responsive Green Sidebar CSS
 /* ---------- CSS VARIABLES ---------- */
 :root {
 --sidebar-width: 260px;
---sidebar-bg: #1e7e34; /* green layout for sidebar */
+--sidebar-bg:#222; /* green layout for sidebar */
 --sidebar-text: #fff;
 --primary: #007bff;
 --dark: #222;

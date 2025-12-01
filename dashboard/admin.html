@@ -18,140 +18,138 @@
 </head>
 <body class="admin-body">
 
-<!-- Mobile Navbar -->
+  <!-- Mobile Navbar -->
 
-<nav class="d-lg-none navbar navbar-dark bg-dark px-3 py-2 shadow-sm">
-  <a class="navbar-brand d-flex align-items-center" href="index.html">
-    <img src="FitTrack.jpg" alt="FitTrack Logo" class="rounded-circle me-2" style="width:32px; height:32px;">
-    <span class="fs-6 fw-bold">FitTrack Admin</span>
-  </a>
-  <button class="btn btn-outline-light btn-sm" id="menuToggle">
-    <i class="fa-solid fa-bars"></i>
-  </button>
-</nav>
+  <header class="d-lg-none navbar navbar-dark bg-dark px-3 py-2 shadow-sm" role="banner">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="FitTrack.jpg" alt="FitTrack Logo" class="rounded-circle me-2" style="width:32px; height:32px;">
+      <span class="fs-6 fw-bold">FitTrack Admin</span>
+    </a>
+    <button class="btn btn-outline-light btn-sm" id="menuToggle" aria-label="Toggle sidebar menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
 
-<!-- Sidebar -->
+  <!-- Sidebar -->
 
-<aside id="sidebar" class="admin-sidebar d-none d-lg-block">
-  <div class="sidebar-header d-flex align-items-center px-3 py-3">
-    <img src="FitTrack.jpg" alt="Logo" class="rounded-circle me-2" style="width:38px; height:38px;">
-    <h4 class="mb-0 fw-bold">FitTrack Admin</h4>
-  </div>
-  <ul class="nav flex-column px-2">
-    <li class="nav-item">
+  <aside id="sidebar" class="admin-sidebar d-none d-lg-block" role="navigation" aria-label="Admin Sidebar">
+    <div class="sidebar-header d-flex align-items-center px-3 py-3">
+      <img src="FitTrack.jpg" alt="FitTrack Logo" class="rounded-circle me-2" style="width:38px; height:38px;">
+      <h4 class="mb-0 fw-bold">FitTrack Admin</h4>
+    </div>
+    <nav class="nav flex-column px-2">
       <a href="#dashboard" class="nav-link text-white">
         <i class="fa-solid fa-chart-line me-2"></i>Dashboard
       </a>
-    </li>
-    <li class="nav-item">
       <a href="#usersTable" class="nav-link text-white">
         <i class="fa-solid fa-users me-2"></i>Manage Users
       </a>
-    </li>
-  </ul>
-</aside>
+    </nav>
+  </aside>
 
-<!-- Main Content -->
+  <!-- Main Content -->
 
-<main class="admin-main-content">
-  <!-- Dashboard Stats -->
-  <section id="dashboard" class="section-block">
-    <h2 class="section-title">Admin Dashboard Overview</h2>
-    <div class="row g-4 mt-1">
-      <div class="col-lg-3 col-md-6" data-aos="fade-up">
-        <div class="dashboard-card shadow-sm">
-          <span class="dashboard-label">Total Users</span>
-          <h3 id="totalUsers" class="dashboard-stat">0</h3>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-        <div class="dashboard-card shadow-sm">
-          <span class="dashboard-label">Active Users</span>
-          <h3 id="activeUsers" class="dashboard-stat">0</h3>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-        <div class="dashboard-card shadow-sm">
-          <span class="dashboard-label">Total Workouts</span>
-          <h3 id="totalWorkouts" class="dashboard-stat">0</h3>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-        <div class="dashboard-card shadow-sm">
-          <span class="dashboard-label">Total Calories Burned</span>
-          <h3 id="totalCalories" class="dashboard-stat">0</h3>
-        </div>
+  <main class="admin-main-content">
+
+```
+<!-- Dashboard Stats -->
+<section id="dashboard" class="section-block" aria-labelledby="dashboard-title">
+  <h2 id="dashboard-title" class="section-title">Admin Dashboard Overview</h2>
+  <div class="row g-4 mt-1">
+    <div class="col-lg-3 col-md-6" data-aos="fade-up">
+      <div class="dashboard-card shadow-sm">
+        <span class="dashboard-label">Total Users</span>
+        <h3 id="totalUsers" class="dashboard-stat">0</h3>
       </div>
     </div>
-  </section>
-
-  <!-- Users Table -->
-
-  <section id="usersTable" class="section-block">
-    <h2 class="section-title">Manage User Accounts</h2>
-
-
-<!-- Filters & Export -->
-<div class="row g-3 mb-3 mt-2 align-items-end">
-  <div class="col-lg-6">
-    <div class="d-flex gap-2">
-      <input id="searchInput" type="text" class="form-control" placeholder="Search name or email…">
-      <button id="searchBtn" class="btn btn-primary">Search</button>
-      <button id="clearSearch" class="btn btn-secondary">Clear</button>
+    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+      <div class="dashboard-card shadow-sm">
+        <span class="dashboard-label">Active Users</span>
+        <h3 id="activeUsers" class="dashboard-stat">0</h3>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+      <div class="dashboard-card shadow-sm">
+        <span class="dashboard-label">Total Workouts</span>
+        <h3 id="totalWorkouts" class="dashboard-stat">0</h3>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+      <div class="dashboard-card shadow-sm">
+        <span class="dashboard-label">Total Calories Burned</span>
+        <h3 id="totalCalories" class="dashboard-stat">0</h3>
+      </div>
     </div>
   </div>
-  <div class="col-lg-6 text-lg-end">
-    <button id="exportCSV" class="btn btn-success me-2">
-      <i class="fa-solid fa-file-csv me-1"></i> Export CSV
-    </button>
-    <button id="exportJSON" class="btn btn-info text-white">
-      <i class="fa-solid fa-file-export me-1"></i> Export JSON
-    </button>
-  </div>
-</div>
+</section>
 
 <!-- Users Table -->
-<div class="table-responsive shadow-sm rounded overflow-hidden">
-  <table class="table table-striped table-hover table-bordered align-middle mb-0">
-    <thead class="table-dark sticky-top text-center">
-      <tr>
-        <th class="text-start">User</th>
-        <th>Email</th>
-        <th>Status</th>
-        <th>Workouts</th>
-        <th>Calories</th>
-        <th>Last Login</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody id="userTableBody">
-      <!-- Populated via JS -->
-    </tbody>
-  </table>
-</div>
-  </section>
-</main>
+<section id="usersTable" class="section-block" aria-labelledby="users-title">
+  <h2 id="users-title" class="section-title">Manage User Accounts</h2>
 
-<!-- Footer -->
-
-<footer class="admin-footer bg-dark text-white text-center py-4">
-  <div class="container d-flex flex-column align-items-center">
-    <img src="FitTrack.jpg" alt="FitTrack Logo" class="footer-logo mb-2 rounded-circle" style="height:60px; width:60px; object-fit:cover;">
-    <small class="opacity-75">© 2025 FitTrack Admin Panel — All rights reserved</small>
+  <!-- Filters & Export -->
+  <div class="row g-3 mb-3 mt-2 align-items-end">
+    <div class="col-lg-6">
+      <div class="d-flex gap-2">
+        <input id="searchInput" type="text" class="form-control" placeholder="Search name or email…" aria-label="Search users">
+        <button id="searchBtn" class="btn btn-primary">Search</button>
+        <button id="clearSearch" class="btn btn-secondary">Clear</button>
+      </div>
+    </div>
+    <div class="col-lg-6 text-lg-end">
+      <button id="exportCSV" class="btn btn-success me-2">
+        <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+      </button>
+      <button id="exportJSON" class="btn btn-info text-white">
+        <i class="fa-solid fa-file-export me-1"></i> Export JSON
+      </button>
+    </div>
   </div>
-</footer>
 
-<!-- Scripts -->
+  <!-- Users Table -->
+  <div class="table-responsive shadow-sm rounded overflow-hidden">
+    <table class="table table-striped table-hover table-bordered align-middle mb-0">
+      <thead class="table-dark sticky-top text-center">
+        <tr>
+          <th class="text-start">User</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Workouts</th>
+          <th>Calories</th>
+          <th>Last Login</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <!-- Populated dynamically via JS -->
+      </tbody>
+    </table>
+  </div>
+</section>
+```
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </main>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <!-- Footer -->
 
-<script src="../static/js/admin.js"></script>
+  <footer class="admin-footer bg-dark text-white text-center py-4" role="contentinfo">
+    <div class="container d-flex flex-column align-items-center">
+      <img src="FitTrack.jpg" alt="FitTrack Logo" class="footer-logo mb-2 rounded-circle" style="height:60px; width:60px; object-fit:cover;">
+      <small class="opacity-75">© 2025 FitTrack Admin Panel — All rights reserved</small>
+    </div>
+  </footer>
 
-<script>
-  AOS.init();
-</script>
+  <!-- Scripts -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <script src="../static/js/admin.js"></script>
+
+  <script>
+    AOS.init();
+  </script>
 
 </body>
 </html>
