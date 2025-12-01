@@ -1,39 +1,210 @@
-body { background: #f7f9fc; font-family: 'Segoe UI', sans-serif; }
-.navbar { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-.dashboard-header { margin-top: 4rem; margin-bottom: 2rem; }
+/* =========================================
+   FitTrack Admin Panel - Premium CSS
+   Author: 500000005 (Senior-Level UI Design)
+   ========================================= */
 
-.summary-card {
-  border-radius: 1rem;
-  transition: transform 0.3s, box-shadow 0.3s;
-  background: #fff;
+/* ---------- CSS VARIABLES ---------- */
+:root {
+    --sidebar-width: 260px;
+    --sidebar-bg: #111;
+    --sidebar-text: #fff;
+    --primary: #007bff;
+    --dark: #222;
+    --light: #f8f9fa;
+    --card-bg: #ffffff;
+    --card-radius: 16px;
+    --transition: 0.25s ease;
+    --shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
-.summary-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 1rem 2rem rgba(0,0,0,0.15);
-}
-.summary-card h6 { font-weight: 500; color: #555; }
-.summary-card .stat { font-size: 2rem; font-weight: 700; color: #222; }
 
+/* ---------- GLOBAL RESET ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body.admin-body {
+    font-family: 'Inter', sans-serif;
+    background: #f3f4f7;
+    overflow-x: hidden;
+}
+
+/* ========== SIDEBAR ========== */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding-top: 1rem;
+    z-index: 9999;
+    transition: var(--transition);
+}
+
+.admin-sidebar .nav-link {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+}
+
+.admin-sidebar .nav-link:hover,
+.admin-sidebar .nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-header h4 {
+    font-size: 1.35rem;
+}
+
+/* Mobile sidebar hidden by default */
+@media (max-width: 992px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    .admin-sidebar.open {
+        transform: translateX(0);
+        box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+}
+
+/* ========== MAIN CONTENT ========== */
+.admin-main-content {
+    margin-left: var(--sidebar-width);
+    padding: 30px;
+    transition: var(--transition);
+}
+
+@media (max-width: 992px) {
+    .admin-main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+
+/* ========== MOBILE TOPBAR ========== */
+.mobile-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 9000;
+}
+
+/* ========== SECTION HEADINGS ========== */
+.section-block {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+/* ========== DASHBOARD CARDS ========== */
+.dashboard-card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    padding: 22px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.dashboard-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #666;
+}
+
+.dashboard-stat {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+/* ========== TABLE STYLING ========== */
 .table-responsive {
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
-}
-table thead { background: #343a40; color: #fff; }
-table tbody tr:nth-child(even) { background: #f1f3f6; }
-table tbody tr.active-user { background-color: #d4edda; font-weight: 500; }
-.badge-status { font-size: 0.85rem; }
-.btn-export { min-width: 130px; }
-.table-actions button { margin-right: 0.3rem; }
-
-footer {
-  background: #222;
-  color: #ccc;
-  padding: 1.5rem 0;
-  text-align: center;
-  font-size: 0.9rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
 }
 
-@media(max-width:768px){ 
-  .summary-card { margin-bottom: 1rem; } 
+table.table {
+    margin-bottom: 0;
+}
+
+table thead {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+table tbody tr {
+    transition: var(--transition);
+}
+
+table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+/* Sticky header */
+.table-dark.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Action buttons inside table */
+.action-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+/* ========== FOOTER ========== */
+.admin-footer {
+    margin-left: var(--sidebar-width);
+    transition: var(--transition);
+}
+
+@media (max-width: 992px) {
+    .admin-footer {
+        margin-left: 0;
+    }
+}
+
+/* ========== SEARCH + BUTTON STYLES ========== */
+#searchInput {
+    border-radius: 10px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+.btn-export {
+    padding: 7px 16px;
+    font-size: 0.9rem;
+}
+
+/* ========== ANIMATIONS ========== */
+.fade-in {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }

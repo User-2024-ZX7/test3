@@ -3,113 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - FitTrack</title>
+  <title>FitTrack Admin Panel</title>
 
-  <!-- Bootstrap & FontAwesome -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" />
-  <!-- AOS -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet"/>
+
+  <!-- AOS Animations -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="static/css/admin.css" />
+  <link rel="stylesheet" href="../static/css/admin.css" />
 </head>
-<body>
 
-<!-- Sidebar -->
-<div class="d-flex">
-  <nav id="sidebar" class="bg-dark text-white d-flex flex-column p-3" style="width: 250px; min-height: 100vh;">
-    <a href="index.html" class="d-flex align-items-center mb-4 text-decoration-none text-white fs-4 fw-bold">
-      <i class="fa-solid fa-dumbbell me-2"></i>FitTrack Admin
-    </a>
+<body class="admin-body">
 
-    <ul class="nav nav-pills flex-column mb-auto">
-      <li class="nav-item mb-2"><a href="#dashboard" class="nav-link text-white"><i class="fa-solid fa-chart-pie me-2"></i>Dashboard</a></li>
-      <li class="nav-item mb-2"><a href="#usersTable" class="nav-link text-white"><i class="fa-solid fa-users me-2"></i>Manage Users</a></li>
-      <li class="nav-item"><button id="logout-btn" class="btn btn-outline-danger w-100 mt-3"><i class="fa-solid fa-sign-out-alt me-2"></i> Logout</button></li>
-    </ul>
-  </nav>
+<!-- Mobile Navbar -->
+<div class="d-lg-none mobile-topbar d-flex align-items-center justify-content-between px-3 py-2 shadow-sm bg-dark text-white">
+  
+  <!-- Logo + Brand -->
+  <a class="navbar-brand d-flex align-items-center text-white text-decoration-none" href="index.html">
+      <img src="FitTrack.jpg" alt="FitTrack Logo" class="brand-logo me-2" style="height:32px; width:auto;">
+      <span class="fs-5 fw-bold">FitTrack Admin</span>
+  </a>
 
-  <!-- Main content -->
-  <div class="flex-grow-1 p-4">
-    
-    <!-- Dashboard summary cards -->
-    <section id="dashboard" class="mb-5">
-      <h2 class="fw-bold mb-4">User Activity Summary</h2>
-      <div class="row g-4">
-        <div class="col-md-3">
-          <div class="card summary-card p-4 text-center">
-            <h6>Total Users</h6>
-            <div class="stat" id="totalUsers">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card summary-card p-4 text-center">
-            <h6>Active Users</h6>
-            <div class="stat" id="activeUsers">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card summary-card p-4 text-center">
-            <h6>Total Workouts</h6>
-            <div class="stat" id="totalWorkouts">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card summary-card p-4 text-center">
-            <h6>Total Calories Burned</h6>
-            <div class="stat" id="totalCalories">0</div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- Mobile Menu Toggle -->
+  <button id="menuToggle" class="btn btn-outline-light btn-sm">
+      <i class="fa-solid fa-bars"></i>
+  </button>
 
-    <!-- Manage users table -->
-    <section id="usersTable">
-      <h2 class="fw-bold mb-3">Manage User Accounts</h2>
-
-      <div class="row mb-3 g-3">
-        <div class="col-md-6 d-flex gap-2">
-          <input id="searchInput" type="text" class="form-control" placeholder="Search by name or email">
-          <button id="searchBtn" class="btn btn-outline-primary">Search</button>
-          <button id="clearSearch" class="btn btn-outline-secondary">Clear</button>
-        </div>
-        <div class="col-md-6 d-flex justify-content-md-end gap-2">
-          <button id="exportCSV" class="btn btn-success btn-export"><i class="fa-solid fa-file-csv me-1"></i> CSV</button>
-          <button id="exportJSON" class="btn btn-info btn-export"><i class="fa-solid fa-file-export me-1"></i> JSON</button>
-        </div>
-      </div>
-
-      <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th>User</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th>Workouts</th>
-              <th>Calories</th>
-              <th>Last Login</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody">
-            <!-- Dynamic rows populated from JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </div>
 </div>
 
-<footer class="text-center py-3 mt-5 bg-dark text-white">
-  © 2025 FitTrack Admin Panel — All rights reserved
+<!-- Sidebar -->
+<nav id="sidebar" class="admin-sidebar bg-dark text-white">
+  <div class="sidebar-header px-3 py-3 mb-4 d-flex align-items-center">
+      <img src="FitTrack.jpg" alt="FitTrack Logo" class="me-2 d-none d-lg-block" style="height:38px; width:auto;">
+      <h4 class="fw-bold mb-0 d-none d-lg-block">FitTrack Admin</h4>
+  </div>
+
+  <ul class="nav flex-column px-2">
+      <li class="nav-item">
+          <a href="#dashboard" class="nav-link text-white sidebar-link">
+              <i class="fa-solid fa-chart-line me-2"></i>Dashboard
+          </a>
+      </li>
+
+      <li class="nav-item">
+          <a href="#usersTable" class="nav-link text-white sidebar-link">
+              <i class="fa-solid fa-users me-2"></i>Manage Users
+          </a>
+      </li>
+
+      <li class="nav-item mt-4">
+          <button id="logout-btn" class="btn btn-danger w-100">
+              <i class="fa-solid fa-sign-out-alt me-2"></i>Logout
+          </button>
+      </li>
+  </ul>
+</nav>
+
+
+
+<!-- MAIN CONTENT -->
+<main class="admin-main-content">
+
+  <!-- Dashboard -->
+  <section id="dashboard" class="section-block">
+    <h2 class="section-title">Admin Dashboard Overview</h2>
+
+    <div class="row g-4 mt-1">
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up">
+        <div class="dashboard-card shadow-sm">
+          <span class="dashboard-label">Total Users</span>
+          <h3 id="totalUsers" class="dashboard-stat">0</h3>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="dashboard-card shadow-sm">
+          <span class="dashboard-label">Active Users</span>
+          <h3 id="activeUsers" class="dashboard-stat">0</h3>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="dashboard-card shadow-sm">
+          <span class="dashboard-label">Total Workouts</span>
+          <h3 id="totalWorkouts" class="dashboard-stat">0</h3>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="dashboard-card shadow-sm">
+          <span class="dashboard-label">Total Calories Burned</span>
+          <h3 id="totalCalories" class="dashboard-stat">0</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Manage Users -->
+  <section id="usersTable" class="section-block">
+    <h2 class="section-title">Manage User Accounts</h2>
+
+    <!-- Filters -->
+    <div class="row g-3 mb-3 mt-2 align-items-end">
+
+      <div class="col-lg-6">
+        <div class="d-flex gap-2">
+          <input id="searchInput" type="text" class="form-control" placeholder="Search name or email…">
+          <button id="searchBtn" class="btn btn-primary">Search</button>
+          <button id="clearSearch" class="btn btn-secondary">Clear</button>
+        </div>
+      </div>
+
+      <div class="col-lg-6 text-lg-end">
+        <button id="exportCSV" class="btn btn-success me-2">
+          <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+        </button>
+        <button id="exportJSON" class="btn btn-info text-white">
+          <i class="fa-solid fa-file-export me-1"></i> Export JSON
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-responsive shadow-sm">
+      <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark sticky-top">
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Workouts</th>
+            <th>Calories</th>
+            <th>Last Login</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="userTableBody">
+          <!-- Injected by JS -->
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="admin-footer bg-dark text-white text-center py-4">
+  <div class="container d-flex flex-column align-items-center">
+      
+      <!-- Logo -->
+      <img src="FitTrack.jpg" 
+           alt="FitTrack Logo" 
+           class="footer-logo mb-2"
+           style="height:45px; width:auto;">
+
+      <!-- Text -->
+      <small class="opacity-75">
+        © 2025 FitTrack Admin Panel — All rights reserved
+      </small>
+
+  </div>
 </footer>
 
-<!-- Scripts -->
+
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="static/js/admin.js"></script>
+<script>
+  AOS.init();
+</script>
+<script src="../static/js/admin.js"></script>
+
 </body>
 </html>
-
