@@ -1,210 +1,205 @@
 /* =========================================
-   FitTrack Admin Panel - Premium CSS
-   Author: 500000005 (Senior-Level UI Design)
-   ========================================= */
+FitTrack Admin Panel - Fully Responsive Green Sidebar CSS
+========================================= */
 
 /* ---------- CSS VARIABLES ---------- */
 :root {
-    --sidebar-width: 260px;
-    --sidebar-bg: #111;
-    --sidebar-text: #fff;
-    --primary: #007bff;
-    --dark: #222;
-    --light: #f8f9fa;
-    --card-bg: #ffffff;
-    --card-radius: 16px;
-    --transition: 0.25s ease;
-    --shadow: 0 4px 12px rgba(0,0,0,0.12);
+--sidebar-width: 260px;
+--sidebar-bg: #1e7e34; /* green layout for sidebar */
+--sidebar-text: #fff;
+--primary: #007bff;
+--dark: #222;
+--light: #f8f9fa;
+--card-bg: #ffffff;
+--card-radius: 16px;
+--transition: 0.25s ease;
+--shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 /* ---------- GLOBAL RESET ---------- */
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  }
+  html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  }
 
 body.admin-body {
-    font-family: 'Inter', sans-serif;
-    background: #f3f4f7;
-    overflow-x: hidden;
+font-family: 'Inter', sans-serif;
+background: #f3f4f7;
 }
 
 /* ========== SIDEBAR ========== */
 .admin-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: var(--sidebar-width);
-    height: 100vh;
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    padding-top: 1rem;
-    z-index: 9999;
-    transition: var(--transition);
+position: fixed;
+top: 0;
+left: 0;
+width: var(--sidebar-width);
+height: 100vh;
+background-color: var(--sidebar-bg);
+color: var(--sidebar-text);
+padding-top: 1rem;
+z-index: 9999;
+transition: all 0.3s ease;
+overflow-y: auto; /* scroll if content overflows */
 }
 
 .admin-sidebar .nav-link {
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin-bottom: 6px;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
+padding: 12px 15px;
+border-radius: 8px;
+margin-bottom: 6px;
+display: flex;
+align-items: center;
+background-color: var(--sidebar-bg);
+color: var(--sidebar-text);
+transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .admin-sidebar .nav-link:hover,
 .admin-sidebar .nav-link.active {
-    background: rgba(255, 255, 255, 0.15);
+background-color: rgba(255, 255, 255, 0.1);
+color: var(--sidebar-text);
+}
+
+.sidebar-header {
+display: flex;
+align-items: center;
+padding: 0 15px;
+margin-bottom: 1rem;
+}
+
+.sidebar-header img {
+height: 38px;
+width: 38px;
+object-fit: cover;
+border-radius: 50%;
+margin-right: 10px;
 }
 
 .sidebar-header h4 {
-    font-size: 1.35rem;
-}
-
-/* Mobile sidebar hidden by default */
-@media (max-width: 992px) {
-    .admin-sidebar {
-        transform: translateX(-100%);
-    }
-    .admin-sidebar.open {
-        transform: translateX(0);
-        box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    }
+font-size: 1.35rem;
+margin: 0;
 }
 
 /* ========== MAIN CONTENT ========== */
 .admin-main-content {
-    margin-left: var(--sidebar-width);
-    padding: 30px;
-    transition: var(--transition);
+margin-left: var(--sidebar-width);
+padding: 30px;
+transition: margin 0.3s ease;
 }
-
 @media (max-width: 992px) {
-    .admin-main-content {
-        margin-left: 0;
-        padding: 20px;
-    }
+.admin-main-content {
+margin-left: 0;
+padding: 20px;
+}
 }
 
 /* ========== MOBILE TOPBAR ========== */
 .mobile-topbar {
-    position: sticky;
-    top: 0;
-    z-index: 9000;
+position: sticky;
+top: 0;
+z-index: 9000;
+background: var(--dark);
+color: var(--sidebar-text);
+padding: 10px 15px;
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 
-/* ========== SECTION HEADINGS ========== */
-.section-block {
-    margin-bottom: 50px;
-}
-
-.section-title {
-    font-size: 1.7rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #222;
+.mobile-topbar .brand-logo {
+height: 30px;
+width: 30px;
+object-fit: cover;
+border-radius: 50%;
 }
 
 /* ========== DASHBOARD CARDS ========== */
 .dashboard-card {
-    background: var(--card-bg);
-    border-radius: var(--card-radius);
-    padding: 22px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    border: 1px solid rgba(0,0,0,0.05);
+background: var(--card-bg);
+border-radius: var(--card-radius);
+padding: 22px;
+text-align: center;
+box-shadow: var(--shadow);
+transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+border: 1px solid rgba(0,0,0,0.05);
 }
-
 .dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-.dashboard-label {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #666;
-}
-
-.dashboard-stat {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--primary);
-    margin-top: 5px;
+transform: translateY(-5px);
+box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+background-color: #000;
+color: #fff;
 }
 
 /* ========== TABLE STYLING ========== */
 .table-responsive {
-    border-radius: 12px;
-    overflow: hidden;
-    background: white;
+border-radius: 12px;
+overflow: hidden;
+background: #fff;
+box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-
-table.table {
-    margin-bottom: 0;
+table.table tbody tr {
+transition: background 0.25s ease, color 0.25s ease;
 }
-
-table thead {
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-table tbody tr {
-    transition: var(--transition);
-}
-
-table tbody tr:hover {
-    background: rgba(0, 0, 0, 0.04);
-}
-
-/* Sticky header */
-.table-dark.sticky-top {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-/* Action buttons inside table */
-.action-btn {
-    padding: 6px 10px;
-    font-size: 0.8rem;
+table.table tbody tr:hover {
+background: rgba(0,123,255,0.08);
 }
 
 /* ========== FOOTER ========== */
 .admin-footer {
-    margin-left: var(--sidebar-width);
-    transition: var(--transition);
+margin-left: var(--sidebar-width);
+padding: 15px 20px;
+background: var(--dark);
+color: var(--sidebar-text);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+transition: margin 0.3s ease;
 }
-
 @media (max-width: 992px) {
-    .admin-footer {
-        margin-left: 0;
-    }
+.admin-footer {
+margin-left: 0;
+flex-direction: column;
+gap: 5px;
+}
 }
 
 /* ========== SEARCH + BUTTON STYLES ========== */
 #searchInput {
-    border-radius: 10px;
+border-radius: 10px;
 }
-
 .btn {
-    border-radius: 10px;
+border-radius: 10px;
 }
-
 .btn-export {
-    padding: 7px 16px;
-    font-size: 0.9rem;
+padding: 7px 16px;
+font-size: 0.9rem;
 }
 
 /* ========== ANIMATIONS ========== */
 .fade-in {
-    animation: fadeIn 0.6s ease forwards;
+animation: fadeIn 0.6s ease forwards;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(12px); }
+to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ========== RESPONSIVE LOGO STACKING ========== */
+@media (max-width: 576px) {
+.sidebar-header {
+flex-direction: column;
+text-align: center;
+}
+.sidebar-header h4 {
+display: block;
+font-size: 1.1rem;
+margin-top: 5px;
+}
 }
