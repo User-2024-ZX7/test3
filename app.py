@@ -1,222 +1,118 @@
-'''
-from flask import Flask, render_template, jsonify, request
-from flask_cors import CORS
-from datetime import datetime
-import json
+from flask import Flask, request, jsonify
+from flask_login import LoginManager, login_required, current_user, logout_user
+from werkzeug.utils import secure_filename
+import mysql.connector, os
 
 app = Flask(__name__)
-CORS(app)
+app.config['UPLOAD_FOLDER'] = 'dashboard/images/avatars'
+login_manager = LoginManager(app)
 
-# In-memory demo storage (replace with DB later)
-ACTIVE_WORKOUTS = []
-ARCHIVED_WORKOUTS = []
-
-# Helper to validate workout data
-def normalize_workout(w):
-    return {
-        "id": w.get("id") or str(datetime.now().timestamp()),
-        "activity": w.get("activity","").strip(),
-        "duration": max(0,int(w.get("duration",0))),
-        "calories": max(0,int(w.get("calories",0))),
-        "date": w.get("date") or datetime.now().strftime("%Y-%m-%d")
-    }
-
-@app.route("/")
-def index():
-    return render_template("live_demo.html")
-
-@app.route("/api/workouts/active", methods=["GET","POST"])
-def active_workouts():
-    global ACTIVE_WORKOUTS
-    if request.method == "GET":
-        return jsonify(ACTIVE_WORKOUTS)
-    data = request.json
-    workout = normalize_workout(data)
-    ACTIVE_WORKOUTS.append(workout)
-    return jsonify(workout)
-
-@app.route("/api/workouts/active/<wid>", methods=["DELETE"])
-def delete_active(wid):
-    global ACTIVE_WORKOUTS
-    ACTIVE_WORKOUTS = [w for w in ACTIVE_WORKOUTS if w["id"] != wid]
-    return jsonify({"status":"deleted"})
-
-@app.route("/api/workouts/archive/<wid>", methods=["POST"])
-def archive_active(wid):
-    global ACTIVE_WORKOUTS, ARCHIVED_WORKOUTS
-    workout = next((w for w in ACTIVE_WORKOUTS if w["id"]==wid), None)
-    if workout:
-        ACTIVE_WORKOUTS = [w for w in ACTIVE_WORKOUTS if w["id"] != wid]
-        ARCHIVED_WORKOUTS.append(workout)
-        return jsonify({"status":"archived"})
-    return jsonify({"error":"not found"}),404
-
-@app.route("/api/workouts/archived", methods=["GET"])
-def archived_workouts():
-    return jsonify(ARCHIVED_WORKOUTS)
-
-@app.route("/api/workouts/archive/<wid>/restore", methods=["POST"])
-def restore_archived(wid):
-    global ACTIVE_WORKOUTS, ARCHIVED_WORKOUTS
-    workout = next((w for w in ARCHIVED_WORKOUTS if w["id"]==wid), None)
-    if workout:
-        ARCHIVED_WORKOUTS = [w for w in ARCHIVED_WORKOUTS if w["id"] != wid]
-        ACTIVE_WORKOUTS.append(workout)
-        return jsonify({"status":"restored"})
-    return jsonify({"error":"not found"}),404
-
-@app.route("/api/export/json")
-def export_json():
-    payload = {"active": ACTIVE_WORKOUTS, "archived": ARCHIVED_WORKOUTS}
-    return app.response_class(
-        json.dumps(payload, indent=2),
-        mimetype="application/json",
-        headers={"Content-Disposition":"attachment;filename=fittrack_export.json"}
+def get_db():
+    return mysql.connector.connect(
+        host="localhost", user="your_user", password="your_pass", database="fittrack"
     )
 
-if __name__ == "__main__":
-    app.run(debug=True)
-'''
+# ------------------- WORKOUTS -------------------
+@app.route('/api/workouts', methods=['GET'])
+@login_required
+def get_workouts():
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM workouts WHERE user_id=%s ORDER BY date DESC", (current_user.id,))
+    data = cursor.fetchall()
+    cursor.close(); db.close()
+    return jsonify(data)
 
-'''
-from flask import Flask, jsonify
-import mysql.connector
+@app.route('/api/workouts', methods=['POST'])
+@login_required
+def add_workout():
+    p = request.json
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("INSERT INTO workouts (user_id, activity, duration, calories, date) VALUES (%s,%s,%s,%s,%s)",
+                   (current_user.id, p['activity'], p['duration'], p['calories'], p['date']))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"success"})
 
-app=Flask(__name__)
+@app.route('/api/workouts/<int:w_id>', methods=['DELETE'])
+@login_required
+def delete_workout(w_id):
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("DELETE FROM workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"deleted"})
 
-con=mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='root',
-    database='my_db'
-)
+@app.route('/api/workouts/<int:w_id>/archive', methods=['POST'])
+@login_required
+def archive_workout(w_id):
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("INSERT INTO archived_workouts (user_id, activity, duration, calories, date) SELECT user_id, activity, duration, calories, date FROM workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
+    cursor.execute("DELETE FROM workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"archived"})
 
-@app.route('/getTable',methods=['GET'])
-def get_tables():
-    cursor=con.cursor()
-    cursor.execute("SHOW TABLES;")
-    tables=cursor.fetchall()
-    cursor.close()
-    con.close()
-    print(tables)
-    table_names=[table[0] for table in tables]
-    return jsonify({"tables":table_names}), 200
-    
-if __name__ == "__main__":
-    print("connected to db successfully")
-    app.run(debug=True)
-'''
+# ------------------- ARCHIVED -------------------
+@app.route('/api/archived_workouts', methods=['GET'])
+@login_required
+def get_archived():
+    db = get_db(); cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM archived_workouts WHERE user_id=%s ORDER BY date DESC", (current_user.id,))
+    data = cursor.fetchall()
+    cursor.close(); db.close()
+    return jsonify(data)
 
-from flask import Flask, render_template, request, redirect, session, url_for
-import pymysql
-from werkzeug.security import generate_password_hash, check_password_hash
+@app.route('/api/archived_workouts/<int:w_id>/restore', methods=['POST'])
+@login_required
+def restore_archived(w_id):
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("INSERT INTO workouts (user_id, activity, duration, calories, date) SELECT user_id, activity, duration, calories, date FROM archived_workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
+    cursor.execute("DELETE FROM archived_workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"restored"})
 
-app = Flask(__name__)
-app.secret_key = "supersecretkey123"   # Change this!
+@app.route('/api/archived_workouts/<int:w_id>', methods=['DELETE'])
+@login_required
+def delete_archived(w_id):
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("DELETE FROM archived_workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"deleted"})
 
-# ------------------ DATABASE CONNECTION ------------------
-con = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="my_db",
-    cursorclass=pymysql.cursors.DictCursor
-)
-cursor = con.cursor()
+@app.route('/api/archived_workouts/clear', methods=['POST'])
+@login_required
+def clear_archived():
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("DELETE FROM archived_workouts WHERE user_id=%s", (current_user.id,))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"cleared"})
 
-# =========================================================
-# ------------------------ ROUTES -------------------------
-# =========================================================
+@app.route('/api/archived_workouts/restore_all', methods=['POST'])
+@login_required
+def restore_all():
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("INSERT INTO workouts (user_id, activity, duration, calories, date) SELECT user_id, activity, duration, calories, date FROM archived_workouts WHERE user_id=%s", (current_user.id,))
+    cursor.execute("DELETE FROM archived_workouts WHERE user_id=%s", (current_user.id,))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"restored_all"})
 
-# ---------------- HOME PAGE ----------------
-@app.route("/")
-def index():
-    return render_template("index.html")
+# ------------------- AVATAR -------------------
+@app.route('/api/avatar', methods=['POST'])
+@login_required
+def upload_avatar():
+    if 'avatar' not in request.files:
+        return jsonify({"error":"No file"}), 400
+    file = request.files['avatar']
+    filename = secure_filename(f"user_{current_user.id}_{file.filename}")
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    db = get_db(); cursor = db.cursor()
+    cursor.execute("UPDATE users SET avatar=%s WHERE id=%s", (filename, current_user.id))
+    db.commit(); cursor.close(); db.close()
+    return jsonify({"status":"uploaded","url":f"/dashboard/images/avatars/{filename}"})
 
-
-# ---------------- REGISTER ----------------
-@app.route("/register", methods=["GET", "POST"])
-def register():
-
-    if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        password = generate_password_hash(request.form["password"])
-        role = "user"
-
-        query = "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (name, email, password, role))
-        con.commit()
-
-        return redirect("/login")
-
-    return render_template("register.html")
-
-
-# ---------------- LOGIN ----------------
-@app.route("/login", methods=["GET", "POST"])
-def login():
-
-    if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
-
-        query = "SELECT * FROM users WHERE email = %s"
-        cursor.execute(query, (email,))
-        user = cursor.fetchone()
-
-        if user and check_password_hash(user["password"], password):
-            session["user_id"] = user["id"]
-            session["role"] = user["role"]
-            session["name"] = user["name"]
-
-            # Redirect based on role
-            if user["role"] == "admin":
-                return redirect("/admin")
-            else:
-                return redirect("/user")
-
-        return render_template("login.html", error="Invalid email or password.")
-
-    return render_template("login.html")
-
-
-# ---------------- LOGOUT ----------------
-@app.route("/logout")
+# ------------------- LOGOUT -------------------
+@app.route('/logout', methods=['POST'])
+@login_required
 def logout():
-    session.clear()
-    return redirect("/")
-
-
-# ---------------- USER DASHBOARD ----------------
-@app.route("/user")
-def user_dashboard():
-    if "user_id" not in session:
-        return redirect("/login")
-
-    return render_template("user.html", name=session["name"])
-
-
-# ---------------- ADMIN DASHBOARD ----------------
-@app.route("/admin")
-def admin_dashboard():
-
-    if "user_id" not in session:
-        return redirect("/login")
-
-    if session["role"] != "admin":
-        return "<h2>Access Denied: Admins Only</h2>"
-
-    # Fetch all users
-    cursor.execute("SELECT id, name, email, role FROM users")
-    users = cursor.fetchall()
-
-    return render_template("admin.html", users=users)
-
-
-# =========================================================
-# ------------------------ RUN APP ------------------------
-# =========================================================
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    logout_user()
+    return jsonify({"status":"logged_out"})
+''''''

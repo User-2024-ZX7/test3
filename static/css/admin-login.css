@@ -1,0 +1,28 @@
+body { background: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+
+.admin-card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  perspective: 1200px;
+}
+
+.admin-card:hover {
+  transform: rotateY(5deg) rotateX(3deg) translateZ(10px);
+  box-shadow: 0 1.5rem 2rem rgba(0,0,0,0.25);
+}
+
+input:focus, button:focus {
+  outline: none;
+  box-shadow: 0 0 10px #0d6efd, 0 0 20px rgba(13,110,253,0.4);
+}
+
+input.form-control-lg, button.btn-lg {
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+button.btn-primary:hover {
+  box-shadow: 0 0 15px rgba(13,110,253,0.6);
+}
