@@ -12,6 +12,7 @@ if(!activeUser || activeUser.role!=='admin') {
 document.querySelectorAll('.logoutBtn').forEach(btn=>{
     btn.onclick = ()=>{
         localStorage.removeItem(KEY_ACTIVE_USER);
+        localStorage.removeItem('ft_admin_view_user'); // Clear any previous admin-view
         window.location.href = 'admin-login.html';
     };
 });
@@ -54,17 +55,17 @@ function renderUsers() {
             <td>${avgDur}</td>
             <td>${freqAct}</td>
             <td>
-                <button class="btn btn-sm btn-outline-primary btn-view" data-user="${u.username}"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn btn-sm btn-outline-danger btn-delete" data-user="${u.username}"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn btn-sm btn-outline-primary btn-view" data-user="${u.username}" title="View Details"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" data-user="${u.username}" title="Delete User"><i class="fa-solid fa-trash"></i></button>
             </td>
         </tr>`;
     }).join('');
 
     document.querySelectorAll('.btn-view').forEach(btn=>{
-        btn.onclick=()=>openModal(btn.dataset.user);
+        btn.onclick = ()=>openUserPageReadOnly(btn.dataset.user);
     });
     document.querySelectorAll('.btn-delete').forEach(btn=>{
-        btn.onclick=()=>deleteUser(btn.dataset.user);
+        btn.onclick = ()=>deleteUser(btn.dataset.user);
     });
 
     // Update stats cards
@@ -82,6 +83,13 @@ function renderUsers() {
         return sum + (all.reduce((s,w)=>s+w.calories,0) / (all.length||1));
     },0);
     document.getElementById('avgCalories').textContent = Math.round(avgCalories);
+}
+
+// ------------------- OPEN USER PAGE (READ-ONLY MODE) -------------------
+function openUserPageReadOnly(username){
+    // Set a flag in localStorage so user.html opens in admin read-only mode
+    localStorage.setItem('ft_admin_view_user', username);
+    window.location.href = 'user.html';
 }
 
 // ------------------- MODAL -------------------
@@ -169,3 +177,4 @@ VanillaTilt.init(document.querySelectorAll(".feature-card"), {
 
 // ------------------- AOS Animations -------------------
 AOS.init({ once: true, duration: 800 });
+
