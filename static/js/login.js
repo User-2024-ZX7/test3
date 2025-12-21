@@ -3,6 +3,7 @@ const feedback = document.getElementById('login-feedback');
 
 const KEY_USERS = 'ft_users';
 const KEY_ACTIVE_USER = 'ft_active_user';
+const KEY_ARCHIVED_USERS = 'ft_archived_users';
 
 // -------------------- SINGLE ADMIN --------------------
 const ADMIN = {
@@ -12,7 +13,7 @@ const ADMIN = {
     role: 'admin'
 };
 
-// Ensure admin exists
+// Ensure admin exists (ONLY ONCE)
 let users = JSON.parse(localStorage.getItem(KEY_USERS) || '[]');
 if (!users.some(u => u.role === 'admin')) {
     users.push(ADMIN);
@@ -22,25 +23,41 @@ if (!users.some(u => u.role === 'admin')) {
 // -------------------- LOGIN --------------------
 form.addEventListener('submit', e => {
     e.preventDefault();
+
     const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value;
 
     if (!email || !password) {
-        feedback.textContent = "Both fields are required!";
+        feedback.textContent = 'Both fields are required!';
         feedback.style.color = 'red';
         return;
     }
 
-    users = JSON.parse(localStorage.getItem(KEY_USERS) || '[]');
-    const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+    const users = JSON.parse(localStorage.getItem(KEY_USERS) || '[]');
+    const archived = JSON.parse(localStorage.getItem(KEY_ARCHIVED_USERS) || '[]');
+
+    // 🔒 BLOCK archived users
+    const isArchived = archived.some(
+        u => u.email.toLowerCase() === email
+    );
+
+    if (isArchived) {
+        feedback.textContent = 'This account has been disabled by admin.';
+        feedback.style.color = 'red';
+        return;
+    }
+
+    const user = users.find(
+        u => u.email.toLowerCase() === email && u.password === password
+    );
 
     if (!user) {
-        feedback.textContent = "Incorrect email or password!";
+        feedback.textContent = 'Incorrect email or password!';
         feedback.style.color = 'red';
         return;
     }
 
-    // Save active user
+    // Save active identity (ADMIN or USER)
     localStorage.setItem(KEY_ACTIVE_USER, JSON.stringify(user));
 
     // Redirect based on role

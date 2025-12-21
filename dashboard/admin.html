@@ -59,9 +59,9 @@
     </div>
   </section>
 
-  <!-- Users Table -->
+  <!-- Active Users Table -->
   <section class="container my-5">
-    <h3 class="mb-3">Users Management</h3>
+    <h3 class="mb-3">Active Users</h3>
     <div class="table-responsive">
       <table class="table table-hover shadow-sm bg-white rounded">
         <thead class="table-dark">
@@ -69,8 +69,8 @@
             <th>Avatar</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Active</th>
-            <th>Archived</th>
+            <th>Active Workouts</th>
+            <th>Archived Workouts</th>
             <th>Avg Cal</th>
             <th>Avg Dur</th>
             <th>Frequent Activity</th>
@@ -82,7 +82,30 @@
     </div>
   </section>
 
-  <!-- User Modal -->
+  <!-- Archived Users Table -->
+  <section class="container my-5">
+    <h3 class="mb-3">Archived Users</h3>
+    <div class="table-responsive">
+      <table class="table table-hover shadow-sm bg-white rounded">
+        <thead class="table-secondary">
+          <tr>
+            <th>Avatar</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Active Workouts</th>
+            <th>Archived Workouts</th>
+            <th>Avg Cal</th>
+            <th>Avg Dur</th>
+            <th>Frequent Activity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="archivedUsersTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- User Modal (Read-Only) -->
   <div class="modal fade" id="userModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">

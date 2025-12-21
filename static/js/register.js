@@ -1,4 +1,4 @@
-const form = document.getElementById('register-form');
+const form = document.getElementById('register-form'); 
 const feedback = document.getElementById('register-feedback');
 const KEY_USERS = 'ft_users';
 
@@ -37,11 +37,8 @@ form.addEventListener('submit', e => {
     users.push(newUser);
     localStorage.setItem(KEY_USERS, JSON.stringify(users));
 
-    feedback.textContent = "Registration successful! Redirecting...";
+    // Save active user but DO NOT redirect
+    localStorage.setItem('ft_active_user', JSON.stringify(newUser));
+    feedback.textContent = "Registration successful!";
     feedback.style.color = 'green';
-
-    setTimeout(() => {
-        localStorage.setItem('ft_active_user', JSON.stringify(newUser));
-        window.location.href = 'user.html';
-    }, 1200);
 });
