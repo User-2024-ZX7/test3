@@ -100,7 +100,7 @@
           <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
           <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-          <li class="nav-item"><a class="nav-link" href="user.html">Users</a></li>
+          
 
           <!-- Admin button -->
           <li class="nav-item ms-2">
@@ -111,7 +111,7 @@
 
           <!-- User Profile button -->
           <li class="nav-item ms-2">
-            <a class="btn btn-outline-light btn-sm" href="user.html" id="profileBtn">
+            <a class="btn btn-primary" href="user.html" id="users-btn">
               <i class="fa-solid fa-user"></i> Users
             </a>
           </li>
@@ -214,6 +214,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="../static/js/auth.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
   <script>
     AOS.init({ once: true, duration: 800 });
@@ -243,6 +244,28 @@
     wrapper.addEventListener('mouseleave', () => { isUserInteracting = false; });
     let stopTimeout;
     wrapper.addEventListener('wheel', () => { isUserInteracting = true; clearTimeout(stopTimeout); stopTimeout = setTimeout(() => isUserInteracting = false, 2000); });
+
+      // LOGOUT FUNCTION
+  function logoutUser() {
+    // Clear session data (adjust depending on how you store login state)
+    sessionStorage.clear();
+    localStorage.removeItem('user'); // example if using localStorage
+    window.location.href = 'index.html';
+  }
+
+  // Attach logout on "Home" click
+  const homeLink = document.querySelector('.nav-link.active[href="#home"]');
+  if (homeLink) {
+    homeLink.addEventListener('click', (e) => {
+      e.preventDefault(); // prevent default scrolling
+      logoutUser();
+    });
+  }
+
+
+  document.addEventListener('DOMContentLoaded', () => {
+    checkAccess('user'); // Redirects to login if not logged in
+});
   </script>
 </body>
 </html>

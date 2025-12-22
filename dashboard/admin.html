@@ -82,28 +82,9 @@
     </div>
   </section>
 
-  <!-- Archived Users Table -->
-  <section class="container my-5">
-    <h3 class="mb-3">Archived Users</h3>
-    <div class="table-responsive">
-      <table class="table table-hover shadow-sm bg-white rounded">
-        <thead class="table-secondary">
-          <tr>
-            <th>Avatar</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Active Workouts</th>
-            <th>Archived Workouts</th>
-            <th>Avg Cal</th>
-            <th>Avg Dur</th>
-            <th>Frequent Activity</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="archivedUsersTableBody"></tbody>
-      </table>
-    </div>
-  </section>
+  
+
+ 
 
   <!-- User Modal (Read-Only) -->
   <div class="modal fade" id="userModal" tabindex="-1">
@@ -144,5 +125,12 @@
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.3/dist/vanilla-tilt.min.js"></script>
   <script src="../static/js/admin.js"></script>
+  <script src="../static/js/auth.js"></script>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    checkAccess('admin'); // Redirects to login if not admin
+});
+  </script>
 </body>
 </html>

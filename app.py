@@ -1,118 +1,118 @@
-from flask import Flask, request, jsonify
-from flask_login import LoginManager, login_required, current_user, logout_user
-from werkzeug.utils import secure_filename
-import mysql.connector, os
+from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from config import Config
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'dashboard/images/avatars'
-login_manager = LoginManager(app)
+app.config.from_object(Config)
 
-def get_db():
-    return mysql.connector.connect(
-        host="localhost", user="your_user", password="your_pass", database="fittrack"
-    )
+db = SQLAlchemy(app)
 
-# ------------------- WORKOUTS -------------------
-@app.route('/api/workouts', methods=['GET'])
-@login_required
-def get_workouts():
-    db = get_db()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM workouts WHERE user_id=%s ORDER BY date DESC", (current_user.id,))
-    data = cursor.fetchall()
-    cursor.close(); db.close()
-    return jsonify(data)
+# -------------------- MODELS --------------------
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(50), nullable=False, default='user')
 
-@app.route('/api/workouts', methods=['POST'])
-@login_required
-def add_workout():
-    p = request.json
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("INSERT INTO workouts (user_id, activity, duration, calories, date) VALUES (%s,%s,%s,%s,%s)",
-                   (current_user.id, p['activity'], p['duration'], p['calories'], p['date']))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"success"})
+# -------------------- DATABASE INIT --------------------
+@app.before_first_request
+def create_tables():
+    db.create_all()
+    # Ensure admin exists
+    admin = User.query.filter_by(email='admin@fittrack.com').first()
+    if not admin:
+        hashed_pw = generate_password_hash('SuperSecret123')
+        admin = User(username='FitAdmin', email='admin@fittrack.com', password=hashed_pw, role='admin')
+        db.session.add(admin)
+        db.session.commit()
 
-@app.route('/api/workouts/<int:w_id>', methods=['DELETE'])
-@login_required
-def delete_workout(w_id):
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("DELETE FROM workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"deleted"})
+# -------------------- ROUTES --------------------
+@app.route('/')
+def index():
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        if user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('user_dashboard'))
+    return redirect(url_for('login'))
 
-@app.route('/api/workouts/<int:w_id>/archive', methods=['POST'])
-@login_required
-def archive_workout(w_id):
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("INSERT INTO archived_workouts (user_id, activity, duration, calories, date) SELECT user_id, activity, duration, calories, date FROM workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
-    cursor.execute("DELETE FROM workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"archived"})
+# -------- LOGIN --------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email').strip().lower()
+        password = request.form.get('password')
 
-# ------------------- ARCHIVED -------------------
-@app.route('/api/archived_workouts', methods=['GET'])
-@login_required
-def get_archived():
-    db = get_db(); cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM archived_workouts WHERE user_id=%s ORDER BY date DESC", (current_user.id,))
-    data = cursor.fetchall()
-    cursor.close(); db.close()
-    return jsonify(data)
+        user = User.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.password, password):
+            flash('Incorrect email or password!', 'danger')
+            return redirect(url_for('login'))
 
-@app.route('/api/archived_workouts/<int:w_id>/restore', methods=['POST'])
-@login_required
-def restore_archived(w_id):
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("INSERT INTO workouts (user_id, activity, duration, calories, date) SELECT user_id, activity, duration, calories, date FROM archived_workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
-    cursor.execute("DELETE FROM archived_workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"restored"})
+        session['user_id'] = user.id
+        session['role'] = user.role
+        flash('Logged in successfully!', 'success')
 
-@app.route('/api/archived_workouts/<int:w_id>', methods=['DELETE'])
-@login_required
-def delete_archived(w_id):
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("DELETE FROM archived_workouts WHERE id=%s AND user_id=%s", (w_id, current_user.id))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"deleted"})
+        if user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        return redirect(url_for('user_dashboard'))
 
-@app.route('/api/archived_workouts/clear', methods=['POST'])
-@login_required
-def clear_archived():
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("DELETE FROM archived_workouts WHERE user_id=%s", (current_user.id,))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"cleared"})
+    return render_template('login.html')
 
-@app.route('/api/archived_workouts/restore_all', methods=['POST'])
-@login_required
-def restore_all():
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("INSERT INTO workouts (user_id, activity, duration, calories, date) SELECT user_id, activity, duration, calories, date FROM archived_workouts WHERE user_id=%s", (current_user.id,))
-    cursor.execute("DELETE FROM archived_workouts WHERE user_id=%s", (current_user.id,))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"restored_all"})
+# -------- REGISTER --------
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username').strip()
+        email = request.form.get('email').strip().lower()
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
 
-# ------------------- AVATAR -------------------
-@app.route('/api/avatar', methods=['POST'])
-@login_required
-def upload_avatar():
-    if 'avatar' not in request.files:
-        return jsonify({"error":"No file"}), 400
-    file = request.files['avatar']
-    filename = secure_filename(f"user_{current_user.id}_{file.filename}")
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
-    db = get_db(); cursor = db.cursor()
-    cursor.execute("UPDATE users SET avatar=%s WHERE id=%s", (filename, current_user.id))
-    db.commit(); cursor.close(); db.close()
-    return jsonify({"status":"uploaded","url":f"/dashboard/images/avatars/{filename}"})
+        if password != confirm_password:
+            flash('Passwords do not match!', 'danger')
+            return redirect(url_for('register'))
 
-# ------------------- LOGOUT -------------------
-@app.route('/logout', methods=['POST'])
-@login_required
+        if User.query.filter_by(email=email).first():
+            flash('Email already registered!', 'warning')
+            return redirect(url_for('register'))
+
+        hashed_pw = generate_password_hash(password)
+        user = User(username=username, email=email, password=hashed_pw, role='user')
+        db.session.add(user)
+        db.session.commit()
+
+        flash('Registration successful! Please log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+# -------- LOGOUT --------
+@app.route('/logout')
 def logout():
-    logout_user()
-    return jsonify({"status":"logged_out"})
-''''''
+    session.clear()
+    flash('Logged out successfully.', 'info')
+    return render_template('logout.html')
+
+# -------- DASHBOARDS --------
+@app.route('/admin')
+def admin_dashboard():
+    if session.get('role') != 'admin':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+
+    users = User.query.filter(User.role != 'admin').all()
+    return render_template('admin.html', users=users)
+
+@app.route('/user')
+def user_dashboard():
+    if session.get('role') != 'user':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+    return render_template('user.html', user=user)
+
+# -------------------- RUN --------------------
+if __name__ == '__main__':
+    app.run(debug=True)
