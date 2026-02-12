@@ -1,22 +1,5 @@
 // dashboard.js
-// Senior-level interactive dashboard: calculates, aggregates, animates charts,
-// supports filtering/search, CSV export, demo localStorage fallback and placeholders
-// Replace localStorage reads/writes with API calls to your Flask endpoints when ready.
-
-// ---------- Demo / initial data (replace with API fetch) ----------
-const demoKey = 'ft_demo_workouts_v2';
-if (!localStorage.getItem(demoKey)) {
-  const demo = [
-    { id: 'a1', date: offsetDate(-6), activity: 'Running', duration: 35, calories: 380 },
-    { id: 'a2', date: offsetDate(-5), activity: 'Cycling', duration: 45, calories: 420 },
-    { id: 'a3', date: offsetDate(-4), activity: 'Yoga', duration: 40, calories: 160 },
-    { id: 'a4', date: offsetDate(-3), activity: 'HIIT', duration: 30, calories: 430 },
-    { id: 'a5', date: offsetDate(-2), activity: 'Weights', duration: 55, calories: 360 },
-    { id: 'a6', date: offsetDate(-1), activity: 'Running', duration: 28, calories: 300 },
-    { id: 'a7', date: offsetDate(0), activity: 'Cycling', duration: 50, calories: 520 }
-  ];
-  localStorage.setItem(demoKey, JSON.stringify(demo));
-}
+// DB-backed dashboard using Flask API (/api/workouts)
 
 // ---------- Utilities ----------
 function offsetDate(offsetDays){
@@ -27,15 +10,17 @@ function qs(sel){ return document.querySelector(sel) }
 function qsa(sel){ return Array.from(document.querySelectorAll(sel)) }
 function numberOrZero(v){ return Number(v) || 0 }
 
-// ---------- Fetch / save (swap for API calls) ----------
-function loadWorkouts(){
-  try { return JSON.parse(localStorage.getItem(demoKey) || '[]'); } catch(e){ return [] }
+async function apiGet(url){
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if(!res.ok) throw new Error('Request failed');
+  return res.json();
 }
-function saveWorkouts(arr){ localStorage.setItem(demoKey, JSON.stringify(arr)); }
+async function apiPost(url){
+  const res = await fetch(url, { method:'POST', headers: { 'Accept': 'application/json' } });
+  if(!res.ok) throw new Error('Request failed');
+  return res.json();
+}
 
-// ---------- Session (demo) ----------
-const session = JSON.parse(localStorage.getItem('fittrack_session') || '{}');
-qs('#username').textContent = session.username || 'Guest';
 qs('#today').textContent = new Date().toLocaleString(undefined, { weekday:'long', month:'short', day:'numeric' });
 
 // ---------- Chart instances ----------
@@ -43,9 +28,16 @@ let caloriesChart = null;
 let typesChart = null;
 
 // ---------- Initialize UI ----------
+let allWorkouts = [];
+let eventSource = null;
+
 document.addEventListener('DOMContentLoaded', () => {
-  populateTypeFilter();
   renderAll();
+  if (eventSource) eventSource.close();
+  eventSource = new EventSource('/events');
+  eventSource.onmessage = () => {
+    renderAll();
+  };
 
   // Events
   qs('#searchBtn').addEventListener('click', ()=> applySearch());
@@ -53,17 +45,28 @@ document.addEventListener('DOMContentLoaded', () => {
   qs('#filterBtn').addEventListener('click', ()=> applyDateFilter());
   qs('#clearFilter').addEventListener('click', ()=> { qs('#fromDate').value=''; qs('#toDate').value=''; renderAll(); });
   qs('#refreshBtn').addEventListener('click', renderAll);
-  qs('#clearAll').addEventListener('click', ()=> { if(confirm('Clear demo data?')){ saveWorkouts([]); renderAll(); }});
-  qs('#logout').addEventListener('click', ()=> { localStorage.removeItem('fittrack_session'); window.location.href = 'login.html'; });
+  qs('#clearAll').addEventListener('click', async ()=> {
+    if(!confirm('Clear all workouts?')) return;
+    for(const w of allWorkouts){
+      await apiPost(`/workouts/${w.id}/delete`);
+    }
+    await renderAll();
+  });
 
-  qs('#exportCsv').addEventListener('click', ()=> exportCSV(loadWorkouts(), 'fittrack_export_all.csv'));
+  qs('#exportCsv').addEventListener('click', ()=> exportCSV(allWorkouts, 'fittrack_export_all.csv'));
   qs('#exportVisible').addEventListener('click', ()=> exportCSV(getVisibleRowsData(), 'fittrack_export_visible.csv'));
 });
 
 // ---------- Rendering pipeline ----------
-function renderAll(){
-  const raw = loadWorkouts();
-  const sorted = raw.slice().sort((a,b)=> b.date.localeCompare(a.date));
+async function renderAll(){
+  try {
+    const data = await apiGet('/api/workouts');
+    allWorkouts = [...(data.active || []), ...(data.archived || [])];
+  } catch {
+    window.location.href = '/login';
+    return;
+  }
+  const sorted = allWorkouts.slice().sort((a,b)=> b.date.localeCompare(a.date));
   renderHistory(sorted);
   updateStats(sorted);
   renderCharts(sorted);
@@ -92,9 +95,7 @@ function renderHistory(items){
 
 function onDelete(e){
   const id = e.currentTarget.dataset.id;
-  let arr = loadWorkouts().filter(x=> x.id !== id);
-  saveWorkouts(arr);
-  renderAll();
+  apiPost(`/workouts/${id}/delete`).then(renderAll);
 }
 
 // ---------- Stats calculations (careful arithmetic) ----------
@@ -227,7 +228,7 @@ function generatePalette(n){
 // ---------- Filtering / Search ----------
 function applySearch(){
   const q = (qs('#searchInput').value || '').trim().toLowerCase();
-  const arr = loadWorkouts().filter(w => {
+  const arr = allWorkouts.filter(w => {
     return !q || w.activity.toLowerCase().includes(q) || w.date.includes(q);
   }).sort((a,b)=> b.date.localeCompare(a.date));
   renderHistory(arr);
@@ -238,7 +239,7 @@ function applySearch(){
 function applyDateFilter(){
   const from = qs('#fromDate').value;
   const to = qs('#toDate').value;
-  let arr = loadWorkouts();
+  let arr = allWorkouts.slice();
   if(from) arr = arr.filter(w => w.date >= from);
   if(to) arr = arr.filter(w => w.date <= to);
   arr = arr.sort((a,b)=> b.date.localeCompare(a.date));
@@ -248,7 +249,7 @@ function applyDateFilter(){
 }
 
 function populateTypeFilter(){
-  const types = Array.from(new Set(loadWorkouts().map(w=> w.activity))).sort();
+  const types = Array.from(new Set(allWorkouts.map(w=> w.activity))).sort();
   const sel = qs('#typeFilter');
   if(!sel) return;
   const current = sel.value || '';
@@ -256,7 +257,7 @@ function populateTypeFilter(){
   sel.value = current;
   sel.onchange = function(){
     const v = sel.value;
-    const arr = v ? loadWorkouts().filter(w=> w.activity === v) : loadWorkouts();
+    const arr = v ? allWorkouts.filter(w=> w.activity === v) : allWorkouts;
     renderHistory(arr.sort((a,b)=> b.date.localeCompare(a.date)));
     updateStats(arr);
     renderCharts(arr);
@@ -269,7 +270,8 @@ function exportCSV(data, filename='export.csv'){
   const header = ['date','activity','duration','calories'];
   const rows = data.map(r => [r.date, r.activity, r.duration, r.calories].map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(','));
   const csv = [header.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
+  const bom = '\uFEFF';
+  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);

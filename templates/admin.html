@@ -125,7 +125,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="archivedUsersTableBody">
           {% for u in archived_users %}
             <tr class="align-middle">
               <td>
@@ -196,36 +196,96 @@
   <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.3/dist/vanilla-tilt.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.btn-view').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.userId;
-          window.location.href = `/admin/user/${id}`;
+      const renderRows = (rows) => rows.map(u => `
+        <tr class="align-middle">
+          <td>
+            <img src="${u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}'}" width="40" class="rounded-circle" alt="Avatar">
+          </td>
+          <td>${u.username}</td>
+          <td>${u.email}</td>
+          <td>${u.active_count}</td>
+          <td>${u.archived_count}</td>
+          <td>${u.avg_cal}</td>
+          <td>${u.avg_dur}</td>
+          <td>${u.freq_activity}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-warning btn-archive" data-user-id="${u.id}" title="Archive">
+              <i class="fa-solid fa-box-archive"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>`).join('') || `<tr><td colspan="9" class="text-center text-muted">No active users</td></tr>`;
+
+      const renderArchived = (rows) => rows.map(u => `
+        <tr class="align-middle">
+          <td>
+            <img src="${u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}'}" width="40" class="rounded-circle" alt="Avatar">
+          </td>
+          <td>${u.username}</td>
+          <td>${u.email}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="${u.id}" title="Restore">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>`).join('') || `<tr><td colspan="4" class="text-center text-muted">No archived users</td></tr>`;
+
+      const wireActions = () => {
+        document.querySelectorAll('.btn-view').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.userId;
+            window.location.href = `/admin/user/${id}`;
+          });
         });
-      });
-      document.querySelectorAll('.btn-archive').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.userId;
-          if (!confirm('Archive this user?')) return;
-          await fetch(`/admin/users/${id}/archive`, { method: 'POST' });
-          window.location.reload();
+        document.querySelectorAll('.btn-archive').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.userId;
+            if (!confirm('Archive this user?')) return;
+            await fetch(`/admin/users/${id}/archive`, { method: 'POST' });
+            loadAdminData();
+          });
         });
-      });
-      document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.userId;
-          if (!confirm('Delete this user and all workouts?')) return;
-          await fetch(`/admin/users/${id}/delete`, { method: 'POST' });
-          window.location.reload();
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.userId;
+            if (!confirm('Delete this user and all workouts?')) return;
+            await fetch(`/admin/users/${id}/delete`, { method: 'POST' });
+            loadAdminData();
+          });
         });
-      });
-      document.querySelectorAll('.btn-restore-user').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.userId;
-          if (!confirm('Restore this user?')) return;
-          await fetch(`/admin/users/${id}/restore`, { method: 'POST' });
-          window.location.reload();
+        document.querySelectorAll('.btn-restore-user').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.userId;
+            if (!confirm('Restore this user?')) return;
+            await fetch(`/admin/users/${id}/restore`, { method: 'POST' });
+            loadAdminData();
+          });
         });
-      });
+      };
+
+      const loadAdminData = async () => {
+        const res = await fetch('/admin/data');
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('totalUsers').textContent = data.total_users;
+        document.getElementById('totalWorkouts').textContent = data.total_workouts;
+        document.getElementById('avgCalories').textContent = data.avg_calories;
+        document.getElementById('usersTableBody').innerHTML = renderRows(data.user_stats || []);
+        document.getElementById('archivedUsersTableBody').innerHTML = renderArchived(data.archived_users || []);
+        wireActions();
+      };
+
+      const es = new EventSource('/events');
+      es.onmessage = () => loadAdminData();
+      loadAdminData();
     });
   </script>
 </body>

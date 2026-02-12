@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, inspect, text
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
+import time
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,6 +16,7 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='user')
+    is_archived = db.Column(db.Boolean, nullable=False, default=False)
     avatar_url = db.Column(db.Text, nullable=True)
     workouts = db.relationship('Workout', backref='user', lazy=True)
 
@@ -33,9 +35,17 @@ def create_tables():
     db.create_all()
     # Ensure avatar_url column exists (lightweight migration)
     try:
-        cols = [c['name'] for c in inspect(db.engine).get_columns('user')]
+        cols = {c['name']: c for c in inspect(db.engine).get_columns('user')}
         if 'avatar_url' not in cols:
-            db.session.execute(text('ALTER TABLE user ADD COLUMN avatar_url TEXT'))
+            db.session.execute(text('ALTER TABLE user ADD COLUMN avatar_url MEDIUMTEXT'))
+            db.session.commit()
+        else:
+            col_type = str(cols['avatar_url'].get('type', '')).lower()
+            if 'text' in col_type and 'medium' not in col_type:
+                db.session.execute(text('ALTER TABLE user MODIFY COLUMN avatar_url MEDIUMTEXT'))
+                db.session.commit()
+        if 'is_archived' not in cols:
+            db.session.execute(text('ALTER TABLE user ADD COLUMN is_archived TINYINT(1) NOT NULL DEFAULT 0'))
             db.session.commit()
     except Exception:
         db.session.rollback()
@@ -62,6 +72,10 @@ def login():
         user = User.query.filter_by(email=email).first()
         if not user or not check_password_hash(user.password, password):
             flash('Incorrect email or password!', 'danger')
+            return redirect(url_for('login'))
+
+        if user.is_archived:
+            flash('Account is archived. Contact admin.', 'warning')
             return redirect(url_for('login'))
 
         if user.role == 'admin':
@@ -130,6 +144,14 @@ def register_html():
 def user_html():
     return redirect(url_for('user_dashboard'))
 
+@app.route('/dashboard.html')
+def dashboard_html():
+    return redirect(url_for('dashboard'))
+
+@app.route('/add_workout.html')
+def add_workout_html():
+    return redirect(url_for('add_workout'))
+
 # -------- REGISTER --------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -147,7 +169,11 @@ def register():
             flash('This email is reserved for admins.', 'warning')
             return redirect(url_for('register'))
 
-        if User.query.filter_by(email=email).first():
+        existing = User.query.filter_by(email=email).first()
+        if existing:
+            if existing.is_archived:
+                flash('This account is archived. Contact admin to restore it.', 'warning')
+                return redirect(url_for('register'))
             flash('Email already registered!', 'warning')
             return redirect(url_for('register'))
 
@@ -178,7 +204,9 @@ def admin_dashboard():
         flash('Access denied!', 'danger')
         return redirect(url_for('login'))
 
-    users = User.query.filter(User.role != 'admin').all()
+    users_all = User.query.filter(User.role != 'admin').all()
+    users = [u for u in users_all if not u.is_archived]
+    archived_users = [u for u in users_all if u.is_archived]
     total_users = len(users)
     total_workouts = Workout.query.count()
     avg_calories = db.session.query(func.avg(Workout.calories)).scalar() or 0
@@ -213,7 +241,61 @@ def admin_dashboard():
         total_workouts=total_workouts,
         avg_calories=int(round(avg_calories)) if avg_calories else 0,
         user_stats=user_stats,
+        archived_users=archived_users,
     )
+
+@app.route('/admin/data')
+def admin_data():
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'unauthorized'}), 401
+
+    users_all = User.query.filter(User.role != 'admin').all()
+    users = [u for u in users_all if not u.is_archived]
+    archived_users = [u for u in users_all if u.is_archived]
+
+    total_users = len(users)
+    total_workouts = Workout.query.count()
+    avg_calories = db.session.query(func.avg(Workout.calories)).scalar() or 0
+
+    user_stats = []
+    for u in users:
+        active_count = Workout.query.filter_by(user_id=u.id, archived=False).count()
+        archived_count = Workout.query.filter_by(user_id=u.id, archived=True).count()
+        avg_cal = db.session.query(func.avg(Workout.calories)).filter_by(user_id=u.id).scalar() or 0
+        avg_dur = db.session.query(func.avg(Workout.duration)).filter_by(user_id=u.id).scalar() or 0
+        freq = (
+            db.session.query(Workout.activity, func.count(Workout.id))
+            .filter_by(user_id=u.id)
+            .group_by(Workout.activity)
+            .order_by(func.count(Workout.id).desc())
+            .first()
+        )
+        user_stats.append({
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'active_count': active_count,
+            'archived_count': archived_count,
+            'avg_cal': int(round(avg_cal)) if avg_cal else 0,
+            'avg_dur': int(round(avg_dur)) if avg_dur else 0,
+            'freq_activity': freq[0] if freq else '-',
+            'avatar_url': u.avatar_url,
+        })
+
+    archived_stats = [{
+        'id': u.id,
+        'username': u.username,
+        'email': u.email,
+        'avatar_url': u.avatar_url,
+    } for u in archived_users]
+
+    return jsonify({
+        'total_users': total_users,
+        'total_workouts': total_workouts,
+        'avg_calories': int(round(avg_calories)) if avg_calories else 0,
+        'user_stats': user_stats,
+        'archived_users': archived_stats,
+    })
 
 @app.route('/user')
 def user_dashboard():
@@ -223,6 +305,88 @@ def user_dashboard():
 
     user = db.session.get(User, session['user_id'])
     return render_template('user.html', user=user)
+
+@app.route('/dashboard')
+def dashboard():
+    if session.get('role') != 'user':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+    user = db.session.get(User, session['user_id'])
+    return render_template('dashboard.html', user=user)
+
+@app.route('/add-workout')
+def add_workout():
+    if session.get('role') != 'user':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+    user = db.session.get(User, session['user_id'])
+    return render_template('add_workout.html', user=user)
+
+@app.route('/admin/user/<int:user_id>')
+def admin_view_user(user_id):
+    if session.get('role') != 'admin':
+        flash('Access denied!', 'danger')
+        return redirect(url_for('login'))
+    user = db.session.get(User, user_id)
+    if not user or user.role == 'admin':
+        flash('User not found.', 'warning')
+        return redirect(url_for('admin_dashboard'))
+    return render_template('user.html', user=user, admin_view=True, view_user_id=user_id)
+
+@app.route('/admin/api/workouts/<int:user_id>', methods=['GET'])
+def admin_api_workouts(user_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'unauthorized'}), 401
+    workouts = Workout.query.filter_by(user_id=user_id).order_by(Workout.date.desc()).all()
+    active = []
+    archived = []
+    for w in workouts:
+        item = {
+            'id': w.id,
+            'activity': w.activity,
+            'duration': w.duration,
+            'calories': w.calories,
+            'date': w.date.isoformat(),
+        }
+        if w.archived:
+            archived.append(item)
+        else:
+            active.append(item)
+    return jsonify({'active': active, 'archived': archived})
+
+@app.route('/admin/users/<int:user_id>/archive', methods=['POST'])
+def admin_archive_user(user_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'unauthorized'}), 401
+    user = db.session.get(User, user_id)
+    if not user or user.role == 'admin':
+        return jsonify({'error': 'not_found'}), 404
+    user.is_archived = True
+    db.session.commit()
+    return jsonify({'ok': True})
+
+@app.route('/admin/users/<int:user_id>/restore', methods=['POST'])
+def admin_restore_user(user_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'unauthorized'}), 401
+    user = db.session.get(User, user_id)
+    if not user or user.role == 'admin':
+        return jsonify({'error': 'not_found'}), 404
+    user.is_archived = False
+    db.session.commit()
+    return jsonify({'ok': True})
+
+@app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+def admin_delete_user(user_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'unauthorized'}), 401
+    user = db.session.get(User, user_id)
+    if not user or user.role == 'admin':
+        return jsonify({'error': 'not_found'}), 404
+    Workout.query.filter_by(user_id=user_id).delete()
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'ok': True})
 
 # -------------------- WORKOUTS API --------------------
 @app.route('/api/workouts', methods=['GET'])
@@ -262,6 +426,9 @@ def set_avatar():
     avatar_url = (data.get('avatar_url') or '').strip()
     if not avatar_url:
         return jsonify({'error': 'invalid'}), 400
+    # basic size guard (~2.5MB)
+    if len(avatar_url) > 2_500_000:
+        return jsonify({'error': 'too_large'}), 413
     user = db.session.get(User, session['user_id'])
     if not user:
         return jsonify({'error': 'not_found'}), 404
@@ -352,6 +519,19 @@ def clear_archived_workouts():
     Workout.query.filter_by(user_id=user_id, archived=True).delete()
     db.session.commit()
     return jsonify({'ok': True})
+
+# -------------------- REAL-TIME (SSE) --------------------
+@app.route('/events')
+def events():
+    if 'user_id' not in session:
+        return jsonify({'error': 'unauthorized'}), 401
+
+    def stream():
+        while True:
+            yield f"data: {int(time.time())}\n\n"
+            time.sleep(1)
+
+    return Response(stream(), mimetype='text/event-stream')
 
 # -------------------- RUN --------------------
 if __name__ == '__main__':

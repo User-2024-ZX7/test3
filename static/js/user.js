@@ -49,6 +49,7 @@ let activeWorkouts = [];
 let archivedWorkouts = [];
 const adminView = document.body?.dataset?.adminView === '1';
 const viewUserId = document.body?.dataset?.viewUserId;
+let eventSource = null;
 
 // ------------------- HELPERS -------------------
 const safeNum = v => Math.max(0, Number(v) || 0);
@@ -427,4 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadWorkouts();
+    if (eventSource) eventSource.close();
+    eventSource = new EventSource('/events');
+    eventSource.onmessage = () => {
+        loadWorkouts();
+    };
 });
