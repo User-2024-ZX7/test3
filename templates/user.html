@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
 </head>
 
-<body class="bg-light">
+<body class="bg-light" data-admin-view="{{ '1' if admin_view else '0' }}" data-view-user-id="{{ view_user_id or '' }}">
 
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -52,7 +52,7 @@
     <div class="text-center">
       <img id="userAvatar"
            class="profile-avatar rounded-circle shadow-sm mb-2"
-           src="{{ url_for('static', filename='images/FitTrack.jpg') }}"
+           src="{{ user.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}"
            data-user-id="{{ user.id }}"
            width="100" height="100"
            alt="User Avatar">
