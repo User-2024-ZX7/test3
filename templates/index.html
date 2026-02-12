@@ -5,52 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FitTrack | Smart Fitness Tracker</title>
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet" />
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- AOS Animations -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}" />
 </head>
 <body class="bg-light text-dark">
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-3 shadow-sm nav-elevated">
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top nav-glass">
     <div class="container">
-      <!-- Brand -->
-      <a class="navbar-brand d-flex align-items-center brand-pill" href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo" class="brand-logo">
+      <a class="navbar-brand brand-pill d-flex align-items-center" href="{{ url_for('index') }}">
+        <img class="brand-logo" src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo">
         <span class="ms-2 fw-bold text-white">FitTrack</span>
       </a>
 
-      <!-- Mobile toggle -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Navbar Links -->
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-lg-center gap-2">
-          <li class="nav-item"><a class="nav-link active btn-home" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
-          <li class="nav-item"><a class="nav-link" href="#testimonials">Stories</a></li>
+          <li class="nav-item"><a class="nav-link" href="#stories">Stories</a></li>
           <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-          
-          <!-- Admin button -->
-          <li class="nav-item ms-2">
-            <a class="btn btn-warning btn-sm btn-nav" href="{{ url_for('admin_login') }}" id="adminBtn">
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-warning btn-nav" href="{{ url_for('admin_login') }}" id="adminBtn">
               <i class="fa-solid fa-cogs"></i> Admin
             </a>
           </li>
-
-          <!-- User Profile button -->
-          <li class="nav-item ms-2">
+          <li class="nav-item ms-lg-2">
             <a class="btn btn-primary btn-nav" href="{{ url_for('user_dashboard') }}" id="users-btn">
               <i class="fa-solid fa-user"></i> Users
             </a>
@@ -60,138 +52,157 @@
     </div>
   </nav>
 
+  <!-- Trust Bar -->
+  <div class="trust-bar">
+    <div class="container trust-row">
+      <div><i class="fa-solid fa-shield-check"></i> Secure hashed passwords</div>
+      <div><i class="fa-solid fa-chart-line"></i> Weekly progress charts</div>
+      <div><i class="fa-solid fa-bolt"></i> 1-click CSV export</div>
+      <div><i class="fa-solid fa-cloud"></i> MySQL-backed data</div>
+    </div>
+  </div>
+
   <!-- HERO -->
   <header id="home" class="hero">
     <div class="container hero-grid">
-      <div class="hero-copy" data-aos="fade-up">
-        <span class="eyebrow">Fitness Tracker</span>
+      <div data-aos="fade-up">
+        <p class="eyebrow">Fitness Tracker</p>
         <h1 class="hero-title">Train smarter. See progress weekly.</h1>
         <p class="hero-sub">
           Log workouts, track calories, and visualize your fitness with simple charts built for real habits.
         </p>
         <div class="hero-actions">
-          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
-          <a href="#how" class="btn btn-outline-light btn-lg">How It Works</a>
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg btn-cta">Get Started</a>
+          <a href="#how" class="btn btn-outline-light btn-lg btn-ghost">See How It Works</a>
         </div>
         <div class="hero-stats">
-          <div><strong>7‑day</strong><span>progress view</span></div>
-          <div><strong>1‑click</strong><span>CSV export</span></div>
-          <div><strong>Secure</strong><span>hashed passwords</span></div>
+          <div>
+            <strong>7‑day</strong>
+            <span>progress view</span>
+          </div>
+          <div>
+            <strong>1‑click</strong>
+            <span>CSV export</span>
+          </div>
+          <div>
+            <strong>Secure</strong>
+            <span>hashed passwords</span>
+          </div>
         </div>
       </div>
+
       <div class="hero-card" data-aos="fade-left">
-        <div class="card-glass">
-          <div class="mini-title">Today’s Snapshot</div>
-          <div class="mini-row">
-            <div class="mini-pill">Running</div>
-            <div class="mini-pill">Cycling</div>
-            <div class="mini-pill">Strength</div>
+        <div class="card-surface">
+          <div class="card-header">
+            <span>Today’s Snapshot</span>
+            <span class="badge badge-pill">Live</span>
           </div>
-          <div class="mini-metric">
-            <span>Calories burned</span>
-            <strong>520 kcal</strong>
+          <div class="card-metrics">
+            <div>
+              <p>Running</p>
+              <strong>520 kcal</strong>
+            </div>
+            <div>
+              <p>Total workouts</p>
+              <strong>4</strong>
+            </div>
+            <div>
+              <p>Weekly goal</p>
+              <strong>72%</strong>
+            </div>
           </div>
-          <div class="mini-metric">
-            <span>Total workouts</span>
-            <strong>4</strong>
+          <div class="mini-chart">
+            <span class="bar b1"></span>
+            <span class="bar b2"></span>
+            <span class="bar b3"></span>
+            <span class="bar b4"></span>
+            <span class="bar b5"></span>
+            <span class="bar b6"></span>
+            <span class="bar b7"></span>
           </div>
-          <div class="mini-bar">
-            <div class="mini-bar-fill" style="width:72%"></div>
-          </div>
-          <small class="muted">Weekly goal progress</small>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- TRUST BAR -->
-  <section class="trust">
-    <div class="container trust-row">
-      <span>Built for students</span>
-      <span>Encrypted sessions</span>
-      <span>CSV + PDF exports</span>
-      <span>Mobile‑first UI</span>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section id="how" class="section">
-    <div class="container">
-      <div class="section-head" data-aos="fade-up">
-        <h2>How It Works</h2>
-        <p>Simple steps that keep you consistent.</p>
-      </div>
-      <div class="feature-grid">
-        <div class="feature-card" data-aos="fade-up">
-          <i class="fa-solid fa-pen-to-square"></i>
-          <h5>Log Workouts</h5>
-          <p>Add activity, duration, calories, and date in seconds.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-          <i class="fa-solid fa-chart-line"></i>
-          <h5>See Trends</h5>
-          <p>Weekly charts show what’s working and what’s not.</p>
-        </div>
-        <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-          <i class="fa-solid fa-lock"></i>
-          <h5>Stay Secure</h5>
-          <p>Passwords are hashed and sessions are protected.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- VALUE STRIP -->
-  <section class="value-strip">
+  <!-- Value Strip -->
+  <section class="value-strip section">
     <div class="container value-grid">
-      <div>
-        <h3>Weekly momentum</h3>
-        <p>See your week at a glance with calories and workout minutes.</p>
+      <div class="value-card" data-aos="fade-up">
+        <i class="fa-solid fa-dumbbell"></i>
+        <h3>Simple logging</h3>
+        <p>Quickly add workouts with type, duration, and calories — no clutter.</p>
       </div>
-      <div>
-        <h3>Clean records</h3>
-        <p>Archive workouts without losing history—restore anytime.</p>
+      <div class="value-card" data-aos="fade-up" data-aos-delay="100">
+        <i class="fa-solid fa-chart-pie"></i>
+        <h3>Clear insights</h3>
+        <p>See your weekly trends and understand what drives progress.</p>
       </div>
-      <div>
-        <h3>Admin insights</h3>
-        <p>Admins can review user activity while keeping data secure.</p>
+      <div class="value-card" data-aos="fade-up" data-aos-delay="200">
+        <i class="fa-solid fa-user-shield"></i>
+        <h3>Role-based access</h3>
+        <p>Users see their data; admins view aggregated activity safely.</p>
       </div>
     </div>
   </section>
 
-  <!-- TESTIMONIALS -->
-  <section id="testimonials" class="section testimonials text-center">
+  <!-- How It Works -->
+  <section id="how" class="section how">
     <div class="container">
-      <div class="section-head" data-aos="fade-up">
-        <h2>What Our Users Say</h2>
-        <p>Real outcomes from consistent tracking.</p>
+      <div class="section-head text-center" data-aos="fade-up">
+        <h2>How It Works</h2>
+        <p>Start in minutes. Track consistently. Improve with data.</p>
       </div>
-      <div class="testimonials-wrapper d-flex flex-nowrap overflow-auto">
-        <!-- Testimonial cards -->
-        <div class="testimonial-card shadow-lg rounded-4 bg-white p-4 mx-3 flex-shrink-0">
-          <div class="testimonial-body text-center">
-            <img src="{{ url_for('static', filename='images/james.jpg') }}" alt="User" class="testimonial-img mb-3">
-            <p class="fst-italic text-muted mb-3">“This scale is incredible! After my type-2 diagnosis, FitTrack helped me see how my habits affect my body.”</p>
-            <h6 class="fw-bold mb-0">James, 38</h6>
-            <small class="text-secondary d-block">“My blood sugar is back to pre-diabetic levels”</small>
+      <div class="how-grid">
+        <div class="how-card" data-aos="fade-up">
+          <div class="step">1</div>
+          <h3>Create your account</h3>
+          <p>Register securely and set your fitness baseline.</p>
+        </div>
+        <div class="how-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="step">2</div>
+          <h3>Log workouts</h3>
+          <p>Track activity type, duration, and calories in seconds.</p>
+        </div>
+        <div class="how-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="step">3</div>
+          <h3>Review progress</h3>
+          <p>Use charts and summaries to refine your routine.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stories -->
+  <section id="stories" class="section stories">
+    <div class="container">
+      <div class="section-head text-center" data-aos="fade-up">
+        <h2>Stories That Motivate</h2>
+        <p>Real results from consistent tracking.</p>
+      </div>
+      <div class="story-grid">
+        <div class="story-card" data-aos="fade-up">
+          <img src="{{ url_for('static', filename='images/james.jpg') }}" alt="User">
+          <div>
+            <p>“FitTrack helped me connect habits to outcomes and stay accountable.”</p>
+            <strong>James, 38</strong>
+            <span>Reduced blood sugar levels</span>
           </div>
         </div>
-
-        <div class="testimonial-card shadow-lg rounded-4 bg-white p-4 mx-3 flex-shrink-0">
-          <div class="testimonial-body text-center">
-            <img src="{{ url_for('static', filename='images/Darren.jpg') }}" alt="User" class="testimonial-img mb-3">
-            <p class="fst-italic text-muted mb-3">“I love how simple and visual it is. The dashboard makes my progress clear and fun to follow!”</p>
-            <h6 class="fw-bold mb-0">Darren, 45</h6>
-            <small class="text-secondary d-block">“I'm a better dad, husband and friend”</small>
+        <div class="story-card" data-aos="fade-up" data-aos-delay="100">
+          <img src="{{ url_for('static', filename='images/Darren.jpg') }}" alt="User">
+          <div>
+            <p>“The dashboard makes progress obvious — it keeps me consistent.”</p>
+            <strong>Darren, 45</strong>
+            <span>More energy and focus</span>
           </div>
         </div>
-
-        <div class="testimonial-card shadow-lg rounded-4 bg-white p-4 mx-3 flex-shrink-0">
-          <div class="testimonial-body text-center">
-            <img src="{{ url_for('static', filename='images/Jamie.jpg') }}" alt="User" class="testimonial-img mb-3">
-            <p class="fst-italic text-muted mb-3">“FitTrack helped me lose 10kg by tracking my daily calories and motivating me every day!”</p>
-            <h6 class="fw-bold mb-0">Melanie, 54</h6>
-            <small class="text-secondary d-block">“I finally feel like me again”</small>
+        <div class="story-card" data-aos="fade-up" data-aos-delay="200">
+          <img src="{{ url_for('static', filename='images/Jamie.jpg') }}" alt="User">
+          <div>
+            <p>“I lost 10kg by tracking weekly and adjusting with data.”</p>
+            <strong>Melanie, 54</strong>
+            <span>Consistent weight loss</span>
           </div>
         </div>
       </div>
@@ -203,28 +214,39 @@
     <div class="container">
       <div class="section-head text-center" data-aos="fade-up">
         <h2>Frequently Asked Questions</h2>
-        <p>Clear answers before you get started.</p>
+        <p>Everything you need to know about FitTrack.</p>
       </div>
       <div class="accordion" id="faqAccordion">
-        <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+        <div class="accordion-item" data-aos="fade-up">
           <h2 class="accordion-header">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
               How secure is my data?
             </button>
           </h2>
           <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">All user data is securely stored using MySQL and encrypted passwords via Flask sessions.</div>
+            <div class="accordion-body">All passwords are hashed, and sessions are protected. Data is stored in MySQL with strict role-based access.</div>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+              Can I export my data?
+            </button>
+          </h2>
+          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">Yes — export your workouts to CSV at any time from your dashboard.</div>
           </div>
         </div>
 
         <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
           <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-              Can I view progress history?
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+              How do admins use the system?
             </button>
           </h2>
-          <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-            <div class="accordion-body">Yes! The user's dashboard provides detailed workout logs, calories, and dynamic charts via Chart.js.</div>
+          <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">Admins view aggregated activity and manage users without accessing private workout edits.</div>
           </div>
         </div>
       </div>
@@ -234,8 +256,8 @@
   <!-- CTA -->
   <section class="cta">
     <div class="container">
-      <h3 class="fw-bold floating" data-aos="fade-up">Start Your Fitness Journey Today!</h3>
-      <p class="floating" data-aos="fade-up" data-aos-delay="100">Sign up, log workouts in seconds, and stay accountable.</p>
+      <h3 class="fw-bold" data-aos="fade-up">Start your fitness journey today.</h3>
+      <p data-aos="fade-up" data-aos-delay="100">Register, track, and build consistent habits with FitTrack.</p>
       <a href="{{ url_for('register') }}" class="btn btn-light btn-lg mt-3">Create Account</a>
     </div>
   </section>
@@ -247,38 +269,10 @@
 
   <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
   <script>
     AOS.init({ once: true, duration: 800 });
-    VanillaTilt.init(document.querySelectorAll(".feature-card"), {
-      max: 15,
-      speed: 400,
-      glare: true,
-      "max-glare": 0.3
-    });
-
-    // Auto-scroll testimonials
-    const wrapper = document.querySelector('.testimonials-wrapper');
-    let isUserInteracting = false;
-    function autoScroll() {
-      if (isUserInteracting) return;
-      const maxScrollLeft = wrapper.scrollWidth - wrapper.clientWidth;
-      if (wrapper.scrollLeft >= maxScrollLeft - 2) {
-        wrapper.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        wrapper.scrollBy({ left: 1, behavior: "smooth" });
-      }
-    }
-    let scrollInterval = setInterval(autoScroll, 20);
-    wrapper.addEventListener('touchstart', () => { isUserInteracting = true; });
-    wrapper.addEventListener('touchend', () => { isUserInteracting = false; });
-    wrapper.addEventListener('mouseenter', () => { isUserInteracting = true; });
-    wrapper.addEventListener('mouseleave', () => { isUserInteracting = false; });
-    let stopTimeout;
-    wrapper.addEventListener('wheel', () => { isUserInteracting = true; clearTimeout(stopTimeout); stopTimeout = setTimeout(() => isUserInteracting = false, 2000); });
   </script>
 </body>
 </html>
