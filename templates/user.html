@@ -117,15 +117,16 @@
           <button id="exportCSVUser" class="btn btn-outline-primary btn-sm">
             <i class="fa-solid fa-file-csv me-1"></i> Export CSV
           </button>
-          <button id="exportJSONUser" class="btn btn-outline-secondary btn-sm">
-            <i class="fa-solid fa-file-arrow-down me-1"></i> Export JSON
-          </button>
           <button id="exportPDFUser" class="btn btn-outline-dark btn-sm">
             <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
           </button>
           <label class="btn btn-outline-success btn-sm mb-0">
-            Import JSON / CSV
-            <input id="importFileUser" type="file" accept=".json,.csv,application/json,text/csv" hidden>
+            Import JSON
+            <input id="importJsonUser" type="file" accept=".json,application/json" hidden>
+          </label>
+          <label class="btn btn-outline-success btn-sm mb-0">
+            Import CSV
+            <input id="importCsvUser" type="file" accept=".csv,text/csv" hidden>
           </label>
         </div>
         <div id="importFeedback" class="small text-muted mt-2" role="status" aria-live="polite"></div>

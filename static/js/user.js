@@ -30,9 +30,9 @@ const dom = {
     workBar: document.getElementById('workBarUser'),
 
     exportCSV: document.getElementById('exportCSVUser'),
-    exportJSON: document.getElementById('exportJSONUser'),
     exportPDF: document.getElementById('exportPDFUser'),
-    importFile: document.getElementById('importFileUser'),
+    importJson: document.getElementById('importJsonUser'),
+    importCsv: document.getElementById('importCsvUser'),
     importFeedback: document.getElementById('importFeedback'),
 
     clearArchive: document.getElementById('clearArchiveUser'),
@@ -330,44 +330,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dom.exportCSV?.addEventListener('click', () => {
         const arr = activeWorkouts;
-        const csv = ["Date,Activity,Duration,Calories", ...arr.map(w => `${w.date},${w.activity},${w.duration},${w.calories}`)].join("\n");
-        const blob = new Blob([csv], { type: 'text/csv' });
+        const escapeCsv = v => {
+            const s = String(v ?? '');
+            return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+        };
+        const csv = [
+            "Date,Activity,Duration,Calories",
+            ...arr.map(w => [
+                escapeCsv(w.date),
+                escapeCsv(w.activity),
+                escapeCsv(w.duration),
+                escapeCsv(w.calories)
+            ].join(','))
+        ].join("\n");
+        const bom = '\uFEFF'; // UTF-8 BOM for Excel/Unicode compatibility
+        const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workouts.csv'; a.click();
-    });
-
-    dom.exportJSON?.addEventListener('click', () => {
-        const arr = activeWorkouts;
-        const blob = new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workouts.json'; a.click();
     });
 
     dom.exportPDF?.addEventListener('click', () => {
         window.print();
     });
 
-    dom.importFile?.addEventListener('change', async e => {
+    dom.importJson?.addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = async () => {
             try {
                 const text = reader.result;
-                if (file.name.toLowerCase().endsWith('.json')) {
-                    const arr = JSON.parse(text);
-                    await importWorkouts(Array.isArray(arr) ? arr : []);
-                } else if (file.name.toLowerCase().endsWith('.csv')) {
-                    const arr = parseCsv(text);
-                    await importWorkouts(arr);
-                } else {
-                    setImportFeedback('Unsupported file type. Please use JSON or CSV.', true);
-                }
+                const arr = JSON.parse(text);
+                await importWorkouts(Array.isArray(arr) ? arr : []);
             } catch {
-                setImportFeedback('Import failed. Please check file format.', true);
+                setImportFeedback('JSON import failed. Please check file format.', true);
             } finally {
                 e.target.value = '';
             }
         };
-        reader.readAsText(file);
+        reader.readAsText(file, 'utf-8');
+    });
+
+    dom.importCsv?.addEventListener('change', async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const text = reader.result;
+                const arr = parseCsv(text);
+                await importWorkouts(arr);
+            } catch {
+                setImportFeedback('CSV import failed. Please check file format.', true);
+            } finally {
+                e.target.value = '';
+            }
+        };
+        reader.readAsText(file, 'utf-8');
     });
 
     dom.clearArchive?.addEventListener('click', () => {
