@@ -8,6 +8,8 @@ body {
     width: 100px;
     height: 100px;
     object-fit: cover;
+    border: 3px solid #fff;
+    background: #fff;
 }
 
 .card-hover:hover {
@@ -17,6 +19,26 @@ body {
 .stat-card {
     background: #fff;
     border-radius: 0.5rem;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+/* UI polish */
+.card {
+    border: 0;
+    border-radius: 1rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.table thead th {
+    font-weight: 600;
+}
+
+.btn {
+    border-radius: 0.75rem;
+}
+
+.progress {
+    height: 8px;
 }
 
 /* Responsive tweaks */

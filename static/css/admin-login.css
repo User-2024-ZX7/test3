@@ -35,4 +35,5 @@ button.btn-primary:hover {
   .admin-card .btn {
     font-size: 0.95rem;
   }
+  body { padding: 1rem; }
 }

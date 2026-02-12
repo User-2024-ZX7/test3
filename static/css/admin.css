@@ -18,6 +18,24 @@ input:focus, button:focus {
 .card.stat-card { background: linear-gradient(135deg,#00c6ff,#0072ff); color: #fff; }
 .stat-card h2 { font-weight: 700; font-size: 2.2rem; }
 
+/* Visual polish */
+.table {
+  border-radius: 14px;
+  overflow: hidden;
+}
+.table thead th {
+  letter-spacing: 0.02em;
+}
+.table tbody tr:hover {
+  background: #f6f9fc;
+}
+.btn {
+  border-radius: 0.75rem;
+}
+.stat-card {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
 @media (max-width: 992px) {
   .stat-card h2 { font-size: 1.8rem; }
 }
@@ -26,4 +44,5 @@ input:focus, button:focus {
   .navbar .navbar-brand { font-size: 0.95rem; }
   .stat-card h2 { font-size: 1.5rem; }
   .feature-card { transform: none; }
+  table { font-size: 0.85rem; }
 }
