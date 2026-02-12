@@ -31,7 +31,9 @@ const dom = {
 
     exportCSV: document.getElementById('exportCSVUser'),
     exportJSON: document.getElementById('exportJSONUser'),
+    exportPDF: document.getElementById('exportPDFUser'),
     importFile: document.getElementById('importFileUser'),
+    importFeedback: document.getElementById('importFeedback'),
 
     clearArchive: document.getElementById('clearArchiveUser'),
     restoreAll: document.getElementById('restoreAllUser'),
@@ -114,6 +116,51 @@ async function clearArchived() {
     if (!confirm('Clear all archived workouts?')) return;
     await apiPost('/workouts/clear-archive');
     await loadWorkouts();
+}
+
+function setImportFeedback(msg, isError = false) {
+    if (!dom.importFeedback) return;
+    dom.importFeedback.textContent = msg;
+    dom.importFeedback.className = `small mt-2 ${isError ? 'text-danger' : 'text-success'}`;
+}
+
+function parseCsv(text) {
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    if (!lines.length) return [];
+    const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const idx = {
+        date: header.indexOf('date'),
+        activity: header.indexOf('activity'),
+        duration: header.indexOf('duration'),
+        calories: header.indexOf('calories')
+    };
+    if (Object.values(idx).some(i => i === -1)) return [];
+    return lines.slice(1).map(line => {
+        const cols = line.split(',').map(c => c.trim());
+        return {
+            date: cols[idx.date],
+            activity: cols[idx.activity],
+            duration: safeNum(cols[idx.duration]),
+            calories: safeNum(cols[idx.calories])
+        };
+    }).filter(w => w.date && w.activity && w.duration > 0 && w.calories > 0);
+}
+
+async function importWorkouts(arr) {
+    if (!arr.length) {
+        setImportFeedback('No valid workouts found.', true);
+        return;
+    }
+    for (const w of arr) {
+        await apiPost('/workouts', {
+            activity: w.activity,
+            duration: w.duration,
+            calories: w.calories,
+            date: w.date
+        });
+    }
+    await loadWorkouts();
+    setImportFeedback('Import completed successfully.');
 }
 
 // ------------------- TABLES -------------------
@@ -292,6 +339,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const arr = activeWorkouts;
         const blob = new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workouts.json'; a.click();
+    });
+
+    dom.exportPDF?.addEventListener('click', () => {
+        window.print();
+    });
+
+    dom.importFile?.addEventListener('change', async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const text = reader.result;
+                if (file.name.toLowerCase().endsWith('.json')) {
+                    const arr = JSON.parse(text);
+                    await importWorkouts(Array.isArray(arr) ? arr : []);
+                } else if (file.name.toLowerCase().endsWith('.csv')) {
+                    const arr = parseCsv(text);
+                    await importWorkouts(arr);
+                } else {
+                    setImportFeedback('Unsupported file type. Please use JSON or CSV.', true);
+                }
+            } catch {
+                setImportFeedback('Import failed. Please check file format.', true);
+            } finally {
+                e.target.value = '';
+            }
+        };
+        reader.readAsText(file);
     });
 
     dom.clearArchive?.addEventListener('click', () => {
