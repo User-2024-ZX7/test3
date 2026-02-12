@@ -33,6 +33,11 @@
     </a>
 
     <div class="ms-auto d-flex align-items-center gap-2">
+      {% if admin_view %}
+      <a class="btn btn-sm btn-warning" href="{{ url_for('admin_dashboard') }}">
+        <i class="fa-solid fa-crown me-1"></i> Admin
+      </a>
+      {% endif %}
       <a class="btn btn-sm btn-outline-light btn-home" href="{{ url_for('index') }}">
         <i class="fa-solid fa-house me-1"></i> Home
       </a>

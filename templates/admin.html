@@ -28,7 +28,7 @@
       </button>
       <div class="collapse navbar-collapse" id="adminNav">
         <ul class="navbar-nav ms-auto align-items-center gap-2">
-          <li class="nav-item"><a class="nav-link active btn-home" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="btn btn-sm btn-outline-light btn-home" href="{{ url_for('index') }}">Home</a></li>
           <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
         </ul>
       </div>
@@ -90,11 +90,61 @@
               <td>{{ item.avg_cal }}</td>
               <td>{{ item.avg_dur }}</td>
               <td>{{ item.freq_activity }}</td>
-              <td class="text-muted small">—</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="{{ item.user.id }}" title="View">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning btn-archive" data-user-id="{{ item.user.id }}" title="Archive">
+                  <i class="fa-solid fa-box-archive"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="{{ item.user.id }}" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
             </tr>
           {% else %}
             <tr>
               <td colspan="9" class="text-center text-muted">No active users</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Archived Users Table -->
+  <section class="container my-5">
+    <h3 class="mb-3">Archived Users</h3>
+    <div class="table-responsive">
+      <table class="table table-hover shadow-sm bg-white rounded">
+        <thead class="table-dark">
+          <tr>
+            <th>Avatar</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in archived_users %}
+            <tr class="align-middle">
+              <td>
+                <img src="{{ u.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}" width="40" class="rounded-circle" alt="Avatar">
+              </td>
+              <td>{{ u.username }}</td>
+              <td>{{ u.email }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="{{ u.id }}" title="Restore">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="{{ u.id }}" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="4" class="text-center text-muted">No archived users</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -144,8 +194,39 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.3/dist/vanilla-tilt.min.js"></script>
-  
-  
-  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.btn-view').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.userId;
+          window.location.href = `/admin/user/${id}`;
+        });
+      });
+      document.querySelectorAll('.btn-archive').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.userId;
+          if (!confirm('Archive this user?')) return;
+          await fetch(`/admin/users/${id}/archive`, { method: 'POST' });
+          window.location.reload();
+        });
+      });
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.userId;
+          if (!confirm('Delete this user and all workouts?')) return;
+          await fetch(`/admin/users/${id}/delete`, { method: 'POST' });
+          window.location.reload();
+        });
+      });
+      document.querySelectorAll('.btn-restore-user').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.userId;
+          if (!confirm('Restore this user?')) return;
+          await fetch(`/admin/users/${id}/restore`, { method: 'POST' });
+          window.location.reload();
+        });
+      });
+    });
+  </script>
 </body>
 </html>

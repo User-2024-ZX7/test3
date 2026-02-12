@@ -47,6 +47,8 @@ const dom = {
 // ------------------- STATE -------------------
 let activeWorkouts = [];
 let archivedWorkouts = [];
+const adminView = document.body?.dataset?.adminView === '1';
+const viewUserId = document.body?.dataset?.viewUserId;
 
 // ------------------- HELPERS -------------------
 const safeNum = v => Math.max(0, Number(v) || 0);
@@ -71,12 +73,16 @@ async function apiPost(url, body) {
 // ------------------- DATA LOAD -------------------
 async function loadWorkouts() {
     try {
-        const data = await apiGet('/api/workouts');
+        const data = adminView && viewUserId
+            ? await apiGet(`/admin/api/workouts/${viewUserId}`)
+            : await apiGet('/api/workouts');
         activeWorkouts = data.active || [];
         archivedWorkouts = data.archived || [];
-        const avatar = await apiGet('/api/avatar');
-        if (avatar && avatar.avatar_url) {
-            dom.avatar.src = avatar.avatar_url;
+        if (!adminView) {
+            const avatar = await apiGet('/api/avatar');
+            if (avatar && avatar.avatar_url) {
+                dom.avatar.src = avatar.avatar_url;
+            }
         }
         renderAll();
     } catch {
@@ -87,32 +93,38 @@ async function loadWorkouts() {
 
 // ------------------- CRUD -------------------
 async function addWorkout(w) {
+    if (adminView) return;
     await apiPost('/workouts', w);
     await loadWorkouts();
 }
 
 async function deleteWorkout(id) {
+    if (adminView) return;
     if (!confirm('Delete workout?')) return;
     await apiPost(`/workouts/${id}/delete`);
     await loadWorkouts();
 }
 
 async function archiveWorkout(id) {
+    if (adminView) return;
     await apiPost(`/workouts/${id}/archive`);
     await loadWorkouts();
 }
 
 async function restoreArchived(id) {
+    if (adminView) return;
     await apiPost(`/workouts/${id}/restore`);
     await loadWorkouts();
 }
 
 async function restoreAllArchived() {
+    if (adminView) return;
     await apiPost('/workouts/restore-all');
     await loadWorkouts();
 }
 
 async function clearArchived() {
+    if (adminView) return;
     if (!confirm('Clear all archived workouts?')) return;
     await apiPost('/workouts/clear-archive');
     await loadWorkouts();
@@ -296,24 +308,29 @@ function renderAll() {
 // ------------------- EVENT LISTENERS -------------------
 document.addEventListener('DOMContentLoaded', () => {
     dom.date.value = new Date().toISOString().slice(0, 10);
-    // Avatar upload (save to DB)
-    dom.avatarInput?.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async () => {
-            dom.avatar.src = reader.result;
-            try {
-                await apiPost('/api/avatar', { avatar_url: reader.result });
-            } catch {
-                alert('Avatar upload failed.');
-            }
-        };
-        reader.readAsDataURL(file);
-    });
+    // Avatar upload (save to DB) - disable in admin view
+    if (adminView) {
+        if (dom.avatarInput) dom.avatarInput.disabled = true;
+    } else {
+        dom.avatarInput?.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async () => {
+                dom.avatar.src = reader.result;
+                try {
+                    await apiPost('/api/avatar', { avatar_url: reader.result });
+                } catch {
+                    alert('Avatar upload failed.');
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
 
     dom.addForm?.addEventListener('submit', async e => {
         e.preventDefault();
+        if (adminView) return;
         const item = {
             activity: dom.activity.value.trim(),
             duration: safeNum(dom.duration.value),
@@ -353,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dom.importJson?.addEventListener('change', async e => {
+        if (adminView) return;
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -371,6 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dom.importCsv?.addEventListener('change', async e => {
+        if (adminView) return;
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -395,6 +414,17 @@ document.addEventListener('DOMContentLoaded', () => {
     dom.restoreAll?.addEventListener('click', () => {
         restoreAllArchived();
     });
+
+    if (adminView) {
+        dom.activity && (dom.activity.disabled = true);
+        dom.duration && (dom.duration.disabled = true);
+        dom.calories && (dom.calories.disabled = true);
+        dom.date && (dom.date.disabled = true);
+        dom.clearArchive && (dom.clearArchive.disabled = true);
+        dom.restoreAll && (dom.restoreAll.disabled = true);
+        dom.importJson && (dom.importJson.disabled = true);
+        dom.importCsv && (dom.importCsv.disabled = true);
+    }
 
     loadWorkouts();
 });
