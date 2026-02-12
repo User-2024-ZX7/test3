@@ -20,7 +20,7 @@ const timer = setInterval(()=>{
     countdown.textContent = seconds;
     if(seconds <= 0){
         clearInterval(timer);
-        window.location.href = 'login.html';
+        window.location.href = "{{ url_for('login') }}";
     }
 }, 1000);
 </script>

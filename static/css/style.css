@@ -39,3 +39,27 @@ body {
   transform: scale(1.05);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
 }
+
+.btn-home {
+  position: relative;
+  font-weight: 600;
+}
+
+.btn-home::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -4px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.3;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+.btn-home:hover::after,
+.btn-home:focus::after {
+  transform: scaleX(1);
+}

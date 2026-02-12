@@ -1,22 +1,6 @@
-// =================== SESSION CHECK =================== 
-const KEY_ACTIVE_USER = 'ft_active_user';
+// =================== STORAGE KEYS ===================
 const KEY_USERS = 'ft_users';
 const KEY_ARCHIVED_USERS = 'ft_archived_users';
-const activeUser = JSON.parse(localStorage.getItem(KEY_ACTIVE_USER));
-
-if(!activeUser || activeUser.role !== 'admin') {
-    alert('You must login as admin first.');
-    window.location.href = 'admin-login.html';
-}
-
-// =================== LOGOUT ===================
-document.querySelectorAll('.logoutBtn').forEach(btn => {
-    btn.onclick = () => {
-        localStorage.removeItem(KEY_ACTIVE_USER);
-        localStorage.removeItem('ft_admin_view_user'); // Clear admin-view flag
-        window.location.href = 'admin-login.html';
-    };
-});
 
 // =================== HELPERS ===================
 const safeNum = v => Number.isFinite(Number(v)) ? Math.max(0, Math.round(v)) : 0;

@@ -12,9 +12,9 @@
   <!-- AOS Animations -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../static/css/style.css" />
-  <link rel="stylesheet" href="../static/css/index.css" />
-  <link href="../static/css/user.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}" />
 
   <style>
     /* Hero */
@@ -84,8 +84,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-3 shadow-sm">
     <div class="container">
       <!-- Brand -->
-      <a class="navbar-brand d-flex align-items-center" href="index.html">
-        <img src="FitTrack.jpg" alt="FitTrack Logo" style="height:40px; width:auto; border-radius:6px;">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo" style="height:40px; width:auto; border-radius:6px;">
         <span class="ms-2 fw-bold text-white">FitTrack</span>
       </a>
 
@@ -97,21 +97,20 @@
       <!-- Navbar Links -->
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-lg-center gap-2">
-          <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link active btn-home" href="#home">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
           <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
           
-
           <!-- Admin button -->
           <li class="nav-item ms-2">
-            <a class="btn btn-warning btn-sm" href="admin-login.html" id="adminBtn">
+            <a class="btn btn-warning btn-sm" href="{{ url_for('admin_login') }}" id="adminBtn">
               <i class="fa-solid fa-cogs"></i> Admin
             </a>
           </li>
 
           <!-- User Profile button -->
           <li class="nav-item ms-2">
-            <a class="btn btn-primary" href="user.html" id="users-btn">
+            <a class="btn btn-primary" href="{{ url_for('user_dashboard') }}" id="users-btn">
               <i class="fa-solid fa-user"></i> Users
             </a>
           </li>
@@ -134,30 +133,28 @@
     <div class="container">
       <h2 class="fw-bold mb-5" data-aos="fade-up">What Our Users Say</h2>
       <div class="testimonials-wrapper d-flex flex-nowrap overflow-auto">
-        <!-- Testimonial 1 -->
+        <!-- Testimonial cards -->
         <div class="testimonial-card shadow-lg rounded-4 bg-white p-4 mx-3 flex-shrink-0">
           <div class="testimonial-body text-center">
-            <img src="james.jpg" alt="User" class="testimonial-img mb-3">
+            <img src="{{ url_for('static', filename='images/james.jpg') }}" alt="User" class="testimonial-img mb-3">
             <p class="fst-italic text-muted mb-3">“This scale is incredible! After my type-2 diagnosis, FitTrack helped me see how my habits affect my body.”</p>
             <h6 class="fw-bold mb-0">James, 38</h6>
             <small class="text-secondary d-block">“My blood sugar is back to pre-diabetic levels”</small>
           </div>
         </div>
 
-        <!-- Testimonial 2 -->
         <div class="testimonial-card shadow-lg rounded-4 bg-white p-4 mx-3 flex-shrink-0">
           <div class="testimonial-body text-center">
-            <img src="Darren.jpg" alt="User" class="testimonial-img mb-3">
+            <img src="{{ url_for('static', filename='images/Darren.jpg') }}" alt="User" class="testimonial-img mb-3">
             <p class="fst-italic text-muted mb-3">“I love how simple and visual it is. The dashboard makes my progress clear and fun to follow!”</p>
             <h6 class="fw-bold mb-0">Darren, 45</h6>
             <small class="text-secondary d-block">“I'm a better dad, husband and friend”</small>
           </div>
         </div>
 
-        <!-- Testimonial 3 -->
         <div class="testimonial-card shadow-lg rounded-4 bg-white p-4 mx-3 flex-shrink-0">
           <div class="testimonial-body text-center">
-            <img src="Jamie.jpg" alt="User" class="testimonial-img mb-3">
+            <img src="{{ url_for('static', filename='images/Jamie.jpg') }}" alt="User" class="testimonial-img mb-3">
             <p class="fst-italic text-muted mb-3">“FitTrack helped me lose 10kg by tracking my daily calories and motivating me every day!”</p>
             <h6 class="fw-bold mb-0">Melanie, 54</h6>
             <small class="text-secondary d-block">“I finally feel like me again”</small>
@@ -201,7 +198,7 @@
   <section class="cta">
     <div class="container">
       <h3 class="fw-bold floating" data-aos="fade-up">Start Your Fitness Journey Today!</h3>
-      <p class="floating" data-aos="fade-up" data-aos-delay="100">Sign up, log workouts in  button, and achieve your fitness goals with FitTrack.</p>
+      <p class="floating" data-aos="fade-up" data-aos-delay="100">Sign up, log workouts in button, and achieve your fitness goals with FitTrack.</p>
     </div>
   </section>
 
@@ -214,7 +211,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="../static/js/auth.js"></script>
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
   <script>
     AOS.init({ once: true, duration: 800 });
@@ -244,28 +241,6 @@
     wrapper.addEventListener('mouseleave', () => { isUserInteracting = false; });
     let stopTimeout;
     wrapper.addEventListener('wheel', () => { isUserInteracting = true; clearTimeout(stopTimeout); stopTimeout = setTimeout(() => isUserInteracting = false, 2000); });
-
-      // LOGOUT FUNCTION
-  function logoutUser() {
-    // Clear session data (adjust depending on how you store login state)
-    sessionStorage.clear();
-    localStorage.removeItem('user'); // example if using localStorage
-    window.location.href = 'index.html';
-  }
-
-  // Attach logout on "Home" click
-  const homeLink = document.querySelector('.nav-link.active[href="#home"]');
-  if (homeLink) {
-    homeLink.addEventListener('click', (e) => {
-      e.preventDefault(); // prevent default scrolling
-      logoutUser();
-    });
-  }
-
-
-  document.addEventListener('DOMContentLoaded', () => {
-    checkAccess('user'); // Redirects to login if not logged in
-});
   </script>
 </body>
 </html>

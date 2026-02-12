@@ -12,15 +12,15 @@
   <!-- AOS -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../static/css/admin.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body class="bg-light">
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
-      <a class="navbar-brand" href="index.html">
-        <img src="FitTrack.jpg" alt="FitTrack" class="me-2" style="height:40px;">
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack" class="me-2" style="height:40px;">
         FitTrack Admin
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
@@ -28,8 +28,8 @@
       </button>
       <div class="collapse navbar-collapse" id="adminNav">
         <ul class="navbar-nav ms-auto align-items-center gap-2">
-          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
-          <li class="nav-item"><a class="btn btn-outline-light btn-sm logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+          <li class="nav-item"><a class="nav-link active btn-home" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
         </ul>
       </div>
     </div>
@@ -41,19 +41,19 @@
       <div class="col-md-4">
         <div class="card stat-card shadow feature-card p-3" data-aos="fade-up">
           <h5>Total Users</h5>
-          <h2 id="totalUsers">0</h2>
+          <h2 id="totalUsers">{{ total_users }}</h2>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card stat-card shadow feature-card p-3" data-aos="fade-up" data-aos-delay="100">
           <h5>Total Workouts</h5>
-          <h2 id="totalWorkouts">0</h2>
+          <h2 id="totalWorkouts">{{ total_workouts }}</h2>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card stat-card shadow feature-card p-3" data-aos="fade-up" data-aos-delay="200">
           <h5>Average Calories</h5>
-          <h2 id="avgCalories">0</h2>
+          <h2 id="avgCalories">{{ avg_calories }}</h2>
         </div>
       </div>
     </div>
@@ -77,7 +77,27 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="usersTableBody"></tbody>
+        <tbody id="usersTableBody">
+          {% for item in user_stats %}
+            <tr class="align-middle">
+              <td>
+                <img src="{{ item.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}" width="40" class="rounded-circle" alt="Avatar">
+              </td>
+              <td>{{ item.user.username }}</td>
+              <td>{{ item.user.email }}</td>
+              <td>{{ item.active_count }}</td>
+              <td>{{ item.archived_count }}</td>
+              <td>{{ item.avg_cal }}</td>
+              <td>{{ item.avg_dur }}</td>
+              <td>{{ item.freq_activity }}</td>
+              <td class="text-muted small">—</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="9" class="text-center text-muted">No active users</td>
+            </tr>
+          {% endfor %}
+        </tbody>
       </table>
     </div>
   </section>
@@ -124,13 +144,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.3/dist/vanilla-tilt.min.js"></script>
-  <script src="../static/js/admin.js"></script>
-  <script src="../static/js/auth.js"></script>
   
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    checkAccess('admin'); // Redirects to login if not admin
-});
-  </script>
+  
+  
 </body>
 </html>

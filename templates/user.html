@@ -18,7 +18,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Custom CSS -->
-<link rel="stylesheet" href="../static/css/user.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
 </head>
 
 <body class="bg-light">
@@ -26,19 +26,19 @@
 <!-- ================= NAVBAR ================= -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="index.html">
-      <img src="FitTrack.jpg" width="40" height="40"
+    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" width="40" height="40"
            class="me-2 rounded-circle shadow-sm" alt="FitTrack Logo">
       <span class="fw-bold fs-5">FitTrack</span>
     </a>
 
     <div class="ms-auto d-flex align-items-center gap-2">
-      <a class="btn btn-sm btn-outline-light" href="index.html">
+      <a class="btn btn-sm btn-outline-light btn-home" href="{{ url_for('index') }}">
         <i class="fa-solid fa-house me-1"></i> Home
       </a>
-      <button class="btn btn-sm btn-danger logoutBtn">
+      <a class="btn btn-sm btn-danger" href="{{ url_for('logout') }}">
         <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
-      </button>
+      </a>
     </div>
   </div>
 </nav>
@@ -52,7 +52,8 @@
     <div class="text-center">
       <img id="userAvatar"
            class="profile-avatar rounded-circle shadow-sm mb-2"
-           src="../static/images/default-avatar.png"
+           src="{{ url_for('static', filename='images/FitTrack.jpg') }}"
+           data-user-id="{{ user.id }}"
            width="100" height="100"
            alt="User Avatar">
       <input type="file"
@@ -62,7 +63,7 @@
     </div>
 
     <div class="flex-grow-1 text-center text-md-start">
-      <h5 id="userName" class="fw-bold mb-1">Guest User</h5>
+      <h5 id="userName" class="fw-bold mb-1">{{ user.username }}</h5>
       <p class="small-muted mb-0">
         Track workouts, view progress, and manage your fitness history.
       </p>
@@ -220,30 +221,7 @@
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/user.js"></script>
-<script src="../static/js/logout.js"></script>
-
-
-
-<script>
-  // Function to log out user
-  function logoutAndRedirect() {
-    // Clear session/local storage (adjust based on your login storage)
-    sessionStorage.clear();
-    localStorage.removeItem('user'); // example if using localStorage
-    // Redirect to homepage
-    window.location.href = 'index.html';
-  }
-
-  // Attach event to "Home" link
-  const homeLink = document.querySelector('a.nav-link.active[href="#home"]');
-  if (homeLink) {
-    homeLink.addEventListener('click', function(e) {
-      e.preventDefault(); // prevent default scroll behavior
-      logoutAndRedirect();
-    });
-  }
-</script>
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
 
 </body>
 </html>

@@ -27,7 +27,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="index.html">
-      <img src="FitTrack.jpg" width="40" height="40"
+      <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" width="40" height="40"
            class="me-2 rounded-circle shadow-sm" alt="FitTrack Logo">
       <span class="fw-bold fs-5">FitTrack</span>
     </a>
@@ -41,7 +41,7 @@
 
       <!-- Admin button -->
     <li class="nav-item ms-2">
-      <a class="btn btn-warning btn-sm" href="admin-login.html" id="adminBtn">
+      <a class="btn btn-warning btn-sm" href="{{ url_for('admin_login') }}" id="adminBtn">
         <i class="fa-solid fa-cogs"></i> Admin
         </a>
       </li>
@@ -62,7 +62,7 @@
     <div class="text-center">
       <img id="userAvatar"
            class="profile-avatar rounded-circle shadow-sm mb-2"
-           src="../static/images/default-avatar.png"
+           src="{{ url_for('static', filename='images/FitTrack.jpg') }}"
            width="100" height="100"
            alt="User Avatar">
       <input type="file"
