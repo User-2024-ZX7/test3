@@ -9,16 +9,58 @@ function offsetDate(offsetDays){
 function qs(sel){ return document.querySelector(sel) }
 function qsa(sel){ return Array.from(document.querySelectorAll(sel)) }
 function numberOrZero(v){ return Number(v) || 0 }
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
 async function apiGet(url){
   const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-  if(!res.ok) throw new Error('Request failed');
-  return res.json();
+  return handleApiResponse(res);
 }
 async function apiPost(url){
-  const res = await fetch(url, { method:'POST', headers: { 'Accept': 'application/json' } });
-  if(!res.ok) throw new Error('Request failed');
-  return res.json();
+  const res = await fetch(url, {
+    method:'POST',
+    headers: { 'Accept': 'application/json', 'X-CSRFToken': csrfToken }
+  });
+  return handleApiResponse(res);
+}
+async function apiPostJson(url, body){
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify(body || {})
+  });
+  return handleApiResponse(res);
+}
+
+async function handleApiResponse(res){
+  let payload = null;
+  try {
+    payload = await res.json();
+  } catch {
+    payload = null;
+  }
+  if(res.ok) return payload || {};
+  const code = payload?.error || `http_${res.status}`;
+  if(code === 'csrf_token_invalid'){
+    alert('Security token expired. The page will reload.');
+    window.location.reload();
+    throw new Error(code);
+  }
+  if(res.status === 401 || code === 'unauthorized'){
+    window.location.href = '/login';
+    throw new Error(code);
+  }
+  throw new Error(code);
+}
+async function logImportExport(action, format, records, filename){
+  try {
+    await apiPostJson('/api/import-export-log', { action, format, records, filename });
+  } catch {
+    // do not block UX if history logging fails
+  }
 }
 
 qs('#today').textContent = new Date().toLocaleString(undefined, { weekday:'long', month:'short', day:'numeric' });
@@ -30,6 +72,7 @@ let typesChart = null;
 // ---------- Initialize UI ----------
 let allWorkouts = [];
 let eventSource = null;
+let loadingDashboardData = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   renderAll();
@@ -59,18 +102,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ---------- Rendering pipeline ----------
 async function renderAll(){
+  if (loadingDashboardData) return;
+  loadingDashboardData = true;
   try {
     const data = await apiGet('/api/workouts');
     allWorkouts = [...(data.active || []), ...(data.archived || [])];
+    const sorted = allWorkouts.slice().sort((a,b)=> b.date.localeCompare(a.date));
+    renderHistory(sorted);
+    updateStats(sorted);
+    renderCharts(sorted);
+    populateTypeFilter(); // ensure types up to date
   } catch {
     window.location.href = '/login';
     return;
+  } finally {
+    loadingDashboardData = false;
   }
-  const sorted = allWorkouts.slice().sort((a,b)=> b.date.localeCompare(a.date));
-  renderHistory(sorted);
-  updateStats(sorted);
-  renderCharts(sorted);
-  populateTypeFilter(); // ensure types up to date
 }
 
 function renderHistory(items){
@@ -275,6 +322,7 @@ function exportCSV(data, filename='export.csv'){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
+  logImportExport('export', 'csv', data.length, filename);
 }
 
 function getVisibleRowsData(){
