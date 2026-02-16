@@ -1,0 +1,116 @@
+{% set area = app_area|default('user') %}
+{% set tag = 'User' if area == 'user' else ('Admin' if area == 'admin' else 'Access') %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top ft-nav is-solid" aria-label="{{ tag }} navigation">
+  <div class="container nav-shell">
+    <a class="navbar-brand brand-pill ft-brand" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo" class="ft-logo">
+      <span class="ft-word">FitTrack</span>
+      <span class="ft-word-tag">{{ tag }}</span>
+    </a>
+
+    <div class="nav-actions d-none d-lg-flex">
+      <a class="btn home-btn-global" href="{{ url_for('index') }}">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
+      {% if area == 'admin' %}
+        <form method="POST" action="{{ url_for('logout') }}" class="d-inline m-0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn logout-btn-global">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </form>
+      {% elif area == 'user' %}
+        {% if admin_view %}
+        <a class="btn admin-btn-global" href="{{ url_for('admin_dashboard') }}">
+          <i class="fa-solid fa-crown"></i> Admin
+        </a>
+        {% endif %}
+        <form method="POST" action="{{ url_for('logout') }}" class="d-inline m-0">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn logout-btn-global">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </form>
+      {% else %}
+        <a class="btn user-btn-global" href="{{ url_for('login') }}">
+          <i class="fa-solid fa-right-to-bracket"></i> Login
+        </a>
+        <a class="btn admin-btn-global" href="{{ url_for('register') }}">
+          <i class="fa-solid fa-user-plus"></i> Register
+        </a>
+        <a class="btn admin-btn-global" href="{{ url_for('admin_login') }}">
+          <i class="fa-solid fa-crown"></i> Admin
+        </a>
+      {% endif %}
+    </div>
+
+    <button class="btn mobile-menu-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar" aria-label="Open menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<div class="offcanvas offcanvas-end home-sidebar d-lg-none" tabindex="-1" id="appSidebar" aria-labelledby="appSidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title brand-pill ft-brand" id="appSidebarLabel">
+      <img class="ft-logo" src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo">
+      <span class="ft-word">FitTrack</span>
+      <span class="ft-word-tag">{{ tag }}</span>
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <nav class="sidebar-nav" aria-label="{{ tag }} quick navigation">
+      {% if area == 'admin' %}
+        <a class="nav-link" href="#admin-overview" data-bs-dismiss="offcanvas">Overview</a>
+        <a class="nav-link" href="#active-users-title" data-bs-dismiss="offcanvas">Active Users</a>
+        <a class="nav-link" href="#archived-users-title" data-bs-dismiss="offcanvas">Archived Users</a>
+      {% elif area == 'user' %}
+        <a class="nav-link" href="#profile-section" data-bs-dismiss="offcanvas">Profile</a>
+        <a class="nav-link" href="#stats-section" data-bs-dismiss="offcanvas">Stats</a>
+        <a class="nav-link" href="#charts-section" data-bs-dismiss="offcanvas">Charts</a>
+        <a class="nav-link" href="#workouts-section" data-bs-dismiss="offcanvas">Workouts</a>
+      {% else %}
+        <a class="nav-link" href="{{ url_for('index') }}" data-bs-dismiss="offcanvas">Home</a>
+        <a class="nav-link" href="{{ url_for('login') }}" data-bs-dismiss="offcanvas">Login</a>
+        <a class="nav-link" href="{{ url_for('register') }}" data-bs-dismiss="offcanvas">Register</a>
+        <a class="nav-link" href="{{ url_for('admin_login') }}" data-bs-dismiss="offcanvas">Admin</a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-actions mt-auto pt-3">
+      <a class="btn home-btn-global mb-2 w-100" href="{{ url_for('index') }}" data-bs-dismiss="offcanvas">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
+      {% if area == 'admin' %}
+        <form method="POST" action="{{ url_for('logout') }}" class="w-100">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn logout-btn-global w-100">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </form>
+      {% elif area == 'user' %}
+        {% if admin_view %}
+        <a class="btn admin-btn-global mb-2 w-100" href="{{ url_for('admin_dashboard') }}" data-bs-dismiss="offcanvas">
+          <i class="fa-solid fa-crown"></i> Admin
+        </a>
+        {% endif %}
+        <form method="POST" action="{{ url_for('logout') }}" class="w-100">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn logout-btn-global w-100">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </form>
+      {% else %}
+        <a class="btn user-btn-global mb-2 w-100" href="{{ url_for('login') }}" data-bs-dismiss="offcanvas">
+          <i class="fa-solid fa-right-to-bracket"></i> Login
+        </a>
+        <a class="btn admin-btn-global mb-2 w-100" href="{{ url_for('register') }}" data-bs-dismiss="offcanvas">
+          <i class="fa-solid fa-user-plus"></i> Register
+        </a>
+        <a class="btn admin-btn-global w-100" href="{{ url_for('admin_login') }}" data-bs-dismiss="offcanvas">
+          <i class="fa-solid fa-crown"></i> Admin
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>

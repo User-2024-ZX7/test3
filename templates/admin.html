@@ -1,85 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Admin Panel | FitTrack</title>
+{% extends 'base.html' %}
+{% set nav_variant = 'app' %}
+{% set app_area = 'admin' %}
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-  <!-- AOS -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Custom CSS -->
+{% block title %}Admin Panel | FitTrack{% endblock %}
+{% block body_class %}bg-light ft-admin{% endblock %}
+{% block main_class %}admin-main{% endblock %}
+
+{% block page_css %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-buttons.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/nav-adaptive.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/site-footer.css') }}">
-</head>
-<body class="bg-light ft-admin">
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+{% endblock %}
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top ft-nav is-solid" aria-label="Admin navigation">
-    <div class="container nav-shell">
-      <a class="navbar-brand brand-pill ft-brand" href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack" class="ft-logo">
-        <span class="ft-word">FitTrack</span>
-        <span class="ft-word-tag">Admin</span>
-      </a>
-
-      <div class="nav-actions d-none d-xl-flex">
-        <a class="btn home-btn-global" href="{{ url_for('index') }}">
-          <i class="fa-solid fa-house"></i> Home
-        </a>
-        <form method="POST" action="{{ url_for('logout') }}" class="d-inline m-0">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn logout-btn-global">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
-          </button>
-        </form>
-      </div>
-
-      <button class="btn mobile-menu-btn d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Open admin menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-    </div>
-  </nav>
-
-  <div class="offcanvas offcanvas-end home-sidebar d-xl-none" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title brand-pill ft-brand" id="adminSidebarLabel">
-        <img class="ft-logo" src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo">
-        <span class="ft-word">FitTrack</span>
-        <span class="ft-word-tag">Admin</span>
-      </h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body d-flex flex-column">
-      <nav class="sidebar-nav" aria-label="Admin quick navigation">
-        <a class="nav-link" href="#admin-overview" data-bs-dismiss="offcanvas">Overview</a>
-        <a class="nav-link" href="#active-users-title" data-bs-dismiss="offcanvas">Active Users</a>
-        <a class="nav-link" href="#archived-users-title" data-bs-dismiss="offcanvas">Archived Users</a>
-      </nav>
-      <div class="sidebar-actions mt-auto pt-3">
-        <a class="btn home-btn-global mb-2 w-100" href="{{ url_for('index') }}">
-          <i class="fa-solid fa-house"></i> Home
-        </a>
-        <form method="POST" action="{{ url_for('logout') }}" class="w-100">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn logout-btn-global w-100">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <main id="main-content" class="admin-main">
+{% block content %}
   <header id="admin-overview" class="container my-4">
     <h1 class="h3 mb-1">Admin Dashboard</h1>
     <p class="text-muted mb-0">Monitor users, workouts, and account lifecycle actions.</p>
@@ -193,7 +125,6 @@
     </div>
   </section>
 
-  <!-- Active Users Table -->
   <section class="container my-5 active-users-section" id="activeUsersSection" aria-labelledby="active-users-title">
     <h2 id="active-users-title" class="h4 mb-3">
       <i class="fa-solid fa-users section-meta-icon meta-users"></i>
@@ -251,7 +182,6 @@
     </div>
   </section>
 
-  <!-- Archived Users Table -->
   <section class="container my-5 archived-users-section" id="archivedUsersSection" aria-labelledby="archived-users-title">
     <h2 id="archived-users-title" class="h4 mb-3">
       <i class="fa-solid fa-box-archive section-meta-icon meta-archive"></i>
@@ -299,18 +229,14 @@
     </div>
   </section>
 
-  </main>
-
-  {% include '_shared_footer.html' %}
   <div id="adminLiveRegion" class="visually-hidden" aria-live="polite"></div>
   <div class="toast-container position-fixed top-0 end-0 p-3 admin-toast-container" id="adminToastContainer"></div>
 
-  <!-- User Modal (Read-Only) -->
   <div class="modal fade" id="userModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">User Details: <span id="modalUsername"></span></h5>
+          <h2 class="modal-title h5 mb-0">User Details: <span id="modalUsername"></span></h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
@@ -337,355 +263,8 @@
       </div>
     </div>
   </div>
+{% endblock %}
 
-  <!-- JS Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ url_for('static', filename='js/nav-adaptive.js') }}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.3/dist/vanilla-tilt.min.js"></script>
-  <script nonce="{{ csp_nonce() }}">
-    document.addEventListener('DOMContentLoaded', () => {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
-      const usersTableBody = document.getElementById('usersTableBody');
-      const archivedUsersTableBody = document.getElementById('archivedUsersTableBody');
-      const activeSection = document.getElementById('activeUsersSection');
-      const archivedSection = document.getElementById('archivedUsersSection');
-      const activeCountBadge = document.getElementById('activeUserCountBadge');
-      const archivedCountBadge = document.getElementById('archivedUserCountBadge');
-      const resultSummary = document.getElementById('adminResultSummary');
-      const lastSync = document.getElementById('adminLastSync');
-      const liveRegion = document.getElementById('adminLiveRegion');
-      const refreshBtn = document.getElementById('adminRefreshBtn');
-      const resetBtn = document.getElementById('adminResetBtn');
-      const searchInput = document.getElementById('adminSearch');
-      const statusFilter = document.getElementById('adminStatusFilter');
-      const sortSelect = document.getElementById('adminSort');
-      const toastContainer = document.getElementById('adminToastContainer');
-
-      const state = {
-        activeUsers: [],
-        archivedUsers: [],
-        filters: {
-          query: '',
-          status: 'all',
-          sort: 'username_asc',
-        },
-      };
-
-      const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, s => (
-        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]
-      ));
-      const handleResponse = async (res) => {
-        let payload = null;
-        try { payload = await res.json(); } catch { payload = null; }
-        if (res.ok) return payload || {};
-        const code = payload?.error || `http_${res.status}`;
-        if (code === 'csrf_token_invalid') {
-          alert('Security token expired. The page will reload.');
-          window.location.reload();
-          throw new Error(code);
-        }
-        if (res.status === 401 || code === 'unauthorized') {
-          window.location.href = '/admin-login';
-          throw new Error(code);
-        }
-        throw new Error(code);
-      };
-      const postAdmin = async (url) => {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json', 'X-CSRFToken': csrfToken }
-        });
-        return handleResponse(res);
-      };
-
-      const showToast = (message, type = 'success') => {
-        if (!toastContainer) return;
-        const tone = type === 'danger' ? 'danger' : (type === 'warning' ? 'warning' : 'success');
-        const wrapper = document.createElement('div');
-        wrapper.className = `toast align-items-center text-bg-${tone} border-0`;
-        wrapper.setAttribute('role', 'status');
-        wrapper.setAttribute('aria-live', 'polite');
-        wrapper.setAttribute('aria-atomic', 'true');
-        wrapper.innerHTML = `
-          <div class="d-flex">
-            <div class="toast-body">${escapeHtml(message)}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>`;
-        toastContainer.appendChild(wrapper);
-        const toast = new bootstrap.Toast(wrapper, { delay: 2200 });
-        wrapper.addEventListener('hidden.bs.toast', () => wrapper.remove());
-        toast.show();
-      };
-
-      const announce = (message) => {
-        if (!liveRegion) return;
-        liveRegion.textContent = message;
-      };
-
-      const toNumber = (value) => Number(value || 0);
-
-      const getFilteredAndSorted = () => {
-        const query = state.filters.query.trim().toLowerCase();
-        const status = state.filters.status;
-        const sort = state.filters.sort;
-
-        const matchUser = (u) => {
-          if (!query) return true;
-          const haystack = [
-            u.username || '',
-            u.email || '',
-            u.freq_activity || '',
-          ].join(' ').toLowerCase();
-          return haystack.includes(query);
-        };
-
-        let active = state.activeUsers.filter(matchUser);
-        let archived = state.archivedUsers.filter(matchUser);
-
-        if (status === 'active') archived = [];
-        if (status === 'archived') active = [];
-
-        const compareBySort = (a, b) => {
-          switch (sort) {
-            case 'username_desc':
-              return String(b.username || '').localeCompare(String(a.username || ''), undefined, { sensitivity: 'base' });
-            case 'active_desc':
-              return toNumber(b.active_count) - toNumber(a.active_count) || String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
-            case 'avg_cal_desc':
-              return toNumber(b.avg_cal) - toNumber(a.avg_cal) || String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
-            case 'archived_desc':
-              return toNumber(b.archived_count) - toNumber(a.archived_count) || String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
-            case 'username_asc':
-            default:
-              return String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
-          }
-        };
-
-        active.sort(compareBySort);
-        archived.sort(compareBySort);
-        return { active, archived };
-      };
-
-      const renderRows = (rows) => rows.map(u => `
-        <tr class="align-middle">
-          <td data-label="Avatar">
-            <img src="${escapeHtml(u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}')}" class="avatar-thumb" alt="Avatar">
-          </td>
-          <td data-label="Username">${escapeHtml(u.username)}</td>
-          <td data-label="Email">${escapeHtml(u.email)}</td>
-          <td data-label="Active Workouts">${u.active_count}</td>
-          <td data-label="Archived Workouts">${u.archived_count}</td>
-          <td data-label="Avg Cal">${u.avg_cal}</td>
-          <td data-label="Avg Dur">${u.avg_dur}</td>
-          <td data-label="Frequent Activity">${escapeHtml(u.freq_activity)}</td>
-          <td data-label="Actions">
-            <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
-              <i class="fa-solid fa-eye"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-warning btn-archive" data-user-id="${u.id}" title="Archive">
-              <i class="fa-solid fa-box-archive"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>`).join('') || `<tr><td colspan="9" class="text-center text-muted">No active users match current filters</td></tr>`;
-
-      const renderArchived = (rows) => rows.map(u => `
-        <tr class="align-middle">
-          <td data-label="Avatar">
-            <img src="${escapeHtml(u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}')}" class="avatar-thumb" alt="Avatar">
-          </td>
-          <td data-label="Username">${escapeHtml(u.username)}</td>
-          <td data-label="Email">${escapeHtml(u.email)}</td>
-          <td data-label="Actions">
-            <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
-              <i class="fa-solid fa-eye"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="${u.id}" title="Restore">
-              <i class="fa-solid fa-rotate-left"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>`).join('') || `<tr><td colspan="4" class="text-center text-muted">No archived users match current filters</td></tr>`;
-
-      const updateMeta = (activeCount, archivedCount) => {
-        if (activeCountBadge) activeCountBadge.textContent = activeCount;
-        if (archivedCountBadge) archivedCountBadge.textContent = archivedCount;
-        if (resultSummary) {
-          resultSummary.textContent = `Showing ${activeCount + archivedCount} users (${activeCount} active, ${archivedCount} archived)`;
-        }
-      };
-
-      const applyFiltersAndRender = () => {
-        const { active, archived } = getFilteredAndSorted();
-        if (usersTableBody) usersTableBody.innerHTML = renderRows(active);
-        if (archivedUsersTableBody) archivedUsersTableBody.innerHTML = renderArchived(archived);
-        if (activeSection) activeSection.classList.toggle('d-none', state.filters.status === 'archived');
-        if (archivedSection) archivedSection.classList.toggle('d-none', state.filters.status === 'active');
-        updateMeta(active.length, archived.length);
-        wireActions();
-      };
-
-      const wireActions = () => {
-        document.querySelectorAll('.btn-view').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = btn.dataset.userId;
-            window.location.href = `/admin/user/${id}`;
-          });
-        });
-        document.querySelectorAll('.btn-archive').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const id = btn.dataset.userId;
-            if (!confirm('Archive this user?')) return;
-            try {
-              await postAdmin(`/admin/users/${id}/archive`);
-              showToast('User archived successfully.');
-              loadAdminData();
-            } catch (err) {
-              showToast('Could not archive user.', 'danger');
-            }
-          });
-        });
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const id = btn.dataset.userId;
-            if (!confirm('Delete this user and all workouts?')) return;
-            try {
-              await postAdmin(`/admin/users/${id}/delete`);
-              showToast('User deleted permanently.', 'warning');
-              loadAdminData();
-            } catch (err) {
-              showToast('Could not delete user.', 'danger');
-            }
-          });
-        });
-        document.querySelectorAll('.btn-restore-user').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const id = btn.dataset.userId;
-            if (!confirm('Restore this user?')) return;
-            try {
-              await postAdmin(`/admin/users/${id}/restore`);
-              showToast('User restored successfully.');
-              loadAdminData();
-            } catch (err) {
-              showToast('Could not restore user.', 'danger');
-            }
-          });
-        });
-      };
-
-      let loadingAdminData = false;
-      const loadAdminData = async () => {
-        if (loadingAdminData) return;
-        loadingAdminData = true;
-        if (refreshBtn) refreshBtn.disabled = true;
-        try {
-          const res = await fetch('/admin/data', { cache: 'no-store' });
-          const data = await handleResponse(res);
-          const snap = data.today_snapshot || {};
-          document.getElementById('adminSnapActiveUsers').textContent = Number(snap.active_users || 0).toLocaleString();
-          document.getElementById('adminSnapWorkouts').textContent = Number(snap.workouts || 0).toLocaleString();
-          document.getElementById('adminSnapCalories').textContent = Number(snap.calories || 0).toLocaleString();
-          document.getElementById('adminSnapAvgCalories').textContent = Number(snap.avg_calories || 0).toLocaleString();
-          const heroUsers = document.getElementById('adminHeroUsers');
-          const heroWorkouts = document.getElementById('adminHeroWorkouts');
-          const heroAvgCalories = document.getElementById('adminHeroAvgCalories');
-          if (heroUsers) heroUsers.textContent = Number(data.total_users || 0).toLocaleString();
-          if (heroWorkouts) heroWorkouts.textContent = Number(data.total_workouts || 0).toLocaleString();
-          if (heroAvgCalories) heroAvgCalories.textContent = Number(data.avg_calories || 0).toLocaleString();
-          state.activeUsers = data.user_stats || [];
-          state.archivedUsers = data.archived_users || [];
-          applyFiltersAndRender();
-          const now = new Date();
-          if (lastSync) lastSync.textContent = `Last sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
-          announce('Admin data updated.');
-        } catch (err) {
-          showToast('Could not refresh admin dashboard data.', 'danger');
-        } finally {
-          if (refreshBtn) refreshBtn.disabled = false;
-          loadingAdminData = false;
-        }
-      };
-
-      let fallbackTimer = null;
-      const startFallbackPolling = () => {
-        if (fallbackTimer) return;
-        fallbackTimer = setInterval(() => {
-          loadAdminData().catch(() => {});
-        }, 15000);
-      };
-
-      if (window.EventSource) {
-        const es = new EventSource('/events');
-        es.onmessage = () => {
-          loadAdminData().catch(() => {});
-        };
-        es.onerror = () => {
-          startFallbackPolling();
-        };
-      } else {
-        startFallbackPolling();
-      }
-
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-          loadAdminData().catch(() => {});
-        });
-      }
-
-      if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-          state.filters = { query: '', status: 'all', sort: 'username_asc' };
-          if (searchInput) searchInput.value = '';
-          if (statusFilter) statusFilter.value = 'all';
-          if (sortSelect) sortSelect.value = 'username_asc';
-          applyFiltersAndRender();
-        });
-      }
-
-      if (searchInput) {
-        searchInput.addEventListener('input', () => {
-          state.filters.query = searchInput.value || '';
-          applyFiltersAndRender();
-        });
-      }
-
-      if (statusFilter) {
-        statusFilter.addEventListener('change', () => {
-          state.filters.status = statusFilter.value;
-          applyFiltersAndRender();
-        });
-      }
-
-      if (sortSelect) {
-        sortSelect.addEventListener('change', () => {
-          state.filters.sort = sortSelect.value;
-          applyFiltersAndRender();
-        });
-      }
-
-      loadAdminData();
-
-      document.querySelectorAll('#adminSidebar a[href^="#"]').forEach((link) => {
-        link.addEventListener('click', (event) => {
-          const target = document.querySelector(link.getAttribute('href'));
-          if (!target) return;
-          event.preventDefault();
-          const sidebarEl = document.getElementById('adminSidebar');
-          const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl) || new bootstrap.Offcanvas(sidebarEl);
-          sidebar.hide();
-          setTimeout(() => {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            history.replaceState(null, '', link.getAttribute('href'));
-          }, 220);
-        });
-      });
-    });
-  </script>
-</body>
-</html>
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
