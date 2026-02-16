@@ -49,14 +49,5 @@ Run security/role smoke tests:
 - Apply migrations: `python -m flask --app app db upgrade`
 - Runtime schema mutation is intentionally disabled; use migrations for schema changes.
 
-## Assessment Assets
-- Rubric evidence: `docs/ASSESSMENT_EVIDENCE.md`
-- LO mapping: `docs/LO_MAPPING.md`
-- Screencast script: `docs/SCREENCAST_RUNBOOK.md`
-- Screencast evidence checklist: `docs/SCREENCAST_EVIDENCE_PACK.md`
-- Technical rationale: `docs/TECHNICAL_REPORT_ADDENDUM.md`
-- Deployment guide: `docs/DEPLOY_PYTHONANYWHERE.md`
-
 ## Final Production Structure
-- Active app path only: `templates/`, `static/`, `app.py`, `config.py`, `migrations/`, `docs/`
-- Legacy duplicates were archived to: `archive/legacy_2026-02-13/`
+- Active app path only: `templates/`, `static/`, `app.py`, `config.py`, `migrations/`, `tests/`
