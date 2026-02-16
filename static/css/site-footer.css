@@ -4,7 +4,7 @@
     #0b1d2f;
   color: #d6deea;
   padding-top: 3rem;
-  font-family: "Poppins", "Segoe UI", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 .site-footer .container {
@@ -107,17 +107,53 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
   color: #f3f8ff;
   text-decoration: none;
   box-shadow: 0 10px 22px rgba(2, 10, 18, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.site-footer .footer-social a::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 28% 28%, rgba(255, 255, 255, 0.35), transparent 55%);
+  pointer-events: none;
 }
 
 .site-footer .footer-social a:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 24px rgba(2, 10, 18, 0.42);
+}
+
+.site-footer .footer-social .social-yt {
+  background: linear-gradient(140deg, #ff5959, #cb1d1d);
+  border-color: rgba(255, 89, 89, 0.5);
+}
+
+.site-footer .footer-social .social-ig {
+  background: linear-gradient(140deg, #f58529 0%, #dd2a7b 45%, #8134af 100%);
+  border-color: rgba(221, 42, 123, 0.42);
+}
+
+.site-footer .footer-social .social-in {
+  background: linear-gradient(140deg, #0a66c2, #004182);
+  border-color: rgba(10, 102, 194, 0.5);
+}
+
+.site-footer .footer-social .social-py {
+  background: linear-gradient(140deg, #3776ab 0%, #ffd43b 100%);
+  border-color: rgba(255, 212, 59, 0.52);
+}
+
+.site-footer .footer-social .social-fb {
+  background: linear-gradient(140deg, #1877f2, #0d4fb0);
+  border-color: rgba(24, 119, 242, 0.5);
 }
 
 .site-footer .footer-social .social-yt:hover {

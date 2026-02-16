@@ -670,11 +670,11 @@ def user_html():
 
 @app.route('/dashboard.html')
 def dashboard_html():
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('user_dashboard'))
 
 @app.route('/add_workout.html')
 def add_workout_html():
-    return redirect(url_for('add_workout'))
+    return redirect(url_for('user_dashboard'))
 
 # -------- REGISTER --------
 @app.route('/register', methods=['GET', 'POST'])
@@ -853,16 +853,14 @@ def dashboard():
     if session.get('role') != 'user':
         flash('Please log in as a user first.', 'warning')
         return redirect(url_for('login'))
-    user = db.session.get(User, session['user_id'])
-    return render_template('dashboard.html', user=user)
+    return redirect(url_for('user_dashboard'))
 
 @app.route('/add-workout')
 def add_workout():
     if session.get('role') != 'user':
         flash('Please log in as a user first.', 'warning')
         return redirect(url_for('login'))
-    user = db.session.get(User, session['user_id'])
-    return render_template('add_workout.html', user=user)
+    return redirect(url_for('user_dashboard'))
 
 @app.route('/admin/user/<int:user_id>')
 def admin_view_user(user_id):

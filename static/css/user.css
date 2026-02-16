@@ -27,7 +27,7 @@
   color: #fff;
 }
 
-.ft-user .navbar {
+.ft-user .navbar:not(.ft-nav) {
   position: sticky;
   top: 0;
   z-index: 1020;
@@ -37,7 +37,7 @@
   backdrop-filter: blur(10px);
 }
 
-.ft-user .navbar .container {
+.ft-user .navbar:not(.ft-nav) .container {
   max-width: 1220px;
   display: flex;
   align-items: center;
@@ -292,7 +292,7 @@ footer.footer-compact {
 }
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
-  .ft-user .navbar {
+  .ft-user .navbar:not(.ft-nav) {
     background: #1f2937 !important;
   }
 }
@@ -483,7 +483,7 @@ footer.footer-compact {
   padding-bottom: 1rem;
 }
 
-.ft-user .navbar {
+.ft-user .navbar:not(.ft-nav) {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(13, 39, 58, 0.92)) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 12px 28px rgba(2, 12, 22, 0.3);
@@ -613,50 +613,61 @@ footer.footer-compact {
 }
 
 .ft-user .profile-meta-tags i {
-  color: var(--u-cyan-500);
-}
-
-.ft-user .profile-meta-tags span:nth-child(1) i {
-  color: #16a34a;
-}
-
-.ft-user .profile-meta-tags span:nth-child(2) i {
-  color: #2563eb;
-}
-
-.ft-user .profile-meta-tags span:nth-child(3) i {
-  color: #d97706;
-}
-
-.ft-user .section-meta-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.72rem;
-  flex: 0 0 24px;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 6px 12px rgba(15, 23, 42, 0.2);
+}
+
+.ft-user .profile-meta-tags span:nth-child(1) i {
+  background: linear-gradient(145deg, #16a34a, #4ade80);
+}
+
+.ft-user .profile-meta-tags span:nth-child(2) i {
+  background: linear-gradient(145deg, #0ea5e9, #2563eb);
+}
+
+.ft-user .profile-meta-tags span:nth-child(3) i {
+  background: linear-gradient(145deg, #f59e0b, #f97316);
+}
+
+.ft-user .section-meta-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+  flex: 0 0 26px;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 7px 14px rgba(15, 23, 42, 0.2);
 }
 
 .ft-user .section-meta-icon.meta-performance {
-  color: #7c3aed;
-  background: rgba(124, 58, 237, 0.17);
+  background: linear-gradient(145deg, #7c3aed, #a855f7);
 }
 
 .ft-user .section-meta-icon.meta-progress {
-  color: #0891b2;
-  background: rgba(8, 145, 178, 0.18);
+  background: linear-gradient(145deg, #0891b2, #22b8cf);
 }
 
 .ft-user .section-meta-icon.meta-archive {
-  color: #d97706;
-  background: rgba(217, 119, 6, 0.18);
+  background: linear-gradient(145deg, #d97706, #f59e0b);
 }
 
 .ft-user .section-meta-icon.meta-workout {
-  color: #16a34a;
-  background: rgba(22, 163, 74, 0.18);
+  background: linear-gradient(145deg, #15803d, #22c55e);
 }
 
 .ft-user .stats-panel {

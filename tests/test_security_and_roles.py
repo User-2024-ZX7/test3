@@ -5,10 +5,19 @@ from datetime import date, timedelta
 import werkzeug
 from werkzeug.security import check_password_hash, generate_password_hash
 
-os.environ['DATABASE_URL'] = 'sqlite:///fittrack_test.db'
-os.environ['FLASK_DEBUG'] = '0'
-os.environ['SESSION_COOKIE_SECURE'] = '0'
-os.environ['SECRET_KEY'] = 'test-secret-key'
+TEST_DATABASE_URL = os.environ.get('TEST_DATABASE_URL')
+if not TEST_DATABASE_URL:
+    raise RuntimeError(
+        'TEST_DATABASE_URL is required for tests and must point to a dedicated MySQL test database '
+        '(mysql+pymysql://user:pass@host:3306/fittrack_test).'
+    )
+if not TEST_DATABASE_URL.startswith('mysql+pymysql://'):
+    raise RuntimeError('TEST_DATABASE_URL must use mysql+pymysql://')
+
+os.environ['DATABASE_URL'] = TEST_DATABASE_URL
+os.environ.setdefault('FLASK_DEBUG', '0')
+os.environ.setdefault('SESSION_COOKIE_SECURE', '0')
+os.environ.setdefault('SECRET_KEY', 'test-secret-key')
 
 import app as app_module  # noqa: E402
 

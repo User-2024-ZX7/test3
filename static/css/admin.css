@@ -1,5 +1,5 @@
-body {
-  font-family: "Poppins", "Segoe UI", sans-serif;
+.ft-admin {
+  font-family: "Manrope", "Segoe UI", sans-serif;
   background:
     radial-gradient(900px 420px at -10% -20%, rgba(30, 64, 175, 0.15), transparent 60%),
     radial-gradient(900px 420px at 110% -30%, rgba(14, 165, 233, 0.14), transparent 58%),
@@ -30,7 +30,7 @@ body {
   color: #fff;
 }
 
-.navbar {
+.ft-admin .navbar:not(.ft-nav) {
   position: sticky;
   top: 0;
   z-index: 1020;
@@ -40,7 +40,7 @@ body {
   backdrop-filter: blur(10px);
 }
 
-.container {
+.ft-admin .container {
   max-width: 1220px;
 }
 
@@ -299,7 +299,7 @@ footer.footer-compact {
 }
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
-  .navbar {
+  .ft-admin .navbar:not(.ft-nav) {
     background: #1f2937 !important;
   }
 }
@@ -466,7 +466,7 @@ footer.footer-compact {
     linear-gradient(180deg, #f4f7fb 0%, #f8fbff 100%);
 }
 
-.ft-admin .navbar {
+.ft-admin .navbar:not(.ft-nav) {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(13, 39, 58, 0.92)) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 12px 28px rgba(2, 12, 22, 0.3);
@@ -599,20 +599,28 @@ footer.footer-compact {
   color: var(--a-ink-900);
 }
 
-.ft-admin .active-users-section > h2::before {
-  content: "";
-  width: 10px;
-  height: 10px;
+.ft-admin .section-meta-icon {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #22c55e;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex: 0 0 30px;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 8px 16px rgba(15, 23, 42, 0.22);
 }
 
-.ft-admin .archived-users-section > h2::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--a-amber-500);
+.ft-admin .section-meta-icon.meta-users {
+  background: linear-gradient(145deg, #15803d, #22c55e);
+}
+
+.ft-admin .section-meta-icon.meta-archive {
+  background: linear-gradient(145deg, #d97706, #f59e0b);
 }
 
 .ft-admin .admin-table thead th {
