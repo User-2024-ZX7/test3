@@ -1,5 +1,5 @@
-body {
-  font-family: "Poppins", "Segoe UI", sans-serif;
+.ft-user {
+  font-family: "Manrope", "Segoe UI", sans-serif;
   background:
     radial-gradient(880px 420px at -8% -16%, rgba(30, 64, 175, 0.14), transparent 60%),
     radial-gradient(820px 380px at 112% -24%, rgba(14, 165, 233, 0.14), transparent 56%),
@@ -27,7 +27,7 @@ body {
   color: #fff;
 }
 
-.navbar {
+.ft-user .navbar {
   position: sticky;
   top: 0;
   z-index: 1020;
@@ -37,7 +37,7 @@ body {
   backdrop-filter: blur(10px);
 }
 
-.navbar .container {
+.ft-user .navbar .container {
   max-width: 1220px;
   display: flex;
   align-items: center;
@@ -259,36 +259,31 @@ label.btn[aria-disabled="true"] {
   }
 }
 
-.navbar .admin-nav {
+.ft-user .navbar .nav-actions {
   margin-left: auto;
 }
 
-.navbar .admin-nav .nav-item {
-  display: flex;
-  align-items: center;
-}
-
-.navbar .admin-nav form {
+.ft-user .navbar .nav-actions form {
   margin: 0;
 }
 
-.navbar .admin-nav .btn,
-.navbar .admin-nav form .btn {
+.ft-user .navbar .nav-actions .btn,
+.ft-user .navbar .nav-actions form .btn {
   white-space: nowrap;
   min-height: 38px;
 }
 
 @media (max-width: 991.98px) {
-  .navbar > .container {
+  .ft-user .navbar > .container {
     justify-content: space-between;
   }
 
-  .mobile-menu-btn {
+  .ft-user .mobile-menu-btn {
     margin-left: auto;
   }
 }
 
-footer {
+footer.footer-compact {
   color: #64748b !important;
 }
 
@@ -297,7 +292,7 @@ footer {
 }
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
-  .navbar {
+  .ft-user .navbar {
     background: #1f2937 !important;
   }
 }
@@ -396,7 +391,7 @@ footer {
 @media (max-width: 576px) {
   .workout-card .table {
     font-size: 0.86rem;
-    min-width: 560px;
+    min-width: 0;
   }
 
   .workout-card .table thead th,
@@ -423,11 +418,11 @@ footer {
     padding-inline: 0.65rem;
   }
 
-  .navbar-brand .ft-word {
+  .ft-user .navbar-brand .ft-word {
     font-size: 0.96rem;
   }
 
-  .navbar-brand .ft-word-tag {
+  .ft-user .navbar-brand .ft-word-tag {
     font-size: 0.62rem;
     padding: 0.12rem 0.34rem;
   }
@@ -437,7 +432,7 @@ footer {
   }
 
   .workout-card .table {
-    min-width: 520px;
+    min-width: 0;
   }
 }
 
@@ -452,7 +447,7 @@ footer {
   }
 
   .workout-card .table {
-    min-width: 500px;
+    min-width: 0;
     font-size: 0.8rem;
   }
 }
@@ -494,7 +489,7 @@ footer {
   box-shadow: 0 12px 28px rgba(2, 12, 22, 0.3);
 }
 
-.ft-user .navbar .admin-nav .btn {
+.ft-user .navbar .nav-actions .btn {
   min-height: 38px;
 }
 
@@ -619,6 +614,49 @@ footer {
 
 .ft-user .profile-meta-tags i {
   color: var(--u-cyan-500);
+}
+
+.ft-user .profile-meta-tags span:nth-child(1) i {
+  color: #16a34a;
+}
+
+.ft-user .profile-meta-tags span:nth-child(2) i {
+  color: #2563eb;
+}
+
+.ft-user .profile-meta-tags span:nth-child(3) i {
+  color: #d97706;
+}
+
+.ft-user .section-meta-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  flex: 0 0 24px;
+}
+
+.ft-user .section-meta-icon.meta-performance {
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.17);
+}
+
+.ft-user .section-meta-icon.meta-progress {
+  color: #0891b2;
+  background: rgba(8, 145, 178, 0.18);
+}
+
+.ft-user .section-meta-icon.meta-archive {
+  color: #d97706;
+  background: rgba(217, 119, 6, 0.18);
+}
+
+.ft-user .section-meta-icon.meta-workout {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.18);
 }
 
 .ft-user .stats-panel {

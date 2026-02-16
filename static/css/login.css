@@ -1,86 +1,77 @@
-body {
+.auth-page {
   font-family: "Poppins", sans-serif;
   background: linear-gradient(135deg, #007bff, #00c6ff);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
-.login-container {
-  background: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  max-width: 450px;
+.auth-shell {
   width: 100%;
-  padding: 2.5rem;
-  position: relative;
-  animation: fadeInUp 0.8s ease;
+  max-width: 420px;
 }
 
-.login-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
+.auth-card,
+.login-container {
+  width: 100%;
+  background: #fff;
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
 }
 
-.login-header h2 {
-  font-weight: 700;
-  color: #333;
-}
-
-.login-header p {
-  color: #666;
-}
-
-.form-control:focus {
+.auth-card .form-control:focus,
+.login-container .form-control:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
+}
+
+.login-container .brand-pill {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.42rem 0.85rem;
 }
 
 .btn-login {
-  background: linear-gradient(135deg, #007bff, #00c6ff);
-  border: none;
-  color: #fff;
-  transition: 0.3s;
   width: 100%;
-  font-weight: 600;
-  padding: 0.75rem;
+  border: none;
   border-radius: 0.5rem;
+  padding: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #007bff, #00c6ff);
 }
 
-.btn-login:hover {
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-  transform: translateY(-2px);
+.btn-login:hover,
+.btn-login:focus {
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(0, 123, 255, 0.28);
+  transform: translateY(-1px);
 }
 
-.back-link {
-  display: inline-block;
-  margin-top: 1rem;
-  color: #007bff;
-  font-weight: 500;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-
-#login-feedback {
-  text-align: center;
-  margin-top: 1rem;
-  font-weight: 500;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+.auth-page footer {
+  width: 100%;
+  margin-top: 0.65rem;
 }
 
 @media (max-width: 576px) {
-  body { padding: 1rem; }
-  .login-container {
-    padding: 1.5rem;
-    border-radius: 1rem;
+  .auth-page {
+    padding: 0.8rem;
   }
-  .login-header h2 { font-size: 1.4rem; }
+
+  .auth-card,
+  .login-container {
+    border-radius: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 

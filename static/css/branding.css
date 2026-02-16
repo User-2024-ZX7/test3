@@ -14,9 +14,9 @@
 }
 
 .ft-word {
-  font-family: "Poppins", "Segoe UI", sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.015em;
   line-height: 1;
   color: #ffffff;
   text-transform: none;
@@ -24,12 +24,12 @@
 }
 
 .ft-word-tag {
-  font-family: "Poppins", "Segoe UI", sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.16rem 0.45rem;
+  padding: 0.16rem 0.48rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.16);
   color: #ffffff;

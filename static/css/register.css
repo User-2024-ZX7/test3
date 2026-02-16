@@ -1,21 +1,26 @@
-body {
+.auth-page {
   font-family: "Poppins", sans-serif;
   background: linear-gradient(135deg, #007bff, #00c6ff);
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
+.auth-shell {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-card,
 .register-container {
   background: #fff;
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  max-width: 450px;
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
   width: 100%;
-  padding: 2.5rem;
-  position: relative;
-  animation: fadeInUp 0.8s ease;
 }
 
 .register-header {
@@ -32,9 +37,10 @@ body {
   color: #666;
 }
 
-.form-control:focus {
+.auth-card .form-control:focus,
+.register-container .form-control:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.2);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
 }
 
 .btn-register {
@@ -70,16 +76,20 @@ body {
   font-weight: 500;
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+.auth-page footer {
+  width: 100%;
+  margin-top: 0.65rem;
 }
 
 @media (max-width: 576px) {
-  body { padding: 1rem; }
-  .register-container {
-    padding: 1.5rem;
-    border-radius: 1rem;
-  }
+  .auth-page { padding: 0.8rem; }
   .register-header h2 { font-size: 1.4rem; }
+  .register-container { border-radius: 0.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
