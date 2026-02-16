@@ -740,4 +740,34 @@ document.addEventListener('DOMContentLoaded', () => {
             updateStats(agg);
         }, 120);
     });
+
+    document.querySelectorAll('#appSidebar a[href^="#"]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            const href = link.getAttribute('href');
+            const target = href ? document.querySelector(href) : null;
+            if (!target) return;
+            event.preventDefault();
+            const sidebarEl = document.getElementById('appSidebar');
+            const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl) || new bootstrap.Offcanvas(sidebarEl);
+            sidebar.hide();
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                history.replaceState(null, '', href);
+            }, 220);
+        });
+    });
+
+    document.querySelectorAll('#appSidebar a[href]:not([href^="#"])').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+            event.preventDefault();
+            const sidebarEl = document.getElementById('appSidebar');
+            const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl) || new bootstrap.Offcanvas(sidebarEl);
+            sidebar.hide();
+            setTimeout(() => {
+                window.location.href = href;
+            }, 180);
+        });
+    });
 });
