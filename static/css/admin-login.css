@@ -1,39 +1,50 @@
-body { background: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #0f2236, #1a8aa5);
+  font-family: "Poppins", sans-serif;
+}
+
+.auth-shell {
+  width: 100%;
+  max-width: 420px;
+}
 
 .admin-card {
   width: 100%;
-  max-width: 380px;
+  border-radius: 1rem;
+  border: 0;
   background: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  perspective: 1200px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .admin-card:hover {
-  transform: rotateY(5deg) rotateX(3deg) translateZ(10px);
-  box-shadow: 0 1.5rem 2rem rgba(0,0,0,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2);
 }
 
-input:focus, button:focus {
-  outline: none;
-  box-shadow: 0 0 10px #0d6efd, 0 0 20px rgba(13,110,253,0.4);
-}
-
-input.form-control-lg, button.btn-lg {
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-}
-
-button.btn-primary:hover {
-  box-shadow: 0 0 15px rgba(13,110,253,0.6);
+.admin-card .form-control:focus {
+  border-color: #1a8aa5;
+  box-shadow: 0 0 0 0.2rem rgba(26, 138, 165, 0.18);
 }
 
 @media (max-width: 576px) {
+  .auth-page {
+    padding: 0.8rem;
+  }
+
   .admin-card {
-    max-width: 92%;
+    border-radius: 0.9rem;
   }
-  .admin-card .form-control,
-  .admin-card .btn {
-    font-size: 0.95rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
   }
-  body { padding: 1rem; }
 }

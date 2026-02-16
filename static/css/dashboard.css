@@ -13,6 +13,20 @@
 html,body{height:100%;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto; background:var(--bg); color:#111; margin:0}
 .app-shell{display:flex; flex-direction:column; min-height:100vh}
 
+.skip-link{
+  position:absolute;
+  left:12px;
+  top:-48px;
+  z-index:1200;
+  background:#111827;
+  color:#fff;
+  padding:0.5rem 0.8rem;
+  border-radius:0.5rem;
+  text-decoration:none;
+  transition:top .2s ease;
+}
+.skip-link:focus{ top:12px; color:#fff; }
+
 /* Sidebar */
 .sidebar{
   display:none;
@@ -20,7 +34,8 @@ html,body{height:100%;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Rob
   color:#fff; padding:24px; flex-direction:column; gap:18px;
   box-shadow: 4px 0 30px rgba(2,6,23,0.12);
 }
-.brand h1{font-size:1.25rem;margin:0}
+.brand-row{display:flex;align-items:center;gap:10px}
+.brand-title{font-size:1.25rem;margin:0;font-weight:700}
 .brand .muted{opacity:0.85;font-size:0.8rem;color:#cbd5e1}
 .nav-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .nav-link{
@@ -64,6 +79,11 @@ html,body{height:100%;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Rob
 .table thead th{border-bottom:1px solid #eef2f6}
 .table tbody tr:hover{background:#fbfcff}
 .input-group .form-control{min-width:0}
+.main-offset{margin-top:calc(var(--ft-nav-shell-h, 74px) + 1rem)}
+.goal-progress-track{height:10px}
+.goal-progress-bar{width:0%}
+.history-search{width:min(340px,100%)}
+img, canvas { max-width: 100%; }
 
 /* Responsive */
 @media (min-width: 1000px){
@@ -78,6 +98,18 @@ html,body{height:100%;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Rob
   .topbar{flex-direction:column; gap:12px; align-items:flex-start}
   .top-actions{width:100%; flex-wrap:wrap; gap:8px}
   .top-actions .input-group{width:100%}
+  .history .card-header{
+    flex-direction:column;
+    align-items:stretch;
+    gap:0.7rem;
+  }
+  .history-search{width:100%}
+  .history{overflow:auto}
+  .history .table{min-width:560px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
 }
 
 /* Minor animation */
