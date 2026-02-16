@@ -11,7 +11,7 @@
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- AOS -->
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
@@ -31,36 +31,30 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- ================= NAVBAR ================= -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm ft-nav is-solid" aria-label="User navigation">
-  <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top ft-nav is-solid" aria-label="User navigation">
+  <div class="container nav-shell">
     <a class="navbar-brand brand-pill ft-brand" href="{{ url_for('index') }}">
       <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" class="ft-logo" alt="FitTrack Logo">
       <span class="ft-word">FitTrack</span>
       <span class="ft-word-tag">User</span>
     </a>
 
-    <ul class="navbar-nav ms-auto align-items-center gap-2 admin-nav d-none d-lg-flex">
-      <li class="nav-item">
-        <a class="btn home-btn-global" href="{{ url_for('index') }}">
-          <i class="fa-solid fa-house"></i> Home
-        </a>
-      </li>
+    <div class="nav-actions d-none d-lg-flex">
+      <a class="btn home-btn-global" href="{{ url_for('index') }}">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
       {% if admin_view %}
-      <li class="nav-item">
-        <a class="btn admin-btn-global" href="{{ url_for('admin_dashboard') }}">
-          <i class="fa-solid fa-crown me-1"></i> Admin
-        </a>
-      </li>
+      <a class="btn admin-btn-global" href="{{ url_for('admin_dashboard') }}">
+        <i class="fa-solid fa-crown me-1"></i> Admin
+      </a>
       {% endif %}
-      <li class="nav-item">
-        <form method="POST" action="{{ url_for('logout') }}" class="d-inline">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button type="submit" class="btn logout-btn-global">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
-          </button>
-        </form>
-      </li>
-    </ul>
+      <form method="POST" action="{{ url_for('logout') }}" class="d-inline m-0">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn logout-btn-global">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </form>
+    </div>
 
     <button class="btn mobile-menu-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#userSidebar" aria-controls="userSidebar" aria-label="Open user menu">
       <i class="fa-solid fa-bars"></i>
