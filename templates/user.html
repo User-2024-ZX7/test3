@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-buttons.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/nav-adaptive.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/site-footer.css') }}">
 </head>
 
 <body class="bg-light ft-user" data-admin-view="{{ '1' if admin_view else '0' }}" data-view-user-id="{{ view_user_id or '' }}">
@@ -180,7 +181,7 @@
     <div class="col-xl-3 col-lg-4" data-aos="fade-up">
 
       <div class="card p-3 stat-card stats-panel shadow-sm">
-        <h6 class="mb-3 fw-semibold panel-title"><i class="fa-solid fa-chart-column me-2"></i>Performance Summary</h6>
+        <h6 class="mb-3 fw-semibold panel-title"><i class="fa-solid fa-chart-column me-2 section-meta-icon meta-performance"></i>Performance Summary</h6>
 
         <!-- Avg Calories -->
         <div class="small-muted">Average Calories / Day</div>
@@ -240,7 +241,7 @@
       <div class="card p-3 mt-3 archive-card shadow-sm"
            data-aos="fade-up" data-aos-delay="80">
 
-        <h6 class="mb-2 fw-semibold panel-title"><i class="fa-solid fa-box-archive me-2"></i>Archived Workouts <span id="archiveCountUser" class="badge text-bg-secondary ms-1">0</span></h6>
+        <h6 class="mb-2 fw-semibold panel-title"><i class="fa-solid fa-box-archive me-2 section-meta-icon meta-archive"></i>Archived Workouts <span id="archiveCountUser" class="badge text-bg-secondary ms-1">0</span></h6>
 
         <ul id="archiveListUser"
             class="list-group list-group-flush small archive-list-scroll"></ul>
@@ -262,7 +263,7 @@
 
       <div class="card p-3 charts-card shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
-          <h6 class="mb-0 fw-semibold panel-title"><i class="fa-solid fa-chart-line me-2"></i>Weekly Progress</h6>
+          <h6 class="mb-0 fw-semibold panel-title"><i class="fa-solid fa-chart-line me-2 section-meta-icon meta-progress"></i>Weekly Progress</h6>
           <span class="small-muted">Last 7 days</span>
         </div>
 
@@ -286,7 +287,7 @@
   <section id="workouts-section" class="card p-3 workout-card shadow-sm"
        data-aos="fade-up" data-aos-delay="160">
     <div class="d-flex justify-content-between align-items-center mb-3 workout-head">
-      <h6 class="mb-0 fw-semibold panel-title"><i class="fa-solid fa-dumbbell me-2"></i>Workout Manager</h6>
+      <h6 class="mb-0 fw-semibold panel-title"><i class="fa-solid fa-dumbbell me-2 section-meta-icon meta-workout"></i>Workout Manager</h6>
       <span class="small-muted">Create, filter, archive</span>
     </div>
 
@@ -361,9 +362,7 @@
   </section>
 </main>
 
-<footer class="py-4 text-center small text-muted">
-  © 2025 FitTrack — User Dashboard
-</footer>
+{% include '_shared_footer.html' %}
 <div id="userLiveRegion" class="visually-hidden" aria-live="polite"></div>
 <div class="toast-container position-fixed top-0 end-0 p-3 user-toast-container" id="userToastContainer"></div>
 

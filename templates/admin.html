@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-buttons.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/nav-adaptive.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site-footer.css') }}">
 </head>
 <body class="bg-light ft-admin">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -146,31 +147,6 @@
     </article>
   </section>
 
-  <!-- Hero / Stats Cards -->
-  <section class="container my-5 admin-kpis" aria-labelledby="admin-kpis-title">
-    <h2 id="admin-kpis-title" class="visually-hidden">Admin KPI Cards</h2>
-      <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card stat-card shadow feature-card p-3">
-          <h5>Total Users</h5>
-          <h2 id="totalUsers">{{ total_users }}</h2>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card stat-card shadow feature-card p-3">
-          <h5>Total Workouts</h5>
-          <h2 id="totalWorkouts">{{ total_workouts }}</h2>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card stat-card shadow feature-card p-3">
-          <h5>Average Calories</h5>
-          <h2 id="avgCalories">{{ avg_calories }}</h2>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="container my-4 admin-controls" aria-labelledby="admin-controls-title">
     <div class="admin-controls-card">
       <h2 id="admin-controls-title" class="h5 mb-3">Admin Controls</h2>
@@ -215,7 +191,11 @@
 
   <!-- Active Users Table -->
   <section class="container my-5 active-users-section" id="activeUsersSection" aria-labelledby="active-users-title">
-    <h2 id="active-users-title" class="h4 mb-3">Active Users <span id="activeUserCountBadge" class="badge text-bg-primary ms-1">{{ user_stats|length }}</span></h2>
+    <h2 id="active-users-title" class="h4 mb-3">
+      <i class="fa-solid fa-users section-meta-icon meta-users"></i>
+      Active Users
+      <span id="activeUserCountBadge" class="badge text-bg-primary ms-1">{{ user_stats|length }}</span>
+    </h2>
     <div class="table-responsive">
       <table class="table table-hover shadow-sm bg-white rounded admin-table admin-table-active">
         <caption class="visually-hidden">List of active users with workout metrics and admin actions</caption>
@@ -269,10 +249,14 @@
 
   <!-- Archived Users Table -->
   <section class="container my-5 archived-users-section" id="archivedUsersSection" aria-labelledby="archived-users-title">
-    <h2 id="archived-users-title" class="h4 mb-3">Archived Users <span id="archivedUserCountBadge" class="badge text-bg-secondary ms-1">{{ archived_users|length }}</span></h2>
+    <h2 id="archived-users-title" class="h4 mb-3">
+      <i class="fa-solid fa-box-archive section-meta-icon meta-archive"></i>
+      Archived Users
+      <span id="archivedUserCountBadge" class="badge text-bg-secondary ms-1">{{ archived_users|length }}</span>
+    </h2>
     <div class="table-responsive">
       <table class="table table-hover shadow-sm bg-white rounded admin-table admin-table-archived">
-        <caption class="visually-hidden">List of archived users with restore and delete actions</caption>
+        <caption class="visually-hidden">List of archived users with preview, restore, and delete actions</caption>
         <thead class="table-dark">
           <tr>
             <th>Avatar</th>
@@ -290,6 +274,9 @@
               <td data-label="Username">{{ u.username }}</td>
               <td data-label="Email">{{ u.email }}</td>
               <td data-label="Actions">
+                <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="{{ u.id }}" title="View">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
                 <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="{{ u.id }}" title="Restore">
                   <i class="fa-solid fa-rotate-left"></i>
                 </button>
@@ -310,9 +297,7 @@
 
   </main>
 
-  <footer class="text-center py-3 text-muted small">
-    © 2026 FitTrack Admin Panel
-  </footer>
+  {% include '_shared_footer.html' %}
   <div id="adminLiveRegion" class="visually-hidden" aria-live="polite"></div>
   <div class="toast-container position-fixed top-0 end-0 p-3 admin-toast-container" id="adminToastContainer"></div>
 
@@ -512,6 +497,9 @@
           <td data-label="Username">${escapeHtml(u.username)}</td>
           <td data-label="Email">${escapeHtml(u.email)}</td>
           <td data-label="Actions">
+            <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
+              <i class="fa-solid fa-eye"></i>
+            </button>
             <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="${u.id}" title="Restore">
               <i class="fa-solid fa-rotate-left"></i>
             </button>
@@ -600,9 +588,6 @@
           document.getElementById('adminSnapWorkouts').textContent = Number(snap.workouts || 0).toLocaleString();
           document.getElementById('adminSnapCalories').textContent = Number(snap.calories || 0).toLocaleString();
           document.getElementById('adminSnapAvgCalories').textContent = Number(snap.avg_calories || 0).toLocaleString();
-          document.getElementById('totalUsers').textContent = data.total_users;
-          document.getElementById('totalWorkouts').textContent = data.total_workouts;
-          document.getElementById('avgCalories').textContent = data.avg_calories;
           const heroUsers = document.getElementById('adminHeroUsers');
           const heroWorkouts = document.getElementById('adminHeroWorkouts');
           const heroAvgCalories = document.getElementById('adminHeroAvgCalories');
