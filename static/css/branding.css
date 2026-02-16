@@ -1,0 +1,111 @@
+.ft-logo,
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.ft-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ft-word {
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #ffffff;
+  text-transform: none;
+  text-shadow: 0 1px 2px rgba(2, 10, 18, 0.5);
+}
+
+.ft-word-tag {
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.16rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.brand-pill {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.brand-pill:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+.mobile-menu-btn {
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-btn:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+}
+
+.home-sidebar {
+  background: linear-gradient(180deg, #0a1a2b 0%, #112a3f 100%);
+  color: #e8f1fb;
+  width: min(86vw, 340px) !important;
+}
+
+.home-sidebar .offcanvas-header {
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+
+.home-sidebar .offcanvas-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.sidebar-nav {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.sidebar-nav .nav-link {
+  color: #e6eef8 !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  text-decoration: none;
+}
+
+.sidebar-nav .nav-link:hover,
+.sidebar-nav .nav-link.active {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.sidebar-actions .btn {
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.25);
+}

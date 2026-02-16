@@ -1,48 +1,901 @@
-/* MOBILE-FIRST */
 body {
-    font-family: 'Helvetica', sans-serif;
-    background: #f8f9fa;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(880px 420px at -8% -16%, rgba(30, 64, 175, 0.14), transparent 60%),
+    radial-gradient(820px 380px at 112% -24%, rgba(14, 165, 233, 0.14), transparent 56%),
+    #f3f6fb;
+  color: #0f172a;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 1200;
+  background: #111827;
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 12px;
+  color: #fff;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background: rgba(15, 23, 42, 0.9) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.navbar .container {
+  max-width: 1220px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-main {
+  width: 100%;
+  max-width: 1240px;
+  padding-top: 1.4rem;
+  padding-inline: clamp(0.7rem, 2vw, 1.2rem);
+}
+
+.small-muted {
+  color: #64748b;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+  background: #fff;
+  min-width: 0;
+}
+
+.profile-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(14, 165, 233, 0.24);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 252, 255, 0.98));
+}
+
+.profile-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
 }
 
 .profile-avatar {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border: 3px solid #fff;
-    background: #fff;
+  width: 108px;
+  height: 108px;
+  object-fit: cover;
+  object-position: center;
+  border: 3px solid #fff;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
 }
 
-.card-hover:hover {
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+.stats-panel {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
 }
 
-.stat-card {
-    background: #fff;
-    border-radius: 0.5rem;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+.stats-panel h6 {
+  font-weight: 700;
 }
 
-/* UI polish */
-.card {
-    border: 0;
-    border-radius: 1rem;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+.stats-panel .h5 {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  overflow-wrap: anywhere;
 }
 
-.table thead th {
-    font-weight: 600;
+.progress-goal {
+  height: 10px;
+  border-radius: 999px;
+  background: #e8eef7;
+}
+
+.progress-goal .progress-bar {
+  width: 0%;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.archive-card {
+  background: linear-gradient(180deg, #ffffff, #fbfcff);
+}
+
+.archive-list-scroll {
+  max-height: 190px;
+  overflow: auto;
+}
+
+.archive-list-scroll .list-group-item {
+  border-color: #edf1f7;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.archive-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.archive-item-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.charts-card {
+  background: linear-gradient(180deg, #ffffff, #fbfcff);
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: clamp(220px, 34vh, 320px);
+}
+
+.chart-canvas-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.workout-card .table {
+  margin-bottom: 0;
+  min-width: 620px;
+}
+
+.workout-card .table thead th {
+  background: #f8fafc;
+  border-bottom: 1px solid #e6edf7;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #334155;
+  padding: 0.85rem 0.75rem;
+}
+
+.workout-card .table tbody td {
+  border-color: #edf1f7;
+  padding: 0.84rem 0.75rem;
+}
+
+.workout-card .table tbody tr:hover {
+  background: #f7faff;
+}
+
+.workout-controls {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.9rem;
+  padding: 0.8rem 0.85rem;
+  background: #f8fbff;
+}
+
+.workout-controls .form-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  font-weight: 700;
+}
+
+.workout-controls .form-control,
+.workout-controls .form-select {
+  border-radius: 0.6rem;
+}
+
+.workout-controls-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.user-workout-table td[data-label="Actions"] {
+  white-space: nowrap;
+}
+
+#userName,
+#freqActUser,
+#longestUser,
+#mostCalUser {
+  overflow-wrap: anywhere;
 }
 
 .btn {
-    border-radius: 0.75rem;
+  border-radius: 0.7rem;
+  white-space: normal;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-.progress {
-    height: 8px;
+.btn-sm {
+  border-radius: 0.55rem;
 }
 
-/* Responsive tweaks */
+label.btn.disabled,
+label.btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #1a8aa5;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
+  }
+
+  .stats-panel .btn-outline-primary:hover,
+  .stats-panel .btn-outline-success:hover,
+  .stats-panel .btn-outline-dark:hover {
+    filter: brightness(1.04);
+  }
+}
+
+.navbar .admin-nav {
+  margin-left: auto;
+}
+
+.navbar .admin-nav .nav-item {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .admin-nav form {
+  margin: 0;
+}
+
+.navbar .admin-nav .btn,
+.navbar .admin-nav form .btn {
+  white-space: nowrap;
+  min-height: 38px;
+}
+
+@media (max-width: 991.98px) {
+  .navbar > .container {
+    justify-content: space-between;
+  }
+
+  .mobile-menu-btn {
+    margin-left: auto;
+  }
+}
+
+footer {
+  color: #64748b !important;
+}
+
+.user-toast-container .toast {
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.24);
+}
+
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  .navbar {
+    background: #1f2937 !important;
+  }
+}
+
 @media (max-width: 767px) {
-    .flex-md-row { flex-direction: column !important; }
-    .text-md-start { text-align: center !important; }
+  .user-main {
+    padding-top: 1rem;
+  }
+
+  .flex-md-row {
+    flex-direction: column !important;
+  }
+
+  .text-md-start {
+    text-align: center !important;
+  }
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .stats-panel,
+  .archive-card,
+  .charts-card,
+  .workout-card {
+    padding: 0.95rem !important;
+  }
+
+  .workout-controls {
+    padding: 0.7rem 0.72rem;
+  }
+
+  .user-workout-table thead {
+    display: none;
+  }
+
+  .workout-card .table {
+    min-width: 0;
+  }
+
+  .user-workout-table,
+  .user-workout-table tbody,
+  .user-workout-table tr,
+  .user-workout-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .user-workout-table tbody tr {
+    margin: 0.7rem 0.15rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    background: #fff;
+  }
+
+  .user-workout-table tbody td {
+    border: none;
+    border-bottom: 1px dashed #e5e7eb;
+    padding: 0.62rem 0.72rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .user-workout-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .user-workout-table tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 44%;
+    max-width: 44%;
+    color: #475569;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+
+  .user-workout-table tbody td[data-label="Actions"] {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .user-workout-table tbody td[data-label="Actions"]::before {
+    content: "Actions";
+    flex: 1 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .workout-card .table {
+    font-size: 0.86rem;
+    min-width: 560px;
+  }
+
+  .workout-card .table thead th,
+  .workout-card .table tbody td {
+    padding: 0.7rem 0.55rem;
+  }
+
+  .chart-canvas-wrap {
+    height: 210px;
+  }
+
+  .workout-controls-meta {
+    font-size: 0.78rem;
+  }
+
+  .profile-avatar {
+    width: 88px;
+    height: 88px;
+  }
+}
+
+@media (max-width: 430px) {
+  .user-main {
+    padding-inline: 0.65rem;
+  }
+
+  .navbar-brand .ft-word {
+    font-size: 0.96rem;
+  }
+
+  .navbar-brand .ft-word-tag {
+    font-size: 0.62rem;
+    padding: 0.12rem 0.34rem;
+  }
+
+  .stats-panel .h5 {
+    font-size: 0.98rem;
+  }
+
+  .workout-card .table {
+    min-width: 520px;
+  }
+}
+
+@media (max-width: 360px) {
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .chart-canvas-wrap {
+    height: 188px;
+  }
+
+  .workout-card .table {
+    min-width: 500px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===================== SENIOR DESIGN LAYER ===================== */
+.ft-user {
+  --u-ink-900: #0f172a;
+  --u-ink-700: #334155;
+  --u-ink-500: #64748b;
+  --u-cyan-500: #0891b2;
+  --u-cyan-400: #22b8cf;
+  --u-blue-500: #2563eb;
+  --u-amber-400: #fbbf24;
+  --u-border: rgba(15, 23, 42, 0.1);
+  --u-shadow-soft: 0 14px 30px rgba(15, 23, 42, 0.1);
+  --u-shadow-float: 0 24px 52px rgba(15, 23, 42, 0.16);
+  background:
+    radial-gradient(980px 440px at -10% -16%, rgba(8, 145, 178, 0.14), transparent 62%),
+    radial-gradient(860px 420px at 110% -20%, rgba(37, 99, 235, 0.14), transparent 58%),
+    linear-gradient(180deg, #f4f7fb 0%, #f8fbff 100%);
+}
+
+.ft-user .user-main {
+  padding-top: 1.2rem;
+  padding-bottom: 1rem;
+}
+
+.ft-user .navbar {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(13, 39, 58, 0.92)) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 28px rgba(2, 12, 22, 0.3);
+}
+
+.ft-user .navbar .admin-nav .btn {
+  min-height: 38px;
+}
+
+.ft-user .user-main .alert {
+  border: none;
+  border-radius: 0.85rem;
+  box-shadow: var(--u-shadow-soft);
+}
+
+.ft-user .card {
+  border-radius: 1.1rem;
+  border: 1px solid var(--u-border);
+  box-shadow: var(--u-shadow-soft);
+}
+
+.ft-user .panel-title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--u-ink-900);
+}
+
+.ft-user .small-muted {
+  color: var(--u-ink-500);
+}
+
+.ft-user .user-hero {
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background:
+    radial-gradient(680px 280px at 10% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(135deg, #0f3a57 0%, #0b5579 48%, #0a6b93 100%);
+  color: #f0f9ff;
+  padding: 1.1rem 1.2rem;
+  box-shadow: var(--u-shadow-float);
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.ft-user .user-hero-kicker {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #c7edf6;
+  font-weight: 700;
+}
+
+.ft-user .user-hero-title {
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.ft-user .user-hero-sub {
+  color: #d8edf7;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 60ch;
+}
+
+.ft-user .user-hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.ft-user .hero-metric-card {
+  border-radius: 0.9rem;
+  padding: 0.65rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  text-align: center;
+}
+
+.ft-user .hero-metric-label {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d2ecf6;
+  margin-bottom: 0.22rem;
+  font-weight: 700;
+}
+
+.ft-user .hero-metric-card strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.ft-user .profile-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 251, 255, 0.97));
+  border: 1px solid rgba(8, 145, 178, 0.22);
+}
+
+.ft-user .profile-avatar-col {
+  min-width: 136px;
+}
+
+.ft-user .profile-meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+}
+
+.ft-user .profile-meta-tags span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  padding: 0.28rem 0.62rem;
+  font-size: 0.74rem;
+  color: #33506f;
+  background: #ffffff;
+  font-weight: 600;
+}
+
+.ft-user .profile-meta-tags i {
+  color: var(--u-cyan-500);
+}
+
+.ft-user .stats-panel {
+  background: linear-gradient(180deg, #ffffff, #f6faff);
+}
+
+.ft-user .stats-panel .h5 {
+  font-size: 1.2rem;
+}
+
+.ft-user .archive-card {
+  background: linear-gradient(180deg, #ffffff, #f9fbff);
+}
+
+.ft-user .archive-card .badge {
+  font-size: 0.68rem;
+  vertical-align: middle;
+}
+
+.ft-user .charts-card {
+  background: linear-gradient(180deg, #ffffff, #f9fcff);
+}
+
+.ft-user .chart-canvas-wrap {
+  border-radius: 0.95rem;
+  border: 1px solid #e4ebf5;
+  background: #ffffff;
+  padding: 0.35rem;
+}
+
+.ft-user .workout-card {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.ft-user .workout-head {
+  padding-bottom: 0.65rem;
+  border-bottom: 1px dashed #d9e2ef;
+}
+
+.ft-user .workout-controls {
+  border: 1px solid #dbe4f2;
+  background: linear-gradient(180deg, #fbfdff, #f4f8ff);
+}
+
+.ft-user .workout-controls .form-control,
+.ft-user .workout-controls .form-select,
+.ft-user #addFormUser .form-control {
+  border-color: #cdd7e5;
+}
+
+.ft-user .workout-controls .form-control:focus,
+.ft-user .workout-controls .form-select:focus,
+.ft-user #addFormUser .form-control:focus,
+.ft-user #addFormUser .form-control:focus-visible {
+  border-color: var(--u-blue-500);
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.16);
+}
+
+.ft-user #addFormUser .btn-primary {
+  border: none;
+  background: linear-gradient(135deg, #1f72ff, #0d5ad8);
+  font-weight: 700;
+}
+
+.ft-user #addFormUser .btn-primary:hover {
+  background: linear-gradient(135deg, #2169df, #0d4fbf);
+}
+
+.ft-user .user-workout-table thead th {
+  background: #0f172a;
+  color: #e7eef8;
+  border-bottom: 0;
+}
+
+.ft-user .user-workout-table tbody tr {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ft-user .user-workout-table tbody tr:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+.ft-user .user-workout-table td[data-label="Actions"] .btn {
+  margin-left: 0.22rem;
+}
+
+.ft-user .progress-goal {
+  height: 11px;
+  background: #e2e8f2;
+}
+
+.ft-user .progress-goal .progress-bar {
+  font-size: 0.69rem;
+  font-weight: 700;
+}
+
+.ft-user .progress-goal .progress-bar.goal-over {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.ft-user .btn {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.ft-user .user-toast-container .toast {
+  border-radius: 0.8rem;
+  box-shadow: var(--u-shadow-float);
+}
+
+.ft-user .home-sidebar .sidebar-nav .nav-link {
+  border-radius: 0.72rem;
+}
+
+.ft-user .home-sidebar .sidebar-nav .nav-link:hover,
+.ft-user .home-sidebar .sidebar-nav .nav-link.active {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+@media (max-width: 1200px) {
+  .ft-user .user-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ft-user .user-hero-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 991.98px) {
+  .ft-user .user-hero {
+    padding: 1rem;
+    gap: 0.9rem;
+  }
+
+  .ft-user .user-hero-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .ft-user .user-hero-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .ft-user .hero-metric-card {
+    text-align: left;
+    padding: 0.62rem 0.72rem;
+  }
+
+  .ft-user .profile-meta-tags {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .ft-user .user-hero-title {
+    font-size: 1.25rem;
+  }
+
+  .ft-user .user-hero-sub {
+    font-size: 0.9rem;
+  }
+
+  .ft-user .workout-controls-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.28rem;
+  }
+
+  .ft-user .user-workout-table tbody tr {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* ===================== RESPONSIVE HARDENING ===================== */
+.user-main,
+.stats-panel,
+.archive-card,
+.charts-card,
+.workout-card,
+.chart-canvas-wrap,
+.table-responsive {
+  min-width: 0;
+}
+
+.user-workout-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.user-workout-table th,
+.user-workout-table td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.workout-card .table {
+  min-width: 0 !important;
+}
+
+img,
+canvas {
+  max-width: 100%;
+}
+
+@media (min-width: 992px) {
+  .ft-user .stats-panel,
+  .ft-user .archive-card {
+    position: static !important;
+    top: auto !important;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .user-workout-table thead {
+    display: none;
+  }
+
+  .user-workout-table,
+  .user-workout-table tbody,
+  .user-workout-table tr,
+  .user-workout-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .user-workout-table tbody tr {
+    margin: 0.62rem 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    background: #fff;
+  }
+
+  .user-workout-table tbody td {
+    border: none;
+    border-bottom: 1px dashed #e5e7eb;
+    padding: 0.62rem 0.72rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .user-workout-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .user-workout-table tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 44%;
+    max-width: 44%;
+    color: #475569;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+
+  .user-workout-table tbody td[data-label="Actions"] {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .user-workout-table tbody td[data-label="Actions"]::before {
+    content: "Actions";
+    flex: 1 0 100%;
+    max-width: 100%;
+  }
+
+  .chart-canvas-wrap {
+    height: clamp(210px, 40vh, 300px);
+  }
 }
