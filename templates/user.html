@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FitTrack — User Dashboard</title>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- Bootstrap 5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- AOS -->
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
@@ -19,69 +21,166 @@
 
 <!-- Custom CSS -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-buttons.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/nav-adaptive.css') }}">
 </head>
 
-<body class="bg-light" data-admin-view="{{ '1' if admin_view else '0' }}" data-view-user-id="{{ view_user_id or '' }}">
+<body class="bg-light ft-user" data-admin-view="{{ '1' if admin_view else '0' }}" data-view-user-id="{{ view_user_id or '' }}">
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- ================= NAVBAR ================= -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm ft-nav is-solid" aria-label="User navigation">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
-      <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" width="40" height="40"
-           class="me-2 rounded-circle shadow-sm" alt="FitTrack Logo">
-      <span class="fw-bold fs-5">FitTrack</span>
+    <a class="navbar-brand brand-pill ft-brand" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" class="ft-logo" alt="FitTrack Logo">
+      <span class="ft-word">FitTrack</span>
+      <span class="ft-word-tag">User</span>
     </a>
 
-    <div class="ms-auto d-flex align-items-center gap-2">
+    <ul class="navbar-nav ms-auto align-items-center gap-2 admin-nav d-none d-lg-flex">
+      <li class="nav-item">
+        <a class="btn home-btn-global" href="{{ url_for('index') }}">
+          <i class="fa-solid fa-house"></i> Home
+        </a>
+      </li>
       {% if admin_view %}
-      <a class="btn btn-sm btn-warning" href="{{ url_for('admin_dashboard') }}">
-        <i class="fa-solid fa-crown me-1"></i> Admin
-      </a>
+      <li class="nav-item">
+        <a class="btn admin-btn-global" href="{{ url_for('admin_dashboard') }}">
+          <i class="fa-solid fa-crown me-1"></i> Admin
+        </a>
+      </li>
       {% endif %}
-      <a class="btn btn-sm btn-outline-light btn-home" href="{{ url_for('index') }}">
-        <i class="fa-solid fa-house me-1"></i> Home
-      </a>
-      <a class="btn btn-sm btn-danger" href="{{ url_for('logout') }}">
-        <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
-      </a>
-    </div>
+      <li class="nav-item">
+        <form method="POST" action="{{ url_for('logout') }}" class="d-inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn logout-btn-global">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </form>
+      </li>
+    </ul>
+
+    <button class="btn mobile-menu-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#userSidebar" aria-controls="userSidebar" aria-label="Open user menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
   </div>
 </nav>
 
-<main class="container mb-5">
+<div class="offcanvas offcanvas-end home-sidebar d-lg-none" tabindex="-1" id="userSidebar" aria-labelledby="userSidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title brand-pill ft-brand" id="userSidebarLabel">
+      <img class="ft-logo" src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo">
+      <span class="ft-word">FitTrack</span>
+      <span class="ft-word-tag">User</span>
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <nav class="sidebar-nav" aria-label="User quick navigation">
+      <a class="nav-link" href="#profile-section" data-bs-dismiss="offcanvas">Profile</a>
+      <a class="nav-link" href="#stats-section" data-bs-dismiss="offcanvas">Stats</a>
+      <a class="nav-link" href="#charts-section" data-bs-dismiss="offcanvas">Charts</a>
+      <a class="nav-link" href="#workouts-section" data-bs-dismiss="offcanvas">Workouts</a>
+    </nav>
+    <div class="sidebar-actions mt-auto pt-3">
+      <a class="btn home-btn-global mb-2 w-100" href="{{ url_for('index') }}">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
+      {% if admin_view %}
+      <a class="btn admin-btn-global mb-2 w-100" href="{{ url_for('admin_dashboard') }}">
+        <i class="fa-solid fa-crown"></i> Admin
+      </a>
+      {% endif %}
+      <form method="POST" action="{{ url_for('logout') }}" class="w-100">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn logout-btn-global w-100">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<main id="main-content" class="container user-main mb-5">
+  <header class="visually-hidden">
+    <h1>User Dashboard</h1>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <section class="mb-3" aria-label="System messages">
+        {% for category, message in messages %}
+          {% set c = category %}
+          {% if c not in ['primary','secondary','success','danger','warning','info','light','dark'] %}
+            {% set c = 'info' %}
+          {% endif %}
+          <div class="alert alert-{{ c }} mb-2" role="alert">{{ message }}</div>
+        {% endfor %}
+      </section>
+    {% endif %}
+  {% endwith %}
+
+  <section class="user-hero mb-4" aria-label="Dashboard summary" data-aos="fade-up">
+    <div class="user-hero-content">
+      <p class="user-hero-kicker mb-2">FitTrack Dashboard</p>
+      <h2 class="user-hero-title mb-2">Train with clarity, not guesswork.</h2>
+      <p class="user-hero-sub mb-0">Log workouts quickly, track weekly momentum, and manage your archive from one focused workspace.</p>
+    </div>
+    <div class="user-hero-metrics">
+      <div class="hero-metric-card">
+        <span class="hero-metric-label">Total Workouts</span>
+        <strong id="heroTotalWorkoutsUser">0</strong>
+      </div>
+      <div class="hero-metric-card">
+        <span class="hero-metric-label">Total Calories</span>
+        <strong><span id="heroTotalCaloriesUser">0</span> kcal</strong>
+      </div>
+      <div class="hero-metric-card">
+        <span class="hero-metric-label">Weekly Goal</span>
+        <strong id="heroGoalUser">0%</strong>
+      </div>
+    </div>
+  </section>
 
   <!-- ================= PROFILE ================= -->
-  <div class="card p-3 mb-4 d-flex flex-column flex-md-row align-items-center gap-3 shadow-sm"
+  <section id="profile-section" class="card profile-card p-3 mb-4 d-flex flex-column flex-md-row align-items-center gap-3 shadow-sm"
        data-aos="fade-up">
 
-    <div class="text-center">
+    <div class="text-center profile-avatar-col">
       <img id="userAvatar"
            class="profile-avatar rounded-circle shadow-sm mb-2"
            src="{{ user.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}"
            data-user-id="{{ user.id }}"
            width="100" height="100"
            alt="User Avatar">
+      <label for="avatarInput" class="form-label small mb-1">Profile Photo</label>
       <input type="file"
              id="avatarInput"
              accept="image/*"
              class="form-control form-control-sm">
     </div>
 
-    <div class="flex-grow-1 text-center text-md-start">
+    <div class="flex-grow-1 text-center text-md-start profile-meta-col">
       <h5 id="userName" class="fw-bold mb-1">{{ user.username }}</h5>
       <p class="small-muted mb-0">
         Track workouts, view progress, and manage your fitness history.
       </p>
+      <div class="profile-meta-tags mt-3">
+        <span><i class="fa-solid fa-shield-halved"></i> Secure account</span>
+        <span><i class="fa-solid fa-database"></i> MySQL synced</span>
+        <span><i class="fa-solid fa-chart-line"></i> Live progress</span>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="row g-4 mb-3">
+  <section id="stats-section" class="row g-4 mb-3">
 
     <!-- ================= STATS ================= -->
     <div class="col-xl-3 col-lg-4" data-aos="fade-up">
 
-      <div class="card p-3 stat-card shadow-sm">
-        <h6 class="mb-3 fw-semibold">Your Stats</h6>
+      <div class="card p-3 stat-card stats-panel shadow-sm">
+        <h6 class="mb-3 fw-semibold panel-title"><i class="fa-solid fa-chart-column me-2"></i>Performance Summary</h6>
 
         <!-- Avg Calories -->
         <div class="small-muted">Average Calories / Day</div>
@@ -109,13 +208,13 @@
         <hr>
 
         <div class="small-muted">Calories Goal (weekly)</div>
-        <div class="progress mb-2">
-          <div id="calBarUser" class="progress-bar bg-success" style="width:0%">0%</div>
+        <div class="progress mb-2 progress-goal">
+          <div id="calBarUser" class="progress-bar bg-success">0%</div>
         </div>
 
         <div class="small-muted">Workout Goal (weekly)</div>
-        <div class="progress mb-2">
-          <div id="workBarUser" class="progress-bar bg-info" style="width:0%">0%</div>
+        <div class="progress mb-2 progress-goal">
+          <div id="workBarUser" class="progress-bar bg-info">0%</div>
         </div>
 
         <div class="d-grid gap-2 mt-3">
@@ -138,14 +237,13 @@
       </div>
 
       <!-- ================= ARCHIVED ================= -->
-      <div class="card p-3 mt-3 shadow-sm"
+      <div class="card p-3 mt-3 archive-card shadow-sm"
            data-aos="fade-up" data-aos-delay="80">
 
-        <h6 class="mb-2 fw-semibold">Archived Workouts</h6>
+        <h6 class="mb-2 fw-semibold panel-title"><i class="fa-solid fa-box-archive me-2"></i>Archived Workouts <span id="archiveCountUser" class="badge text-bg-secondary ms-1">0</span></h6>
 
         <ul id="archiveListUser"
-            class="list-group list-group-flush small"
-            style="max-height:180px;overflow:auto"></ul>
+            class="list-group list-group-flush small archive-list-scroll"></ul>
 
         <div class="d-flex gap-2 mt-2">
           <button id="clearArchiveUser" class="btn btn-sm btn-danger">
@@ -159,46 +257,54 @@
     </div>
 
     <!-- ================= CHARTS ================= -->
-    <div class="col-xl-9 col-lg-8"
+    <div id="charts-section" class="col-xl-9 col-lg-8"
          data-aos="fade-up" data-aos-delay="120">
 
-      <div class="card p-3 shadow-sm">
+      <div class="card p-3 charts-card shadow-sm">
         <div class="d-flex justify-content-between align-items-center">
-          <h6 class="mb-0 fw-semibold">Weekly Progress</h6>
+          <h6 class="mb-0 fw-semibold panel-title"><i class="fa-solid fa-chart-line me-2"></i>Weekly Progress</h6>
           <span class="small-muted">Last 7 days</span>
         </div>
 
         <div class="row g-3 mt-3">
           <div class="col-lg-6">
-            <canvas id="caloriesChartUser" height="180"></canvas>
+            <div class="chart-canvas-wrap">
+              <canvas id="caloriesChartUser"></canvas>
+            </div>
           </div>
           <div class="col-lg-6">
-            <canvas id="durationChartUser" height="180"></canvas>
+            <div class="chart-canvas-wrap">
+              <canvas id="durationChartUser"></canvas>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- ================= ADD WORKOUT ================= -->
-  <div class="card p-3 shadow-sm"
+  <section id="workouts-section" class="card p-3 workout-card shadow-sm"
        data-aos="fade-up" data-aos-delay="160">
+    <div class="d-flex justify-content-between align-items-center mb-3 workout-head">
+      <h6 class="mb-0 fw-semibold panel-title"><i class="fa-solid fa-dumbbell me-2"></i>Workout Manager</h6>
+      <span class="small-muted">Create, filter, archive</span>
+    </div>
 
     <form id="addFormUser" class="row g-2 align-items-end">
       <div class="col-md-3">
-        <label class="form-label small">Activity</label>
+        <label for="activityUser" class="form-label small">Activity</label>
         <input id="activityUser" class="form-control" required>
       </div>
       <div class="col-md-2">
-        <label class="form-label small">Duration (min)</label>
+        <label for="durationUser" class="form-label small">Duration (min)</label>
         <input id="durationUser" type="number" min="0" class="form-control" required>
       </div>
       <div class="col-md-2">
-        <label class="form-label small">Calories</label>
+        <label for="caloriesUser" class="form-label small">Calories</label>
         <input id="caloriesUser" type="number" min="0" class="form-control" required>
       </div>
       <div class="col-md-2">
-        <label class="form-label small">Date</label>
+        <label for="dateUser" class="form-label small">Date</label>
         <input id="dateUser" type="date" class="form-control" required>
       </div>
       <div class="col-md-3 d-grid">
@@ -208,8 +314,38 @@
       </div>
     </form>
 
+    <div class="workout-controls mt-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-lg-5">
+          <label for="workoutSearchUser" class="form-label small mb-1">Search Workouts</label>
+          <input id="workoutSearchUser" type="search" class="form-control form-control-sm" placeholder="Activity or date">
+        </div>
+        <div class="col-6 col-lg-3">
+          <label for="workoutSortUser" class="form-label small mb-1">Sort by</label>
+          <select id="workoutSortUser" class="form-select form-select-sm">
+            <option value="date_desc">Date (newest first)</option>
+            <option value="date_asc">Date (oldest first)</option>
+            <option value="calories_desc">Calories (high-low)</option>
+            <option value="duration_desc">Duration (long-short)</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-2">
+          <label for="workoutMinCaloriesUser" class="form-label small mb-1">Min Calories</label>
+          <input id="workoutMinCaloriesUser" type="number" min="0" class="form-control form-control-sm" placeholder="0">
+        </div>
+        <div class="col-12 col-lg-2 d-grid">
+          <button id="workoutResetUser" class="btn btn-outline-secondary btn-sm" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="workout-controls-meta mt-2">
+        <span id="workoutResultSummaryUser">Showing all active workouts</span>
+        <span id="workoutLastSyncUser">Last sync: --</span>
+      </div>
+    </div>
+
     <div class="table-responsive mt-3">
-      <table class="table table-sm align-middle">
+      <table class="table table-sm align-middle user-workout-table">
+        <caption class="visually-hidden">Workout list with actions to archive or delete entries</caption>
         <thead class="table-light small">
           <tr>
             <th>Date</th>
@@ -222,16 +358,35 @@
         <tbody id="tableBodyUser" class="small"></tbody>
       </table>
     </div>
-  </div>
+  </section>
 </main>
 
 <footer class="py-4 text-center small text-muted">
   © 2025 FitTrack — User Dashboard
 </footer>
+<div id="userLiveRegion" class="visually-hidden" aria-live="polite"></div>
+<div class="toast-container position-fixed top-0 end-0 p-3 user-toast-container" id="userToastContainer"></div>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/nav-adaptive.js') }}"></script>
 <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+<script nonce="{{ csp_nonce() }}">
+  document.querySelectorAll('#userSidebar a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      const sidebarEl = document.getElementById('userSidebar');
+      const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl) || new bootstrap.Offcanvas(sidebarEl);
+      sidebar.hide();
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', link.getAttribute('href'));
+      }, 220);
+    });
+  });
+</script>
 
 </body>
 </html>

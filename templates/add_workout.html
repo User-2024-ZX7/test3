@@ -17,12 +17,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-buttons.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nav-adaptive.css') }}">
 </head>
 
 <body class="bg-light">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top" aria-label="Dashboard navigation">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top ft-nav is-solid" aria-label="Dashboard navigation">
     <div class="container">
       <a class="navbar-brand fw-bold fs-4 ft-brand" href="{{ url_for('index') }}">
         <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" class="ft-logo me-2" alt="FitTrack Logo">
@@ -150,6 +151,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/nav-adaptive.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>

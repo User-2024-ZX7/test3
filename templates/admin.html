@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Admin Panel | FitTrack</title>
 
   <!-- Bootstrap -->
@@ -11,47 +12,158 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
   <!-- AOS -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-buttons.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/branding.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nav-adaptive.css') }}">
 </head>
-<body class="bg-light">
+<body class="bg-light ft-admin">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm ft-nav is-solid" aria-label="Admin navigation">
     <div class="container">
-      <a class="navbar-brand" href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack" class="me-2" style="height:40px;">
-        FitTrack Admin
+      <a class="navbar-brand brand-pill ft-brand" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack" class="ft-logo">
+        <span class="ft-word">FitTrack</span>
+        <span class="ft-word-tag">Admin</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
-        <span class="navbar-toggler-icon"></span>
+      <button class="btn mobile-menu-btn d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Open admin menu">
+        <i class="fa-solid fa-bars"></i>
       </button>
-      <div class="collapse navbar-collapse" id="adminNav">
-        <ul class="navbar-nav ms-auto align-items-center gap-2">
-          <li class="nav-item"><a class="btn btn-sm btn-outline-light btn-home" href="{{ url_for('index') }}">Home</a></li>
-          <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
-        </ul>
-      </div>
+      <ul class="navbar-nav ms-auto align-items-center gap-2 admin-nav d-none d-lg-flex">
+        <li class="nav-item"><a class="btn home-btn-global" href="{{ url_for('index') }}"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li class="nav-item">
+          <form method="POST" action="{{ url_for('logout') }}" class="d-inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn logout-btn-global"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+          </form>
+        </li>
+      </ul>
     </div>
   </nav>
 
+  <div class="offcanvas offcanvas-end home-sidebar d-lg-none" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title brand-pill ft-brand" id="adminSidebarLabel">
+        <img class="ft-logo" src="{{ url_for('static', filename='images/FitTrack.jpg') }}" alt="FitTrack Logo">
+        <span class="ft-word">FitTrack</span>
+        <span class="ft-word-tag">Admin</span>
+      </h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <nav class="sidebar-nav" aria-label="Admin quick navigation">
+        <a class="nav-link" href="#admin-overview" data-bs-dismiss="offcanvas">Overview</a>
+        <a class="nav-link" href="#active-users-title" data-bs-dismiss="offcanvas">Active Users</a>
+        <a class="nav-link" href="#archived-users-title" data-bs-dismiss="offcanvas">Archived Users</a>
+      </nav>
+      <div class="sidebar-actions mt-auto pt-3">
+        <a class="btn home-btn-global mb-2 w-100" href="{{ url_for('index') }}">
+          <i class="fa-solid fa-house"></i> Home
+        </a>
+        <form method="POST" action="{{ url_for('logout') }}" class="w-100">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn logout-btn-global w-100">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <main id="main-content" class="admin-main">
+  <header id="admin-overview" class="container my-4">
+    <h1 class="h3 mb-1">Admin Dashboard</h1>
+    <p class="text-muted mb-0">Monitor users, workouts, and account lifecycle actions.</p>
+  </header>
+
+  <section class="container admin-hero mb-4" aria-label="Admin command center">
+    <article class="admin-hero-shell">
+      <div class="admin-hero-content">
+        <p class="admin-hero-kicker mb-2">FitTrack Control Center</p>
+        <h2 class="admin-hero-title mb-2">Operate with precision and full visibility.</h2>
+        <p class="admin-hero-sub mb-0">Track user lifecycle changes in real time, spot trends quickly, and handle moderation actions with reliable safeguards.</p>
+      </div>
+      <div class="admin-hero-metrics">
+        <div class="admin-hero-metric">
+          <span>Total active users</span>
+          <strong id="adminHeroUsers">{{ total_users }}</strong>
+        </div>
+        <div class="admin-hero-metric">
+          <span>Total workouts</span>
+          <strong id="adminHeroWorkouts">{{ total_workouts }}</strong>
+        </div>
+        <div class="admin-hero-metric">
+          <span>Avg calories</span>
+          <strong id="adminHeroAvgCalories">{{ avg_calories }}</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <section class="container mb-3" aria-label="System messages">
+        {% for category, message in messages %}
+          {% set c = category %}
+          {% if c not in ['primary','secondary','success','danger','warning','info','light','dark'] %}
+            {% set c = 'info' %}
+          {% endif %}
+          <div class="alert alert-{{ c }} mb-2" role="alert">{{ message }}</div>
+        {% endfor %}
+      </section>
+    {% endif %}
+  {% endwith %}
+
+  <section class="container my-4 admin-snapshot" aria-labelledby="admin-snapshot-title">
+    <article class="admin-snapshot-card shadow-sm">
+      <div class="admin-snapshot-head">
+        <h2 id="admin-snapshot-title" class="h5 mb-0">Today’s Snapshot (All Users)</h2>
+        <span class="admin-live-pill"><span class="admin-live-dot"></span>Live</span>
+      </div>
+      <p class="admin-snapshot-date mb-0">{{ today_snapshot.date_iso }}</p>
+      <div class="admin-snapshot-grid mt-3">
+        <div class="snapshot-kpi">
+          <span class="snapshot-label">Active users today</span>
+          <strong id="adminSnapActiveUsers">{{ today_snapshot.active_users }}</strong>
+        </div>
+        <div class="snapshot-kpi">
+          <span class="snapshot-label">Workouts today</span>
+          <strong id="adminSnapWorkouts">{{ today_snapshot.workouts }}</strong>
+        </div>
+        <div class="snapshot-kpi">
+          <span class="snapshot-label">Calories today</span>
+          <strong><span id="adminSnapCalories">{{ today_snapshot.calories }}</span> kcal</strong>
+        </div>
+        <div class="snapshot-kpi">
+          <span class="snapshot-label">Avg calories/workout</span>
+          <strong><span id="adminSnapAvgCalories">{{ today_snapshot.avg_calories }}</span> kcal</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+
   <!-- Hero / Stats Cards -->
-  <section class="container my-5">
-    <div class="row g-4">
+  <section class="container my-5 admin-kpis" aria-labelledby="admin-kpis-title">
+    <h2 id="admin-kpis-title" class="visually-hidden">Admin KPI Cards</h2>
+      <div class="row g-4">
       <div class="col-md-4">
-        <div class="card stat-card shadow feature-card p-3" data-aos="fade-up">
+        <div class="card stat-card shadow feature-card p-3">
           <h5>Total Users</h5>
           <h2 id="totalUsers">{{ total_users }}</h2>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card stat-card shadow feature-card p-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="card stat-card shadow feature-card p-3">
           <h5>Total Workouts</h5>
           <h2 id="totalWorkouts">{{ total_workouts }}</h2>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card stat-card shadow feature-card p-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="card stat-card shadow feature-card p-3">
           <h5>Average Calories</h5>
           <h2 id="avgCalories">{{ avg_calories }}</h2>
         </div>
@@ -59,11 +171,54 @@
     </div>
   </section>
 
+  <section class="container my-4 admin-controls" aria-labelledby="admin-controls-title">
+    <div class="admin-controls-card">
+      <h2 id="admin-controls-title" class="h5 mb-3">Admin Controls</h2>
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-lg-4">
+          <label for="adminSearch" class="form-label mb-1">Search users</label>
+          <input type="search" id="adminSearch" class="form-control" placeholder="Username, email, or activity">
+        </div>
+        <div class="col-6 col-lg-3">
+          <label for="adminStatusFilter" class="form-label mb-1">Show</label>
+          <select id="adminStatusFilter" class="form-select">
+            <option value="all">All users</option>
+            <option value="active">Active only</option>
+            <option value="archived">Archived only</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-3">
+          <label for="adminSort" class="form-label mb-1">Sort by</label>
+          <select id="adminSort" class="form-select">
+            <option value="username_asc">Username (A-Z)</option>
+            <option value="username_desc">Username (Z-A)</option>
+            <option value="active_desc">Active workouts (high-low)</option>
+            <option value="avg_cal_desc">Avg calories (high-low)</option>
+            <option value="archived_desc">Archived workouts (high-low)</option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-2 d-grid d-lg-flex gap-2">
+          <button class="btn btn-dark flex-fill" id="adminRefreshBtn" type="button">
+            <i class="fa-solid fa-rotate"></i> Refresh
+          </button>
+          <button class="btn btn-outline-secondary flex-fill" id="adminResetBtn" type="button">
+            Reset
+          </button>
+        </div>
+      </div>
+      <div class="admin-controls-meta mt-3">
+        <span id="adminResultSummary">Showing all users</span>
+        <span id="adminLastSync">Last sync: --</span>
+      </div>
+    </div>
+  </section>
+
   <!-- Active Users Table -->
-  <section class="container my-5">
-    <h3 class="mb-3">Active Users</h3>
+  <section class="container my-5 active-users-section" id="activeUsersSection" aria-labelledby="active-users-title">
+    <h2 id="active-users-title" class="h4 mb-3">Active Users <span id="activeUserCountBadge" class="badge text-bg-primary ms-1">{{ user_stats|length }}</span></h2>
     <div class="table-responsive">
-      <table class="table table-hover shadow-sm bg-white rounded">
+      <table class="table table-hover shadow-sm bg-white rounded admin-table admin-table-active">
+        <caption class="visually-hidden">List of active users with workout metrics and admin actions</caption>
         <thead class="table-dark">
           <tr>
             <th>Avatar</th>
@@ -80,17 +235,17 @@
         <tbody id="usersTableBody">
           {% for item in user_stats %}
             <tr class="align-middle">
-              <td>
-                <img src="{{ item.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}" width="40" class="rounded-circle" alt="Avatar">
+              <td data-label="Avatar">
+                <img src="{{ item.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}" class="avatar-thumb" alt="Avatar">
               </td>
-              <td>{{ item.user.username }}</td>
-              <td>{{ item.user.email }}</td>
-              <td>{{ item.active_count }}</td>
-              <td>{{ item.archived_count }}</td>
-              <td>{{ item.avg_cal }}</td>
-              <td>{{ item.avg_dur }}</td>
-              <td>{{ item.freq_activity }}</td>
-              <td>
+              <td data-label="Username">{{ item.user.username }}</td>
+              <td data-label="Email">{{ item.user.email }}</td>
+              <td data-label="Active Workouts">{{ item.active_count }}</td>
+              <td data-label="Archived Workouts">{{ item.archived_count }}</td>
+              <td data-label="Avg Cal">{{ item.avg_cal }}</td>
+              <td data-label="Avg Dur">{{ item.avg_dur }}</td>
+              <td data-label="Frequent Activity">{{ item.freq_activity }}</td>
+              <td data-label="Actions">
                 <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="{{ item.user.id }}" title="View">
                   <i class="fa-solid fa-eye"></i>
                 </button>
@@ -113,10 +268,11 @@
   </section>
 
   <!-- Archived Users Table -->
-  <section class="container my-5">
-    <h3 class="mb-3">Archived Users</h3>
+  <section class="container my-5 archived-users-section" id="archivedUsersSection" aria-labelledby="archived-users-title">
+    <h2 id="archived-users-title" class="h4 mb-3">Archived Users <span id="archivedUserCountBadge" class="badge text-bg-secondary ms-1">{{ archived_users|length }}</span></h2>
     <div class="table-responsive">
-      <table class="table table-hover shadow-sm bg-white rounded">
+      <table class="table table-hover shadow-sm bg-white rounded admin-table admin-table-archived">
+        <caption class="visually-hidden">List of archived users with restore and delete actions</caption>
         <thead class="table-dark">
           <tr>
             <th>Avatar</th>
@@ -128,12 +284,12 @@
         <tbody id="archivedUsersTableBody">
           {% for u in archived_users %}
             <tr class="align-middle">
-              <td>
-                <img src="{{ u.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}" width="40" class="rounded-circle" alt="Avatar">
+              <td data-label="Avatar">
+                <img src="{{ u.avatar_url or url_for('static', filename='images/FitTrack.jpg') }}" class="avatar-thumb" alt="Avatar">
               </td>
-              <td>{{ u.username }}</td>
-              <td>{{ u.email }}</td>
-              <td>
+              <td data-label="Username">{{ u.username }}</td>
+              <td data-label="Email">{{ u.email }}</td>
+              <td data-label="Actions">
                 <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="{{ u.id }}" title="Restore">
                   <i class="fa-solid fa-rotate-left"></i>
                 </button>
@@ -152,9 +308,13 @@
     </div>
   </section>
 
-  
+  </main>
 
- 
+  <footer class="text-center py-3 text-muted small">
+    © 2026 FitTrack Admin Panel
+  </footer>
+  <div id="adminLiveRegion" class="visually-hidden" aria-live="polite"></div>
+  <div class="toast-container position-fixed top-0 end-0 p-3 admin-toast-container" id="adminToastContainer"></div>
 
   <!-- User Modal (Read-Only) -->
   <div class="modal fade" id="userModal" tabindex="-1">
@@ -166,7 +326,7 @@
         </div>
         <div class="modal-body">
           <div class="text-center mb-3">
-            <img id="modalAvatar" src="" class="rounded-circle shadow-sm" width="100">
+            <img id="modalAvatar" src="" class="avatar-modal shadow-sm" alt="Avatar">
             <p id="modalEmail" class="mt-2"></p>
           </div>
           <div class="table-responsive">
@@ -191,24 +351,147 @@
 
   <!-- JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/nav-adaptive.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.3/dist/vanilla-tilt.min.js"></script>
-  <script>
+  <script nonce="{{ csp_nonce() }}">
     document.addEventListener('DOMContentLoaded', () => {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      const usersTableBody = document.getElementById('usersTableBody');
+      const archivedUsersTableBody = document.getElementById('archivedUsersTableBody');
+      const activeSection = document.getElementById('activeUsersSection');
+      const archivedSection = document.getElementById('archivedUsersSection');
+      const activeCountBadge = document.getElementById('activeUserCountBadge');
+      const archivedCountBadge = document.getElementById('archivedUserCountBadge');
+      const resultSummary = document.getElementById('adminResultSummary');
+      const lastSync = document.getElementById('adminLastSync');
+      const liveRegion = document.getElementById('adminLiveRegion');
+      const refreshBtn = document.getElementById('adminRefreshBtn');
+      const resetBtn = document.getElementById('adminResetBtn');
+      const searchInput = document.getElementById('adminSearch');
+      const statusFilter = document.getElementById('adminStatusFilter');
+      const sortSelect = document.getElementById('adminSort');
+      const toastContainer = document.getElementById('adminToastContainer');
+
+      const state = {
+        activeUsers: [],
+        archivedUsers: [],
+        filters: {
+          query: '',
+          status: 'all',
+          sort: 'username_asc',
+        },
+      };
+
+      const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, s => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]
+      ));
+      const handleResponse = async (res) => {
+        let payload = null;
+        try { payload = await res.json(); } catch { payload = null; }
+        if (res.ok) return payload || {};
+        const code = payload?.error || `http_${res.status}`;
+        if (code === 'csrf_token_invalid') {
+          alert('Security token expired. The page will reload.');
+          window.location.reload();
+          throw new Error(code);
+        }
+        if (res.status === 401 || code === 'unauthorized') {
+          window.location.href = '/admin-login';
+          throw new Error(code);
+        }
+        throw new Error(code);
+      };
+      const postAdmin = async (url) => {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', 'X-CSRFToken': csrfToken }
+        });
+        return handleResponse(res);
+      };
+
+      const showToast = (message, type = 'success') => {
+        if (!toastContainer) return;
+        const tone = type === 'danger' ? 'danger' : (type === 'warning' ? 'warning' : 'success');
+        const wrapper = document.createElement('div');
+        wrapper.className = `toast align-items-center text-bg-${tone} border-0`;
+        wrapper.setAttribute('role', 'status');
+        wrapper.setAttribute('aria-live', 'polite');
+        wrapper.setAttribute('aria-atomic', 'true');
+        wrapper.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">${escapeHtml(message)}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>`;
+        toastContainer.appendChild(wrapper);
+        const toast = new bootstrap.Toast(wrapper, { delay: 2200 });
+        wrapper.addEventListener('hidden.bs.toast', () => wrapper.remove());
+        toast.show();
+      };
+
+      const announce = (message) => {
+        if (!liveRegion) return;
+        liveRegion.textContent = message;
+      };
+
+      const toNumber = (value) => Number(value || 0);
+
+      const getFilteredAndSorted = () => {
+        const query = state.filters.query.trim().toLowerCase();
+        const status = state.filters.status;
+        const sort = state.filters.sort;
+
+        const matchUser = (u) => {
+          if (!query) return true;
+          const haystack = [
+            u.username || '',
+            u.email || '',
+            u.freq_activity || '',
+          ].join(' ').toLowerCase();
+          return haystack.includes(query);
+        };
+
+        let active = state.activeUsers.filter(matchUser);
+        let archived = state.archivedUsers.filter(matchUser);
+
+        if (status === 'active') archived = [];
+        if (status === 'archived') active = [];
+
+        const compareBySort = (a, b) => {
+          switch (sort) {
+            case 'username_desc':
+              return String(b.username || '').localeCompare(String(a.username || ''), undefined, { sensitivity: 'base' });
+            case 'active_desc':
+              return toNumber(b.active_count) - toNumber(a.active_count) || String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
+            case 'avg_cal_desc':
+              return toNumber(b.avg_cal) - toNumber(a.avg_cal) || String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
+            case 'archived_desc':
+              return toNumber(b.archived_count) - toNumber(a.archived_count) || String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
+            case 'username_asc':
+            default:
+              return String(a.username || '').localeCompare(String(b.username || ''), undefined, { sensitivity: 'base' });
+          }
+        };
+
+        active.sort(compareBySort);
+        archived.sort(compareBySort);
+        return { active, archived };
+      };
+
       const renderRows = (rows) => rows.map(u => `
         <tr class="align-middle">
-          <td>
-            <img src="${u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}'}" width="40" class="rounded-circle" alt="Avatar">
+          <td data-label="Avatar">
+            <img src="${escapeHtml(u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}')}" class="avatar-thumb" alt="Avatar">
           </td>
-          <td>${u.username}</td>
-          <td>${u.email}</td>
-          <td>${u.active_count}</td>
-          <td>${u.archived_count}</td>
-          <td>${u.avg_cal}</td>
-          <td>${u.avg_dur}</td>
-          <td>${u.freq_activity}</td>
-          <td>
+          <td data-label="Username">${escapeHtml(u.username)}</td>
+          <td data-label="Email">${escapeHtml(u.email)}</td>
+          <td data-label="Active Workouts">${u.active_count}</td>
+          <td data-label="Archived Workouts">${u.archived_count}</td>
+          <td data-label="Avg Cal">${u.avg_cal}</td>
+          <td data-label="Avg Dur">${u.avg_dur}</td>
+          <td data-label="Frequent Activity">${escapeHtml(u.freq_activity)}</td>
+          <td data-label="Actions">
             <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
               <i class="fa-solid fa-eye"></i>
             </button>
@@ -219,16 +502,16 @@
               <i class="fa-solid fa-trash"></i>
             </button>
           </td>
-        </tr>`).join('') || `<tr><td colspan="9" class="text-center text-muted">No active users</td></tr>`;
+        </tr>`).join('') || `<tr><td colspan="9" class="text-center text-muted">No active users match current filters</td></tr>`;
 
       const renderArchived = (rows) => rows.map(u => `
         <tr class="align-middle">
-          <td>
-            <img src="${u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}'}" width="40" class="rounded-circle" alt="Avatar">
+          <td data-label="Avatar">
+            <img src="${escapeHtml(u.avatar_url || '{{ url_for('static', filename='images/FitTrack.jpg') }}')}" class="avatar-thumb" alt="Avatar">
           </td>
-          <td>${u.username}</td>
-          <td>${u.email}</td>
-          <td>
+          <td data-label="Username">${escapeHtml(u.username)}</td>
+          <td data-label="Email">${escapeHtml(u.email)}</td>
+          <td data-label="Actions">
             <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="${u.id}" title="Restore">
               <i class="fa-solid fa-rotate-left"></i>
             </button>
@@ -236,7 +519,25 @@
               <i class="fa-solid fa-trash"></i>
             </button>
           </td>
-        </tr>`).join('') || `<tr><td colspan="4" class="text-center text-muted">No archived users</td></tr>`;
+        </tr>`).join('') || `<tr><td colspan="4" class="text-center text-muted">No archived users match current filters</td></tr>`;
+
+      const updateMeta = (activeCount, archivedCount) => {
+        if (activeCountBadge) activeCountBadge.textContent = activeCount;
+        if (archivedCountBadge) archivedCountBadge.textContent = archivedCount;
+        if (resultSummary) {
+          resultSummary.textContent = `Showing ${activeCount + archivedCount} users (${activeCount} active, ${archivedCount} archived)`;
+        }
+      };
+
+      const applyFiltersAndRender = () => {
+        const { active, archived } = getFilteredAndSorted();
+        if (usersTableBody) usersTableBody.innerHTML = renderRows(active);
+        if (archivedUsersTableBody) archivedUsersTableBody.innerHTML = renderArchived(archived);
+        if (activeSection) activeSection.classList.toggle('d-none', state.filters.status === 'archived');
+        if (archivedSection) archivedSection.classList.toggle('d-none', state.filters.status === 'active');
+        updateMeta(active.length, archived.length);
+        wireActions();
+      };
 
       const wireActions = () => {
         document.querySelectorAll('.btn-view').forEach(btn => {
@@ -249,43 +550,152 @@
           btn.addEventListener('click', async () => {
             const id = btn.dataset.userId;
             if (!confirm('Archive this user?')) return;
-            await fetch(`/admin/users/${id}/archive`, { method: 'POST' });
-            loadAdminData();
+            try {
+              await postAdmin(`/admin/users/${id}/archive`);
+              showToast('User archived successfully.');
+              loadAdminData();
+            } catch (err) {
+              showToast('Could not archive user.', 'danger');
+            }
           });
         });
         document.querySelectorAll('.btn-delete').forEach(btn => {
           btn.addEventListener('click', async () => {
             const id = btn.dataset.userId;
             if (!confirm('Delete this user and all workouts?')) return;
-            await fetch(`/admin/users/${id}/delete`, { method: 'POST' });
-            loadAdminData();
+            try {
+              await postAdmin(`/admin/users/${id}/delete`);
+              showToast('User deleted permanently.', 'warning');
+              loadAdminData();
+            } catch (err) {
+              showToast('Could not delete user.', 'danger');
+            }
           });
         });
         document.querySelectorAll('.btn-restore-user').forEach(btn => {
           btn.addEventListener('click', async () => {
             const id = btn.dataset.userId;
             if (!confirm('Restore this user?')) return;
-            await fetch(`/admin/users/${id}/restore`, { method: 'POST' });
-            loadAdminData();
+            try {
+              await postAdmin(`/admin/users/${id}/restore`);
+              showToast('User restored successfully.');
+              loadAdminData();
+            } catch (err) {
+              showToast('Could not restore user.', 'danger');
+            }
           });
         });
       };
 
+      let loadingAdminData = false;
       const loadAdminData = async () => {
-        const res = await fetch('/admin/data');
-        if (!res.ok) return;
-        const data = await res.json();
-        document.getElementById('totalUsers').textContent = data.total_users;
-        document.getElementById('totalWorkouts').textContent = data.total_workouts;
-        document.getElementById('avgCalories').textContent = data.avg_calories;
-        document.getElementById('usersTableBody').innerHTML = renderRows(data.user_stats || []);
-        document.getElementById('archivedUsersTableBody').innerHTML = renderArchived(data.archived_users || []);
-        wireActions();
+        if (loadingAdminData) return;
+        loadingAdminData = true;
+        if (refreshBtn) refreshBtn.disabled = true;
+        try {
+          const res = await fetch('/admin/data', { cache: 'no-store' });
+          const data = await handleResponse(res);
+          const snap = data.today_snapshot || {};
+          document.getElementById('adminSnapActiveUsers').textContent = Number(snap.active_users || 0).toLocaleString();
+          document.getElementById('adminSnapWorkouts').textContent = Number(snap.workouts || 0).toLocaleString();
+          document.getElementById('adminSnapCalories').textContent = Number(snap.calories || 0).toLocaleString();
+          document.getElementById('adminSnapAvgCalories').textContent = Number(snap.avg_calories || 0).toLocaleString();
+          document.getElementById('totalUsers').textContent = data.total_users;
+          document.getElementById('totalWorkouts').textContent = data.total_workouts;
+          document.getElementById('avgCalories').textContent = data.avg_calories;
+          const heroUsers = document.getElementById('adminHeroUsers');
+          const heroWorkouts = document.getElementById('adminHeroWorkouts');
+          const heroAvgCalories = document.getElementById('adminHeroAvgCalories');
+          if (heroUsers) heroUsers.textContent = Number(data.total_users || 0).toLocaleString();
+          if (heroWorkouts) heroWorkouts.textContent = Number(data.total_workouts || 0).toLocaleString();
+          if (heroAvgCalories) heroAvgCalories.textContent = Number(data.avg_calories || 0).toLocaleString();
+          state.activeUsers = data.user_stats || [];
+          state.archivedUsers = data.archived_users || [];
+          applyFiltersAndRender();
+          const now = new Date();
+          if (lastSync) lastSync.textContent = `Last sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+          announce('Admin data updated.');
+        } catch (err) {
+          showToast('Could not refresh admin dashboard data.', 'danger');
+        } finally {
+          if (refreshBtn) refreshBtn.disabled = false;
+          loadingAdminData = false;
+        }
       };
 
-      const es = new EventSource('/events');
-      es.onmessage = () => loadAdminData();
+      let fallbackTimer = null;
+      const startFallbackPolling = () => {
+        if (fallbackTimer) return;
+        fallbackTimer = setInterval(() => {
+          loadAdminData().catch(() => {});
+        }, 15000);
+      };
+
+      if (window.EventSource) {
+        const es = new EventSource('/events');
+        es.onmessage = () => {
+          loadAdminData().catch(() => {});
+        };
+        es.onerror = () => {
+          startFallbackPolling();
+        };
+      } else {
+        startFallbackPolling();
+      }
+
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          loadAdminData().catch(() => {});
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          state.filters = { query: '', status: 'all', sort: 'username_asc' };
+          if (searchInput) searchInput.value = '';
+          if (statusFilter) statusFilter.value = 'all';
+          if (sortSelect) sortSelect.value = 'username_asc';
+          applyFiltersAndRender();
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          state.filters.query = searchInput.value || '';
+          applyFiltersAndRender();
+        });
+      }
+
+      if (statusFilter) {
+        statusFilter.addEventListener('change', () => {
+          state.filters.status = statusFilter.value;
+          applyFiltersAndRender();
+        });
+      }
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+          state.filters.sort = sortSelect.value;
+          applyFiltersAndRender();
+        });
+      }
+
       loadAdminData();
+
+      document.querySelectorAll('#adminSidebar a[href^="#"]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+          const target = document.querySelector(link.getAttribute('href'));
+          if (!target) return;
+          event.preventDefault();
+          const sidebarEl = document.getElementById('adminSidebar');
+          const sidebar = bootstrap.Offcanvas.getInstance(sidebarEl) || new bootstrap.Offcanvas(sidebarEl);
+          sidebar.hide();
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.replaceState(null, '', link.getAttribute('href'));
+          }, 220);
+        });
+      });
     });
   </script>
 </body>
