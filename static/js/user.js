@@ -1,5 +1,7 @@
 // ------------------- INITIALIZATION -------------------
-AOS.init({ once: true, duration: 600 });
+if (window.AOS) {
+    AOS.init({ once: true, duration: 600 });
+}
 
 // ------------------- CONSTANTS -------------------
 const CAL_GOAL = 4000;
@@ -37,6 +39,18 @@ const dom = {
 
     clearArchive: document.getElementById('clearArchiveUser'),
     restoreAll: document.getElementById('restoreAllUser'),
+    archiveCount: document.getElementById('archiveCountUser'),
+    workoutSearch: document.getElementById('workoutSearchUser'),
+    workoutSort: document.getElementById('workoutSortUser'),
+    workoutMinCalories: document.getElementById('workoutMinCaloriesUser'),
+    workoutReset: document.getElementById('workoutResetUser'),
+    workoutResultSummary: document.getElementById('workoutResultSummaryUser'),
+    workoutLastSync: document.getElementById('workoutLastSyncUser'),
+    heroTotalWorkouts: document.getElementById('heroTotalWorkoutsUser'),
+    heroTotalCalories: document.getElementById('heroTotalCaloriesUser'),
+    heroGoal: document.getElementById('heroGoalUser'),
+    liveRegion: document.getElementById('userLiveRegion'),
+    toastContainer: document.getElementById('userToastContainer'),
 
     charts: {
         calories: document.getElementById('caloriesChartUser'),
@@ -49,30 +63,210 @@ let activeWorkouts = [];
 let archivedWorkouts = [];
 const adminView = document.body?.dataset?.adminView === '1';
 const viewUserId = document.body?.dataset?.viewUserId;
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 let eventSource = null;
+let loadingWorkouts = false;
+const uiState = {
+    query: '',
+    sort: 'date_desc',
+    minCalories: 0
+};
 
 // ------------------- HELPERS -------------------
 const safeNum = v => Math.max(0, Number(v) || 0);
 const isoToDisplay = d => new Date(d).toLocaleDateString();
+const escapeHtml = value => String(value || '').replace(/[&<>"']/g, s => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]
+));
+const isSmallViewport = () => window.matchMedia('(max-width: 576px)').matches;
+
+function showToast(message, type = 'success') {
+    if (!dom.toastContainer || !window.bootstrap?.Toast) return;
+    const tone = type === 'danger' ? 'danger' : (type === 'warning' ? 'warning' : 'success');
+    const wrapper = document.createElement('div');
+    wrapper.className = `toast align-items-center text-bg-${tone} border-0`;
+    wrapper.setAttribute('role', 'status');
+    wrapper.setAttribute('aria-live', 'polite');
+    wrapper.setAttribute('aria-atomic', 'true');
+    wrapper.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${escapeHtml(message)}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>`;
+    dom.toastContainer.appendChild(wrapper);
+    const toast = new bootstrap.Toast(wrapper, { delay: 2200 });
+    wrapper.addEventListener('hidden.bs.toast', () => wrapper.remove());
+    toast.show();
+}
+
+function announce(message) {
+    if (dom.liveRegion) dom.liveRegion.textContent = message;
+}
+
+function updateSyncMeta() {
+    if (!dom.workoutLastSync) return;
+    const now = new Date();
+    dom.workoutLastSync.textContent = `Last sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+}
+
+function getVisibleActiveWorkouts() {
+    const query = uiState.query.trim().toLowerCase();
+    const minCal = Math.max(0, Number(uiState.minCalories) || 0);
+
+    const filtered = activeWorkouts.filter(w => {
+        const activity = String(w.activity || '').toLowerCase();
+        const date = String(w.date || '').toLowerCase();
+        const calories = safeNum(w.calories);
+        const matchesQuery = !query || activity.includes(query) || date.includes(query);
+        const matchesCalories = calories >= minCal;
+        return matchesQuery && matchesCalories;
+    });
+
+    filtered.sort((a, b) => {
+        switch (uiState.sort) {
+            case 'date_asc':
+                return String(a.date || '').localeCompare(String(b.date || ''));
+            case 'calories_desc':
+                return safeNum(b.calories) - safeNum(a.calories) || String(b.date || '').localeCompare(String(a.date || ''));
+            case 'duration_desc':
+                return safeNum(b.duration) - safeNum(a.duration) || String(b.date || '').localeCompare(String(a.date || ''));
+            case 'date_desc':
+            default:
+                return String(b.date || '').localeCompare(String(a.date || ''));
+        }
+    });
+    return filtered;
+}
+
+function updateWorkoutMeta(visibleCount) {
+    if (dom.workoutResultSummary) {
+        dom.workoutResultSummary.textContent = `Showing ${visibleCount} of ${activeWorkouts.length} active workouts`;
+    }
+    if (dom.archiveCount) {
+        dom.archiveCount.textContent = archivedWorkouts.length;
+    }
+}
+
+function buildChartOptions() {
+    const small = isSmallViewport();
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    boxWidth: small ? 10 : 14,
+                    font: { size: small ? 10 : 12 }
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    maxRotation: 0,
+                    minRotation: 0,
+                    autoSkip: true,
+                    maxTicksLimit: 7,
+                    font: { size: small ? 10 : 12 }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                suggestedMin: 0,
+                ticks: {
+                    font: { size: small ? 10 : 12 }
+                }
+            }
+        }
+    };
+}
+
+
+function compressImageFile(file, maxSide = 320, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+                const width = Math.max(1, Math.round(img.width * scale));
+                const height = Math.max(1, Math.round(img.height * scale));
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                URL.revokeObjectURL(objectUrl);
+                resolve(dataUrl);
+            } catch (err) {
+                URL.revokeObjectURL(objectUrl);
+                reject(err);
+            }
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('invalid_image'));
+        };
+        img.src = objectUrl;
+    });
+}
 
 async function apiGet(url) {
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!res.ok) throw new Error('Request failed');
-    return res.json();
+    return handleApiResponse(res);
 }
 
 async function apiPost(url, body) {
+    const headers = { 'Accept': 'application/json', 'X-CSRFToken': csrfToken };
+    if (body) headers['Content-Type'] = 'application/json';
     const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers,
         body: body ? JSON.stringify(body) : null
     });
-    if (!res.ok) throw new Error('Request failed');
-    return res.json();
+    return handleApiResponse(res);
+}
+
+async function handleApiResponse(res) {
+    let payload = null;
+    try {
+        payload = await res.json();
+    } catch {
+        payload = null;
+    }
+    if (res.ok) return payload || {};
+    const code = payload?.error || `http_${res.status}`;
+    if (code === 'csrf_token_invalid') {
+        alert('Security token expired. The page will reload.');
+        window.location.reload();
+        throw new Error(code);
+    }
+    if (res.status === 401 || code === 'unauthorized') {
+        window.location.href = '/login';
+        throw new Error(code);
+    }
+    throw new Error(code);
+}
+
+async function logImportExport(action, format, records, filename) {
+    if (adminView) return;
+    try {
+        await apiPost('/api/import-export-log', {
+            action,
+            format,
+            records,
+            filename: filename || null
+        });
+    } catch {
+        // Silent fail for logging
+    }
 }
 
 // ------------------- DATA LOAD -------------------
 async function loadWorkouts() {
+    if (loadingWorkouts) return;
+    loadingWorkouts = true;
     try {
         const data = adminView && viewUserId
             ? await apiGet(`/admin/api/workouts/${viewUserId}`)
@@ -86,9 +280,15 @@ async function loadWorkouts() {
             }
         }
         renderAll();
-    } catch {
-        alert('Please login again.');
-        window.location.href = '/login';
+        updateSyncMeta();
+        announce('Workout data updated.');
+    } catch (err) {
+        const code = String(err?.message || '');
+        if (code !== 'unauthorized' && code !== 'csrf_token_invalid') {
+            showToast('Could not refresh workouts right now.', 'danger');
+        }
+    } finally {
+        loadingWorkouts = false;
     }
 }
 
@@ -102,20 +302,35 @@ async function addWorkout(w) {
 async function deleteWorkout(id) {
     if (adminView) return;
     if (!confirm('Delete workout?')) return;
-    await apiPost(`/workouts/${id}/delete`);
-    await loadWorkouts();
+    try {
+        await apiPost(`/workouts/${id}/delete`);
+        await loadWorkouts();
+        showToast('Workout deleted.');
+    } catch {
+        showToast('Could not delete workout.', 'danger');
+    }
 }
 
 async function archiveWorkout(id) {
     if (adminView) return;
-    await apiPost(`/workouts/${id}/archive`);
-    await loadWorkouts();
+    try {
+        await apiPost(`/workouts/${id}/archive`);
+        await loadWorkouts();
+        showToast('Workout archived.');
+    } catch {
+        showToast('Could not archive workout.', 'danger');
+    }
 }
 
 async function restoreArchived(id) {
     if (adminView) return;
-    await apiPost(`/workouts/${id}/restore`);
-    await loadWorkouts();
+    try {
+        await apiPost(`/workouts/${id}/restore`);
+        await loadWorkouts();
+        showToast('Workout restored.');
+    } catch {
+        showToast('Could not restore workout.', 'danger');
+    }
 }
 
 async function restoreAllArchived() {
@@ -159,7 +374,7 @@ function parseCsv(text) {
     }).filter(w => w.date && w.activity && w.duration > 0 && w.calories > 0);
 }
 
-async function importWorkouts(arr) {
+async function importWorkouts(arr, sourceFormat, filename) {
     if (!arr.length) {
         setImportFeedback('No valid workouts found.', true);
         return;
@@ -174,33 +389,44 @@ async function importWorkouts(arr) {
     }
     await loadWorkouts();
     setImportFeedback('Import completed successfully.');
+    if (sourceFormat) {
+        await logImportExport('import', sourceFormat, arr.length, filename);
+    }
 }
 
 // ------------------- TABLES -------------------
 function renderTable() {
-    const arr = [...activeWorkouts].sort((a, b) => b.date.localeCompare(a.date));
+    const arr = getVisibleActiveWorkouts();
+    updateWorkoutMeta(arr.length);
     dom.tableBody.innerHTML = arr.length ? arr.map(w => `
         <tr>
-            <td>${isoToDisplay(w.date)}</td>
-            <td>${w.activity}</td>
-            <td>${safeNum(w.duration)} min</td>
-            <td>${safeNum(w.calories)}</td>
-            <td class="text-end">
-                <button class="btn btn-sm btn-danger del" data-id="${w.id}">✖</button>
-                <button class="btn btn-sm btn-secondary arc" data-id="${w.id}">📦</button>
+            <td data-label="Date">${isoToDisplay(w.date)}</td>
+            <td data-label="Activity">${escapeHtml(w.activity)}</td>
+            <td data-label="Duration">${safeNum(w.duration)} min</td>
+            <td data-label="Calories">${safeNum(w.calories)}</td>
+            <td data-label="Actions" class="text-end">
+                <button class="btn btn-sm btn-outline-danger del" data-id="${w.id}" title="Delete workout">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary arc" data-id="${w.id}" title="Archive workout">
+                    <i class="fa-solid fa-box-archive"></i>
+                </button>
             </td>
         </tr>`).join('') :
-        `<tr><td colspan="5" class="text-muted text-center">No workouts</td></tr>`;
+        `<tr><td colspan="5" class="text-muted text-center">No workouts match current filters</td></tr>`;
 
     document.querySelectorAll('.del').forEach(b => b.onclick = () => deleteWorkout(b.dataset.id));
     document.querySelectorAll('.arc').forEach(b => b.onclick = () => archiveWorkout(b.dataset.id));
 }
 
 function renderArchive() {
+    if (dom.archiveCount) dom.archiveCount.textContent = archivedWorkouts.length;
     dom.archiveList.innerHTML = archivedWorkouts.length ? archivedWorkouts.map(w => `
-        <li class="list-group-item d-flex justify-content-between">
-            ${w.activity} • ${safeNum(w.calories)} cal
-            <button class="btn btn-sm btn-success res" data-id="${w.id}">↩</button>
+        <li class="list-group-item archive-item">
+            <span class="archive-item-text">${escapeHtml(w.activity)} • ${safeNum(w.calories)} cal</span>
+            <button class="btn btn-sm btn-success res" data-id="${w.id}" title="Restore workout">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
         </li>`).join('') :
         `<li class="list-group-item text-muted">No archived workouts</li>`;
 
@@ -234,17 +460,19 @@ let calChart, durChart;
 function renderCharts() {
     const agg = aggregateLast7Safe(activeWorkouts);
     const labels = agg.dates.map(d => new Date(d).toLocaleDateString(undefined, { weekday: 'short' }));
+    const calOptions = buildChartOptions();
+    const durOptions = buildChartOptions();
 
     if (!calChart) {
         calChart = new Chart(dom.charts.calories, {
             type: 'line',
             data: { labels, datasets: [{ label: 'Calories (Weekly Progress)', data: agg.totalsCal, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,.15)', fill: true, tension: .35, pointRadius: 5 }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true, suggestedMin: 0 } } }
+            options: calOptions
         });
     } else {
         calChart.data.labels = labels;
         calChart.data.datasets[0].data = agg.totalsCal;
-        calChart.options.scales.y.beginAtZero = true;
+        calChart.options = calOptions;
         calChart.update();
     }
 
@@ -252,12 +480,12 @@ function renderCharts() {
         durChart = new Chart(dom.charts.duration, {
             type: 'bar',
             data: { labels, datasets: [{ label: 'Minutes (Last 7 Days)', data: agg.totalsDur, backgroundColor: 'rgba(25,135,84,.25)', borderColor: '#198754', borderWidth: 1, borderRadius: 6 }] },
-            options: { responsive: true, scales: { y: { beginAtZero: true, suggestedMin: 0 } } }
+            options: durOptions
         });
     } else {
         durChart.data.labels = labels;
         durChart.data.datasets[0].data = agg.totalsDur;
-        durChart.options.scales.y.beginAtZero = true;
+        durChart.options = durOptions;
         durChart.update();
     }
 
@@ -289,13 +517,21 @@ function updateStats(agg) {
     dom.mostCal.textContent = most && most.activity && most.calories > 0 ? `${most.activity} - ${most.calories} cal` : '—';
 
     const calTotal = agg.totalsCal.reduce((s, v) => s + safeNum(v), 0);
-    const calPct = Math.min(100, Math.max(0, Math.round(calTotal / CAL_GOAL * 100)));
-    const workPct = Math.min(100, Math.max(0, Math.round(activeWorkouts.length / WORK_GOAL * 100)));
+    const calPct = Math.max(0, Math.round(calTotal / CAL_GOAL * 100));
+    const workPct = Math.max(0, Math.round(activeWorkouts.length / WORK_GOAL * 100));
+    const calFillPct = Math.min(100, calPct);
+    const workFillPct = Math.min(100, workPct);
 
-    dom.calBar.style.width = calPct + '%';
+    dom.calBar.style.width = calFillPct + '%';
     dom.calBar.textContent = calPct + '%';
-    dom.workBar.style.width = workPct + '%';
+    dom.calBar.classList.toggle('goal-over', calPct > 100);
+    dom.workBar.style.width = workFillPct + '%';
     dom.workBar.textContent = workPct + '%';
+    dom.workBar.classList.toggle('goal-over', workPct > 100);
+
+    if (dom.heroTotalWorkouts) dom.heroTotalWorkouts.textContent = combined.length.toLocaleString();
+    if (dom.heroTotalCalories) dom.heroTotalCalories.textContent = totalCal.toLocaleString();
+    if (dom.heroGoal) dom.heroGoal.textContent = `${workPct}%`;
 }
 
 // ------------------- RENDER EVERYTHING -------------------
@@ -309,23 +545,53 @@ function renderAll() {
 // ------------------- EVENT LISTENERS -------------------
 document.addEventListener('DOMContentLoaded', () => {
     dom.date.value = new Date().toISOString().slice(0, 10);
+    if (dom.workoutSort) dom.workoutSort.value = uiState.sort;
+    if (dom.workoutMinCalories) dom.workoutMinCalories.value = String(uiState.minCalories);
+
+    dom.workoutSearch?.addEventListener('input', () => {
+        uiState.query = dom.workoutSearch.value || '';
+        renderTable();
+    });
+    dom.workoutSort?.addEventListener('change', () => {
+        uiState.sort = dom.workoutSort.value || 'date_desc';
+        renderTable();
+    });
+    dom.workoutMinCalories?.addEventListener('input', () => {
+        uiState.minCalories = Math.max(0, Number(dom.workoutMinCalories.value) || 0);
+        renderTable();
+    });
+    dom.workoutReset?.addEventListener('click', () => {
+        uiState.query = '';
+        uiState.sort = 'date_desc';
+        uiState.minCalories = 0;
+        if (dom.workoutSearch) dom.workoutSearch.value = '';
+        if (dom.workoutSort) dom.workoutSort.value = uiState.sort;
+        if (dom.workoutMinCalories) dom.workoutMinCalories.value = '0';
+        renderTable();
+    });
+
     // Avatar upload (save to DB) - disable in admin view
     if (adminView) {
         if (dom.avatarInput) dom.avatarInput.disabled = true;
     } else {
-        dom.avatarInput?.addEventListener('change', e => {
+        dom.avatarInput?.addEventListener('change', async e => {
             const file = e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async () => {
-                dom.avatar.src = reader.result;
-                try {
-                    await apiPost('/api/avatar', { avatar_url: reader.result });
-                } catch {
-                    alert('Avatar upload failed.');
-                }
-            };
-            reader.readAsDataURL(file);
+            if (!file.type.startsWith('image/')) {
+                alert('Please choose an image file.');
+                e.target.value = '';
+                return;
+            }
+            try {
+                const optimizedDataUrl = await compressImageFile(file, 320, 0.82);
+                dom.avatar.src = optimizedDataUrl;
+                await apiPost('/api/avatar', { avatar_url: optimizedDataUrl });
+                showToast('Avatar updated successfully.');
+            } catch {
+                alert('Avatar upload failed.');
+            } finally {
+                e.target.value = '';
+            }
         });
     }
 
@@ -339,11 +605,16 @@ document.addEventListener('DOMContentLoaded', () => {
             date: dom.date.value || new Date().toISOString().slice(0, 10)
         };
         if (!item.activity || item.duration <= 0 || item.calories <= 0) return alert('Enter valid values');
-        await addWorkout(item);
-        dom.activity.value = '';
-        dom.duration.value = 30;
-        dom.calories.value = 300;
-        dom.date.value = new Date().toISOString().slice(0, 10);
+        try {
+            await addWorkout(item);
+            dom.activity.value = '';
+            dom.duration.value = 30;
+            dom.calories.value = 300;
+            dom.date.value = new Date().toISOString().slice(0, 10);
+            showToast('Workout added.');
+        } catch {
+            showToast('Could not add workout.', 'danger');
+        }
     });
 
     dom.exportCSV?.addEventListener('click', () => {
@@ -364,10 +635,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const bom = '\uFEFF'; // UTF-8 BOM for Excel/Unicode compatibility
         const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
         const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workouts.csv'; a.click();
+        URL.revokeObjectURL(a.href);
+        showToast('CSV exported.');
+        logImportExport('export', 'csv', arr.length, 'workouts.csv');
     });
 
     dom.exportPDF?.addEventListener('click', () => {
         window.print();
+        showToast('PDF export started.');
+        logImportExport('export', 'pdf', activeWorkouts.length, 'workouts.pdf');
     });
 
     dom.importJson?.addEventListener('change', async e => {
@@ -379,9 +655,11 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const text = reader.result;
                 const arr = JSON.parse(text);
-                await importWorkouts(Array.isArray(arr) ? arr : []);
+                await importWorkouts(Array.isArray(arr) ? arr : [], 'json', file.name);
+                showToast('JSON import completed.');
             } catch {
                 setImportFeedback('JSON import failed. Please check file format.', true);
+                showToast('JSON import failed.', 'danger');
             } finally {
                 e.target.value = '';
             }
@@ -398,9 +676,11 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const text = reader.result;
                 const arr = parseCsv(text);
-                await importWorkouts(arr);
+                await importWorkouts(arr, 'csv', file.name);
+                showToast('CSV import completed.');
             } catch {
                 setImportFeedback('CSV import failed. Please check file format.', true);
+                showToast('CSV import failed.', 'danger');
             } finally {
                 e.target.value = '';
             }
@@ -409,11 +689,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dom.clearArchive?.addEventListener('click', () => {
-        clearArchived();
+        clearArchived().then(() => showToast('Archive cleared.')).catch(() => showToast('Could not clear archive.', 'danger'));
     });
 
     dom.restoreAll?.addEventListener('click', () => {
-        restoreAllArchived();
+        restoreAllArchived().then(() => showToast('Archived workouts restored.')).catch(() => showToast('Could not restore archive.', 'danger'));
     });
 
     if (adminView) {
@@ -421,16 +701,43 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.duration && (dom.duration.disabled = true);
         dom.calories && (dom.calories.disabled = true);
         dom.date && (dom.date.disabled = true);
+        dom.addForm?.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
         dom.clearArchive && (dom.clearArchive.disabled = true);
         dom.restoreAll && (dom.restoreAll.disabled = true);
         dom.importJson && (dom.importJson.disabled = true);
         dom.importCsv && (dom.importCsv.disabled = true);
+        dom.importJson?.closest('label')?.classList.add('disabled');
+        dom.importCsv?.closest('label')?.classList.add('disabled');
     }
 
     loadWorkouts();
     if (eventSource) eventSource.close();
-    eventSource = new EventSource('/events');
-    eventSource.onmessage = () => {
-        loadWorkouts();
+    let fallbackTimer = null;
+    const startFallbackPolling = () => {
+        if (fallbackTimer) return;
+        fallbackTimer = setInterval(() => {
+            loadWorkouts();
+        }, 15000);
     };
+    if (window.EventSource) {
+        eventSource = new EventSource('/events');
+        eventSource.onmessage = () => {
+            loadWorkouts();
+        };
+        eventSource.onerror = () => {
+            startFallbackPolling();
+        };
+    } else {
+        startFallbackPolling();
+    }
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (!calChart || !durChart) return;
+            const agg = renderCharts();
+            updateStats(agg);
+        }, 120);
+    });
 });
