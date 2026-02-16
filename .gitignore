@@ -29,6 +29,14 @@ instance/*
 !instance/.gitkeep
 *.log
 localhost.session.sql
+password.session.sql
+
+# Submission/build artifacts
+*.zip
+
+# Repo cleanup excludes
+docs/
+archive/
 
 # OS
 .DS_Store
