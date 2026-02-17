@@ -26,6 +26,27 @@ if ($missing.Count -gt 0) {
     throw "Missing environment variables: $($missing -join ', ')"
 }
 
+# Create the target database automatically so checker can run with one command.
+if ($env:DB_NAME -notmatch '^[A-Za-z0-9_]+$') {
+    throw "DB_NAME contains invalid characters. Use letters, numbers, and underscore only."
+}
+$mysql = Get-Command mysql -ErrorAction SilentlyContinue
+if (-not $mysql) {
+    throw "MySQL CLI not found in PATH. Install MySQL client tools or add mysql.exe to PATH."
+}
+
+$createDbSql = "CREATE DATABASE IF NOT EXISTS $($env:DB_NAME) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+$env:MYSQL_PWD = $env:DB_PASSWORD
+try {
+    & $mysql.Source --protocol=TCP -h $env:DB_HOST -P $env:DB_PORT -u $env:DB_USER -e $createDbSql
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create/access database $($env:DB_NAME). Check DB credentials and privileges."
+    }
+}
+finally {
+    Remove-Item Env:MYSQL_PWD -ErrorAction SilentlyContinue
+}
+
 & $python -m flask --app app db upgrade
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
