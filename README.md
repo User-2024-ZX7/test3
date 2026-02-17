@@ -32,6 +32,10 @@ FitTrack is a Flask + Jinja2 + MySQL web application for tracking workouts, calo
 5. Start server: `python app.py`
 6. Open: `http://127.0.0.1:5000`
 
+### Stable Local Start (recommended on Windows)
+Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, run migrations, and start one server process:
+- `.\run_local.ps1`
+
 ## Default Admin
 - Email: `admin@fittrack.com`
 - Name: `FitAdmin`

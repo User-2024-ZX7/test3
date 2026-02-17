@@ -1,6 +1,6 @@
 from flask import Flask, g, render_template, redirect, url_for, request, flash, session, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import case, func, inspect
+from sqlalchemy import case, func, inspect, text
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 import json
@@ -1245,4 +1245,12 @@ def events():
 
 # -------------------- RUN --------------------
 if __name__ == '__main__':
-    app.run(debug=os.environ.get('FLASK_DEBUG', '0') == '1')
+    debug_mode = os.environ.get('FLASK_DEBUG', '0') == '1'
+
+    # Fail fast on boot instead of returning 500 on first request.
+    with app.app_context():
+        db.session.execute(text('SELECT 1'))
+
+    # Keep single-process dev server behavior to avoid duplicate listeners
+    # on Windows when reloader is enabled.
+    app.run(debug=debug_mode, use_reloader=False)
