@@ -5,6 +5,30 @@ if (-not (Test-Path $python)) {
     throw "Virtualenv python not found at $python"
 }
 
+# Load .env if present (only fills values that are not already in current shell).
+$envFile = Join-Path $PSScriptRoot '.env'
+if (Test-Path $envFile) {
+    Get-Content -Path $envFile | ForEach-Object {
+        $line = $_.Trim()
+        if (-not $line -or $line.StartsWith('#')) {
+            return
+        }
+        $parts = $line.Split('=', 2)
+        if ($parts.Count -ne 2) {
+            return
+        }
+        $name = $parts[0].Trim()
+        if ($name -notmatch '^[A-Za-z_][A-Za-z0-9_]*$') {
+            return
+        }
+        $value = $parts[1].Trim().Trim('"').Trim("'")
+        $existing = (Get-Item -Path ("Env:" + $name) -ErrorAction SilentlyContinue).Value
+        if ([string]::IsNullOrWhiteSpace($existing)) {
+            Set-Item -Path ("Env:" + $name) -Value $value
+        }
+    }
+}
+
 # Ensure only one local Flask server owns 127.0.0.1:5000.
 $listeners = Get-NetTCPConnection -LocalAddress '127.0.0.1' -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue
 foreach ($conn in $listeners) {
