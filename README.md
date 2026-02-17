@@ -36,6 +36,7 @@ FitTrack is a Flask + Jinja2 + MySQL web application for tracking workouts, calo
 Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, auto-create the MySQL database (if missing), run migrations, and start one server process:
 - Copy `.env.example` to `.env` and set your MySQL credentials once.
 - `.\run_local.ps1`
+- For assessment checks: this script is the intended single-command startup.
 
 ## Default Admin
 - Email: `admin@fittrack.com`
