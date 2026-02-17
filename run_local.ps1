@@ -15,7 +15,13 @@ foreach ($conn in $listeners) {
 }
 
 $required = @('DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT', 'DB_NAME')
-$missing = @($required | Where-Object { -not $env:$_ })
+$missing = @(
+    $required | Where-Object {
+        $name = $_
+        $value = (Get-Item -Path ("Env:" + $name) -ErrorAction SilentlyContinue).Value
+        [string]::IsNullOrWhiteSpace($value)
+    }
+)
 if ($missing.Count -gt 0) {
     throw "Missing environment variables: $($missing -join ', ')"
 }
