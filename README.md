@@ -51,3 +51,6 @@ Run security/role smoke tests:
 
 ## Final Production Structure
 - Active app path only: `templates/`, `static/`, `app.py`, `config.py`, `migrations/`, `tests/`
+
+## Development Authenticity
+This project was developed incrementally in GitHub through regular commits across backend, frontend, database migrations, security controls, and tests. The history reflects staged implementation and cleanup work rather than a single final code dump. Final code validation was run on MySQL with passing automated tests.
