@@ -189,6 +189,32 @@ def enforce_csrf():
         return redirect(request.referrer or url_for('index'))
     return None
 
+
+@app.before_request
+def enforce_session_identity():
+    user_id = session.get('user_id')
+    role = session.get('role')
+    if not user_id or role not in ('user', 'admin'):
+        return None
+
+    current_user = db.session.get(User, user_id)
+    session_invalid = (
+        not current_user
+        or current_user.role != role
+        or (role == 'user' and current_user.is_archived)
+    )
+    if not session_invalid:
+        return None
+
+    session.clear()
+    if request.path.startswith('/api/') or request.path.startswith('/admin/'):
+        return jsonify({'error': 'session_invalid'}), 401
+
+    flash('Your session expired. Please log in again.', 'warning')
+    if role == 'admin':
+        return redirect(url_for('admin_login'))
+    return redirect(url_for('login'))
+
 # -------------------- MODELS --------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
