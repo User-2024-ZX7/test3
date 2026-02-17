@@ -33,7 +33,8 @@ FitTrack is a Flask + Jinja2 + MySQL web application for tracking workouts, calo
 6. Open: `http://127.0.0.1:5000`
 
 ### Stable Local Start (recommended on Windows)
-Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, run migrations, and start one server process:
+Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, auto-create the MySQL database (if missing), run migrations, and start one server process:
+- Copy `.env.example` to `.env` and set your MySQL credentials once.
 - `.\run_local.ps1`
 
 ## Default Admin
