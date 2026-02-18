@@ -192,6 +192,7 @@ def enforce_csrf():
 
 @app.before_request
 def enforce_session_identity():
+    # Prevent 500s from stale cookies pointing to deleted/changed accounts.
     user_id = session.get('user_id')
     role = session.get('role')
     if not user_id or role not in ('user', 'admin'):
