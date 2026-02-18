@@ -343,6 +343,70 @@ class UserSettings(db.Model):
     notifications = db.Column(db.Boolean, nullable=False, default=True)
 
 # -------------------- DATABASE INIT --------------------
+def _seed_demo_dataset():
+    if app.config.get('TESTING'):
+        return
+    seed_flag = (os.environ.get('FITTRACK_SEED_DEMO', '1') or '1').strip().lower()
+    if seed_flag in ('0', 'false', 'no', 'off'):
+        return
+
+    demo_users = (
+        {'username': 'StudentUser', 'email': 'student@example.com', 'password': 'StrongPass123'},
+        {'username': 'AlexRunner', 'email': 'alex.runner@fittrack.demo', 'password': 'StrongPass123'},
+        {'username': 'MayaLift', 'email': 'maya.lift@fittrack.demo', 'password': 'StrongPass123'},
+    )
+    workout_templates = (
+        ('Running', 35, 320, 1, ('cardio', 'endurance'), False),
+        ('Cycling', 45, 410, 2, ('cardio',), False),
+        ('Strength', 50, 360, 3, ('strength',), False),
+        ('Walking', 30, 180, 4, ('recovery',), False),
+        ('Yoga', 40, 220, 5, ('mobility',), False),
+        ('HIIT', 25, 370, 6, ('interval',), False),
+        ('Core', 20, 160, 8, ('strength', 'core'), True),
+    )
+
+    today = date.today()
+    users_for_seed = []
+    for spec in demo_users:
+        user = User.query.filter_by(email=spec['email']).first()
+        if not user:
+            user = User(
+                username=spec['username'],
+                email=spec['email'],
+                password=generate_password_hash(spec['password']),
+                role='user',
+                is_archived=False,
+            )
+            db.session.add(user)
+            db.session.flush()
+        users_for_seed.append(user)
+
+    touched_dates = {}
+    for user in users_for_seed:
+        if Workout.query.filter_by(user_id=user.id).count() > 0:
+            continue
+        for activity, duration, calories, days_back, tags, archived in workout_templates:
+            workout_date = today - timedelta(days=days_back)
+            workout = Workout(
+                user_id=user.id,
+                username=user.username,
+                activity=activity,
+                duration=duration,
+                calories=calories,
+                date=workout_date,
+                archived=archived,
+            )
+            if tags:
+                workout.tags = get_or_create_tags(list(tags))
+            db.session.add(workout)
+            touched_dates.setdefault(user.id, set()).add(workout_date)
+
+    db.session.flush()
+    for user_id, days in touched_dates.items():
+        for day in days:
+            recalc_daily_summary(user_id, day)
+
+
 @app.before_first_request
 def initialize_seed_data():
     # Schema evolution is handled by Alembic migrations only.
@@ -366,6 +430,9 @@ def initialize_seed_data():
             role='admin'
         )
         db.session.add(admin)
+
+    # Seed deterministic demo users/workouts for reproducible demos.
+    _seed_demo_dataset()
 
     # Ensure settings and weekly goals exist for all users
     try:
