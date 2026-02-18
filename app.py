@@ -379,6 +379,11 @@ def _seed_demo_dataset():
             )
             db.session.add(user)
             db.session.flush()
+        else:
+            # Keep demo identities consistent across environments.
+            user.username = spec['username']
+            user.role = 'user'
+            user.is_archived = False
         users_for_seed.append(user)
 
     touched_dates = {}
@@ -1376,6 +1381,7 @@ if __name__ == '__main__':
     # Auto-provision DB + schema so running app.py is enough on a fresh MySQL host.
     with app.app_context():
         _bootstrap_mysql_database()
+        initialize_seed_data()
 
     # Fail fast on boot instead of returning 500 on first request.
     with app.app_context():
