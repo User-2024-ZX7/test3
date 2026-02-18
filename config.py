@@ -3,6 +3,14 @@ from pathlib import Path
 from datetime import timedelta
 
 
+def _env_stripped(name):
+    value = os.environ.get(name)
+    if value is None:
+        return None
+    value = value.strip()
+    return value or None
+
+
 def _is_development_mode():
     env = (os.environ.get('FLASK_ENV') or 'development').lower()
     debug = os.environ.get('FLASK_DEBUG', '0') == '1'
@@ -24,12 +32,12 @@ class Config:
 
     # SQLAlchemy database URI
     # Preferred: DATABASE_URL
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    DB_USER = os.environ.get('DB_USER')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD')
-    DB_HOST = os.environ.get('DB_HOST')
-    DB_PORT = os.environ.get('DB_PORT')
-    DB_NAME = os.environ.get('DB_NAME')
+    DATABASE_URL = _env_stripped('DATABASE_URL')
+    DB_USER = _env_stripped('DB_USER')
+    DB_PASSWORD = _env_stripped('DB_PASSWORD')
+    DB_HOST = _env_stripped('DB_HOST')
+    DB_PORT = _env_stripped('DB_PORT')
+    DB_NAME = _env_stripped('DB_NAME')
 
     if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
