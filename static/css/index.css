@@ -102,6 +102,13 @@
   backdrop-filter: blur(11px);
 }
 
+.ft-home .ft-nav::after {
+  background:
+    linear-gradient(90deg, rgba(34, 211, 238, 0.25), rgba(59, 130, 246, 0.25)),
+    linear-gradient(90deg, #22d3ee var(--ft-scroll, 0%), transparent 0);
+  opacity: 0.95;
+}
+
 .ft-home .nav-shell {
   min-height: var(--ft-nav-height);
   display: flex;
@@ -773,16 +780,25 @@
 }
 
 /* FAQ */
+.ft-home #faq .container {
+  max-width: min(var(--ft-content-max), 1020px);
+}
+
 .ft-home .faq-shell {
-  max-width: 900px;
+  max-width: 100%;
   margin-inline: auto;
+}
+
+.ft-home .faq-shell .accordion {
+  display: grid;
+  gap: 0.78rem;
 }
 
 .ft-home .accordion-item {
   border: 1px solid rgba(23, 32, 51, 0.1);
   border-radius: var(--ft-radius-sm);
   overflow: hidden;
-  margin-bottom: 0.78rem;
+  margin-bottom: 0;
   box-shadow: 0 8px 20px rgba(9, 25, 41, 0.08);
 }
 

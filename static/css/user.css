@@ -1,5 +1,6 @@
 .ft-user {
   font-family: "Manrope", "Segoe UI", sans-serif;
+  --ft-user-shell-max: 1180px;
   background:
     radial-gradient(880px 420px at -8% -16%, rgba(30, 64, 175, 0.14), transparent 60%),
     radial-gradient(820px 380px at 112% -24%, rgba(14, 165, 233, 0.14), transparent 56%),
@@ -37,6 +38,11 @@
   backdrop-filter: blur(10px);
 }
 
+.ft-user .ft-nav > .container,
+.ft-user .user-main {
+  max-width: var(--ft-user-shell-max);
+}
+
 .ft-user .navbar:not(.ft-nav) .container {
   max-width: 1220px;
   display: flex;
@@ -46,7 +52,7 @@
 
 .user-main {
   width: 100%;
-  max-width: 1240px;
+  max-width: var(--ft-user-shell-max);
   padding-top: 1.4rem;
   padding-inline: clamp(0.7rem, 2vw, 1.2rem);
 }
