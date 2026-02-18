@@ -1306,6 +1306,10 @@ def events():
 if __name__ == '__main__':
     debug_mode = os.environ.get('FLASK_DEBUG', '0') == '1'
 
+    # Auto-provision DB + schema so running app.py is enough on a fresh MySQL host.
+    with app.app_context():
+        _bootstrap_mysql_database()
+
     # Fail fast on boot instead of returning 500 on first request.
     with app.app_context():
         db.session.execute(text('SELECT 1'))

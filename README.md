@@ -28,8 +28,7 @@ FitTrack is a Flask + Jinja2 + MySQL web application for tracking workouts, calo
 1. Activate environment: `venv\Scripts\Activate.ps1`
 2. Install deps: `pip install -r requirements.txt`
 3. Configure env vars (optional): `SECRET_KEY`, `DATABASE_URL`, `DB_*`
-4. Apply migrations: `python -m flask --app app db upgrade`
-5. Start server: `python app.py`
+4. Start server: `python app.py` (auto-creates DB + applies migrations on startup)
 6. Open: `http://127.0.0.1:5000`
 
 ### Stable Local Start (recommended on Windows)
