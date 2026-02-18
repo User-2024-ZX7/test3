@@ -1,6 +1,7 @@
 from flask import Flask, g, render_template, redirect, url_for, request, flash, session, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import case, func, inspect, text
+from sqlalchemy import case, create_engine, func, inspect, text
+from sqlalchemy.engine import make_url
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
 import json
@@ -125,6 +126,37 @@ def _validate_runtime_config():
 
 
 _validate_runtime_config()
+
+
+def _bootstrap_mysql_database():
+    uri = app.config.get('SQLALCHEMY_DATABASE_URI') or ''
+    url = make_url(uri)
+    if url.get_backend_name() != 'mysql':
+        raise RuntimeError('Only MySQL is supported.')
+
+    db_name = (url.database or '').strip()
+    if not db_name or not re.match(r'^[A-Za-z0-9_]+$', db_name):
+        raise RuntimeError('Invalid DB name. Use letters, numbers, and underscore only.')
+
+    admin_url = url.set(database='mysql')
+    admin_engine = create_engine(admin_url, pool_pre_ping=True)
+    try:
+        with admin_engine.begin() as conn:
+            conn.execute(
+                text(
+                    f"CREATE DATABASE IF NOT EXISTS `{db_name}` "
+                    "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+                )
+            )
+    finally:
+        admin_engine.dispose()
+
+    with app.app_context():
+        if Migrate:
+            from flask_migrate import upgrade as migrate_upgrade
+            migrate_upgrade()
+        else:
+            db.create_all()
 
 
 @app.after_request
