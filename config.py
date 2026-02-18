@@ -35,20 +35,20 @@ class Config:
     DATABASE_URL = _env_stripped('DATABASE_URL')
     DB_USER = _env_stripped('DB_USER')
     DB_PASSWORD = _env_stripped('DB_PASSWORD')
-    DB_HOST = _env_stripped('DB_HOST')
-    DB_PORT = _env_stripped('DB_PORT')
-    DB_NAME = _env_stripped('DB_NAME')
+    DB_HOST = _env_stripped('DB_HOST') or 'localhost'
+    DB_PORT = _env_stripped('DB_PORT') or '3306'
+    DB_NAME = _env_stripped('DB_NAME') or 'fittrack'
 
     if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
-    elif all([DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]):
+    elif all([DB_USER, DB_PASSWORD]):
         SQLALCHEMY_DATABASE_URI = (
             f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
         )
     else:
         raise RuntimeError(
             'MySQL configuration is required. Set DATABASE_URL (mysql+pymysql://...) '
-            'or DB_USER/DB_PASSWORD/DB_HOST/DB_PORT/DB_NAME.'
+            'or set DB_USER/DB_PASSWORD (DB_HOST/DB_PORT/DB_NAME default to localhost/3306/fittrack).'
         )
 
     if not str(SQLALCHEMY_DATABASE_URI).startswith('mysql+pymysql://'):

@@ -25,15 +25,16 @@ FitTrack is a Flask + Jinja2 + MySQL web application for tracking workouts, calo
 - Session hardening (HttpOnly, SameSite, secure option via env)
 
 ## Run Locally
-1. Activate environment: `venv\Scripts\Activate.ps1`
-2. Install deps: `pip install -r requirements.txt`
-3. Configure env vars (optional): `SECRET_KEY`, `DATABASE_URL`, `DB_*`
-4. Start server: `python app.py` (auto-creates DB + applies migrations on startup)
+1. Create venv: `python -m venv venv`
+2. Activate environment: `venv\Scripts\Activate.ps1`
+3. Install deps: `pip install -r requirements.txt`
+4. Set DB credentials: `DB_USER`, `DB_PASSWORD` (optional overrides: `DB_HOST`, `DB_PORT`, `DB_NAME`)
+5. Start server: `python app.py` (auto-creates DB + applies migrations on startup)
 6. Open: `http://127.0.0.1:5000`
 
 ### Stable Local Start (recommended on Windows)
-Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, auto-create the MySQL database (if missing), run migrations, and start one server process:
-- Copy `.env.example` to `.env` and set your MySQL credentials once.
+Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, auto-create the MySQL database (if missing), run migrations, and start one server process.
+- Copy `.env.example` to `.env` and set `DB_USER` and `DB_PASSWORD` once.
 - `.\run_local.ps1`
 - For assessment checks: this script is the intended single-command startup.
 
