@@ -56,7 +56,7 @@ Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, auto-cre
 
 - On app startup, FitTrack seeds deterministic demo users and workouts in development mode.
 - Demo user password: `StrongPass123`.
-- Demo users: `student@example.com`, `alex.runner@fittrack.demo`, `maya.lift@fittrack.demo`.
+- Demo users: `student@example.com`, `coventry@gmail.com`, `alex.runner@fittrack.demo`, `maya.lift@fittrack.demo`.
 - To disable demo seeding: set `FITTRACK_SEED_DEMO=0`.
 
 ## Tests

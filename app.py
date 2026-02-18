@@ -352,6 +352,7 @@ def _seed_demo_dataset():
 
     demo_users = (
         {'username': 'StudentUser', 'email': 'student@example.com', 'password': 'StrongPass123'},
+        {'username': 'Coventry123', 'email': 'coventry@gmail.com', 'password': 'StrongPass123'},
         {'username': 'AlexRunner', 'email': 'alex.runner@fittrack.demo', 'password': 'StrongPass123'},
         {'username': 'MayaLift', 'email': 'maya.lift@fittrack.demo', 'password': 'StrongPass123'},
     )
