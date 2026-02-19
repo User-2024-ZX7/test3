@@ -67,6 +67,7 @@
   background: linear-gradient(180deg, #0a1a2b 0%, #112a3f 100%);
   color: #e8f1fb;
   width: min(86vw, 340px) !important;
+  z-index: 1305 !important;
 }
 
 .home-sidebar .offcanvas-header {
@@ -78,6 +79,13 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  opacity: 1;
+}
+
+.home-sidebar .offcanvas-title .ft-word,
+.home-sidebar .offcanvas-title .ft-word-tag {
+  color: #ffffff;
+  opacity: 1;
 }
 
 .sidebar-nav {

@@ -146,6 +146,7 @@
 .ft-nav .mobile-menu-btn {
   border-color: rgba(255, 255, 255, 0.32);
   background: rgba(255, 255, 255, 0.1);
+  margin-left: auto;
 }
 
 .ft-nav .nav-link {
