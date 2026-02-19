@@ -1,6 +1,7 @@
 .ft-user {
   font-family: "Manrope", "Segoe UI", sans-serif;
   --ft-user-shell-max: 1180px;
+  --ft-user-shell-pad: 0.95rem;
   background:
     radial-gradient(880px 420px at -8% -16%, rgba(30, 64, 175, 0.14), transparent 60%),
     radial-gradient(820px 380px at 112% -24%, rgba(14, 165, 233, 0.14), transparent 56%),
@@ -41,6 +42,7 @@
 .ft-user .ft-nav > .container,
 .ft-user .user-main {
   max-width: var(--ft-user-shell-max);
+  padding-inline: var(--ft-user-shell-pad);
 }
 
 .ft-user .navbar:not(.ft-nav) .container {
@@ -54,7 +56,7 @@
   width: 100%;
   max-width: var(--ft-user-shell-max);
   padding-top: 1.4rem;
-  padding-inline: clamp(0.7rem, 2vw, 1.2rem);
+  padding-inline: var(--ft-user-shell-pad);
 }
 
 .small-muted {
@@ -280,6 +282,10 @@ label.btn[aria-disabled="true"] {
 }
 
 @media (max-width: 991.98px) {
+  .ft-user {
+    --ft-user-shell-pad: 0.72rem;
+  }
+
   .ft-user .navbar > .container {
     justify-content: space-between;
   }
@@ -421,7 +427,7 @@ footer.footer-compact {
 
 @media (max-width: 430px) {
   .user-main {
-    padding-inline: 0.65rem;
+    padding-inline: var(--ft-user-shell-pad);
   }
 
   .ft-user .navbar-brand .ft-word {

@@ -1,6 +1,7 @@
 .ft-admin {
   font-family: "Manrope", "Segoe UI", sans-serif;
   --ft-admin-shell-max: 1180px;
+  --ft-admin-shell-pad: 0.95rem;
   background:
     radial-gradient(900px 420px at -10% -20%, rgba(30, 64, 175, 0.15), transparent 60%),
     radial-gradient(900px 420px at 110% -30%, rgba(14, 165, 233, 0.14), transparent 58%),
@@ -44,6 +45,7 @@
 .ft-admin .ft-nav > .container,
 .ft-admin .admin-main > .container {
   max-width: var(--ft-admin-shell-max);
+  padding-inline: var(--ft-admin-shell-pad);
 }
 
 .admin-main > header h1 {
@@ -674,6 +676,10 @@ footer.footer-compact {
 }
 
 @media (max-width: 992px) {
+  .ft-admin {
+    --ft-admin-shell-pad: 0.72rem;
+  }
+
   .ft-admin .admin-main > header {
     padding: 0.85rem 0.9rem;
   }

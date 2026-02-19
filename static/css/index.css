@@ -781,7 +781,7 @@
 
 /* FAQ */
 .ft-home #faq .container {
-  max-width: min(var(--ft-content-max), 1020px);
+  max-width: var(--ft-content-max);
 }
 
 .ft-home .faq-shell {
