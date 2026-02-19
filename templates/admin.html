@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-  <header id="admin-overview" class="container my-4">
+  <header id="admin-overview" class="container admin-shell my-4">
     <h1 class="h3 mb-1">Admin Dashboard</h1>
     <p class="text-muted mb-0">Monitor users, workouts, and account lifecycle actions.</p>
   </header>
@@ -42,7 +42,7 @@
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <section class="container mb-3" aria-label="System messages">
+      <section class="container admin-shell mb-3" aria-label="System messages">
         {% for category, message in messages %}
           {% set c = category %}
           {% if c not in ['primary','secondary','success','danger','warning','info','light','dark'] %}
@@ -54,7 +54,7 @@
     {% endif %}
   {% endwith %}
 
-  <section class="container my-4 admin-snapshot" aria-labelledby="admin-snapshot-title">
+  <section class="container admin-shell my-4 admin-snapshot" aria-labelledby="admin-snapshot-title">
     <article class="admin-snapshot-card shadow-sm">
       <div class="admin-snapshot-head">
         <h2 id="admin-snapshot-title" class="h5 mb-0">Today’s Snapshot (All Users)</h2>
@@ -82,7 +82,7 @@
     </article>
   </section>
 
-  <section class="container my-4 admin-controls" aria-labelledby="admin-controls-title">
+  <section class="container admin-shell my-4 admin-controls" aria-labelledby="admin-controls-title">
     <div class="admin-controls-card">
       <h2 id="admin-controls-title" class="h5 mb-3">Admin Controls</h2>
       <div class="row g-3 align-items-end">
@@ -124,7 +124,7 @@
     </div>
   </section>
 
-  <section class="container my-5 active-users-section" id="activeUsersSection" aria-labelledby="active-users-title">
+  <section class="container admin-shell my-5 active-users-section" id="activeUsersSection" aria-labelledby="active-users-title">
     <h2 id="active-users-title" class="h4 mb-3">
       <i class="fa-solid fa-users section-meta-icon meta-users"></i>
       Active Users
@@ -181,7 +181,7 @@
     </div>
   </section>
 
-  <section class="container my-5 archived-users-section" id="archivedUsersSection" aria-labelledby="archived-users-title">
+  <section class="container admin-shell my-5 archived-users-section" id="archivedUsersSection" aria-labelledby="archived-users-title">
     <h2 id="archived-users-title" class="h4 mb-3">
       <i class="fa-solid fa-box-archive section-meta-icon meta-archive"></i>
       Archived Users
