@@ -38,6 +38,29 @@ FitTrack is a Flask + Jinja2 + MySQL web application for tracking workouts, calo
 
 Development defaults: if `DB_USER`/`DB_PASSWORD` are not set, app uses `root` / `root`.
 
+## For Checker (Quick Run)
+
+Prerequisites:
+
+- Python 3.11+
+- MySQL server running locally
+- MySQL user with permission to create/use databases
+
+Setup:
+
+1. `python -m venv venv`
+2. `venv\Scripts\Activate.ps1`
+3. `python -m pip install -r requirements.txt`
+4. Set environment variables: `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME`
+5. Start app: `python app.py`
+6. Open: `http://127.0.0.1:5000`
+
+Notes:
+
+- App startup auto-creates the MySQL database (if missing) and applies migrations.
+- Windows one-command startup: `.\run_local.ps1`
+- Use a separate MySQL test database for tests.
+
 ### Stable Local Start (recommended on Windows)
 
 Use `run_local.ps1` to auto-stop stale Python listeners on port `5000`, auto-create the MySQL database (if missing), run migrations, and start one server process.
