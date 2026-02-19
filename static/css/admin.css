@@ -51,8 +51,7 @@
   padding-inline: var(--ft-admin-shell-pad);
 }
 
-.ft-admin .admin-main > .container,
-.ft-admin .admin-main > header,
+.ft-admin .admin-main > .container:not(header),
 .ft-admin .admin-main > section.container {
   width: var(--ft-admin-shell-width);
   max-width: var(--ft-admin-shell-width);
@@ -61,17 +60,17 @@
   padding-inline: 0 !important;
 }
 
+.ft-admin .admin-main > header.container {
+  width: var(--ft-admin-shell-width);
+  max-width: var(--ft-admin-shell-width);
+  margin-inline: auto;
+  --bs-gutter-x: 0;
+}
+
 .ft-admin .admin-shell {
   width: var(--ft-admin-shell-width);
   max-width: var(--ft-admin-shell-width);
   margin-inline: auto;
-}
-
-.ft-admin .admin-main > #admin-overview,
-.ft-admin .admin-main > .admin-hero,
-.ft-admin .admin-main > .admin-snapshot,
-.ft-admin .admin-main > .admin-controls {
-  padding-inline: 0 !important;
 }
 
 .ft-admin .admin-shell > * {
@@ -736,6 +735,10 @@ footer.footer-compact {
     --ft-admin-shell-pad: 0.72rem;
     --ft-admin-shell-width: min(calc(100vw - 0.8rem), var(--ft-admin-shell-max));
     --a-panel-pad-x: 0.95rem;
+  }
+
+  .ft-admin .ft-nav .mobile-menu-btn {
+    margin-left: auto;
   }
 
   .ft-admin .admin-main > header {
