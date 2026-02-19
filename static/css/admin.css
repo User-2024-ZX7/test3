@@ -44,37 +44,38 @@
   backdrop-filter: blur(10px);
 }
 
-.ft-admin .ft-nav > .container,
-.ft-admin .admin-main > .container {
+.ft-admin .ft-nav > .container {
   width: var(--ft-admin-shell-width);
   max-width: var(--ft-admin-shell-width);
   margin-inline: auto;
   padding-inline: var(--ft-admin-shell-pad);
 }
 
-.ft-admin .admin-shell {
-  width: var(--ft-admin-shell-width);
-  max-width: var(--ft-admin-shell-width);
-  margin-inline: auto;
-  padding-inline: 0;
-}
-
-.ft-admin .admin-shell > * {
-  max-width: 100%;
-}
-
-/* Fallback alignment even if template still uses plain .container blocks */
+.ft-admin .admin-main > .container,
 .ft-admin .admin-main > header,
 .ft-admin .admin-main > section.container {
   width: var(--ft-admin-shell-width);
   max-width: var(--ft-admin-shell-width);
   margin-inline: auto;
-  padding-inline: 0;
-}
-
-.ft-admin .admin-main > .container {
   --bs-gutter-x: 0;
   padding-inline: 0 !important;
+}
+
+.ft-admin .admin-shell {
+  width: var(--ft-admin-shell-width);
+  max-width: var(--ft-admin-shell-width);
+  margin-inline: auto;
+}
+
+.ft-admin .admin-main > #admin-overview,
+.ft-admin .admin-main > .admin-hero,
+.ft-admin .admin-main > .admin-snapshot,
+.ft-admin .admin-main > .admin-controls {
+  padding-inline: 0 !important;
+}
+
+.ft-admin .admin-shell > * {
+  max-width: 100%;
 }
 
 .admin-main > header h1 {
@@ -495,6 +496,7 @@ footer.footer-compact {
   --a-border: rgba(15, 23, 42, 0.1);
   --a-shadow-soft: 0 14px 32px rgba(15, 23, 42, 0.1);
   --a-shadow-float: 0 24px 56px rgba(15, 23, 42, 0.16);
+  --a-panel-pad-x: 1.2rem;
   background:
     radial-gradient(980px 420px at -10% -22%, rgba(8, 145, 178, 0.14), transparent 62%),
     radial-gradient(980px 420px at 110% -28%, rgba(29, 78, 216, 0.14), transparent 58%),
@@ -512,7 +514,16 @@ footer.footer-compact {
   border: 1px solid var(--a-border);
   background: linear-gradient(180deg, #ffffff, #f8fbff);
   box-shadow: var(--a-shadow-soft);
-  padding: 1rem 1.1rem;
+  padding: 1rem var(--a-panel-pad-x);
+}
+
+.ft-admin #admin-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.9rem !important;
+  margin-bottom: 1.15rem !important;
+  padding: 1.28rem var(--a-panel-pad-x);
 }
 
 .ft-admin .admin-main > header h1 {
@@ -520,8 +531,20 @@ footer.footer-compact {
   font-weight: 700;
 }
 
+.ft-admin #admin-overview h1 {
+  margin: 0;
+  line-height: 1.14;
+  font-size: clamp(1.48rem, 2.05vw, 1.95rem);
+}
+
 .ft-admin .admin-main > header p {
   color: var(--a-ink-500) !important;
+}
+
+.ft-admin #admin-overview p {
+  margin: 0;
+  line-height: 1.58;
+  max-width: 66ch;
 }
 
 .ft-admin .admin-hero-shell {
@@ -531,7 +554,7 @@ footer.footer-compact {
     radial-gradient(640px 260px at 12% 0%, rgba(255, 255, 255, 0.16), transparent 60%),
     linear-gradient(135deg, #10334a 0%, #115a7a 54%, #1484a6 100%);
   color: #e9f8ff;
-  padding: 1.1rem 1.2rem;
+  padding: 1.1rem var(--a-panel-pad-x);
   box-shadow: var(--a-shadow-float);
   display: grid;
   grid-template-columns: 1.25fr 1fr;
@@ -601,6 +624,7 @@ footer.footer-compact {
 
 .ft-admin .admin-controls-card {
   background: linear-gradient(180deg, #ffffff, #f8fbff);
+  padding-inline: var(--a-panel-pad-x);
 }
 
 .ft-admin .admin-controls .form-control,
@@ -620,6 +644,7 @@ footer.footer-compact {
 
 .ft-admin .admin-snapshot-card {
   background: linear-gradient(180deg, #ffffff, #f8fbff);
+  padding-inline: var(--a-panel-pad-x);
 }
 
 .ft-admin .snapshot-kpi {
@@ -710,14 +735,15 @@ footer.footer-compact {
   .ft-admin {
     --ft-admin-shell-pad: 0.72rem;
     --ft-admin-shell-width: min(calc(100vw - 0.8rem), var(--ft-admin-shell-max));
+    --a-panel-pad-x: 0.95rem;
   }
 
   .ft-admin .admin-main > header {
-    padding: 0.85rem 0.9rem;
+    padding: 0.85rem var(--a-panel-pad-x);
   }
 
   .ft-admin .admin-hero-shell {
-    padding: 0.95rem;
+    padding: 0.95rem var(--a-panel-pad-x);
   }
 
   .ft-admin .admin-hero-metrics {
@@ -726,6 +752,17 @@ footer.footer-compact {
 }
 
 @media (max-width: 576px) {
+  .ft-admin {
+    --a-panel-pad-x: 0.92rem;
+  }
+
+  .ft-admin #admin-overview {
+    padding: 1rem var(--a-panel-pad-x);
+    gap: 0.35rem;
+    margin-top: 0.6rem !important;
+    margin-bottom: 0.95rem !important;
+  }
+
   .ft-admin .admin-hero-title {
     font-size: 1.25rem;
   }
