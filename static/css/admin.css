@@ -342,6 +342,21 @@ footer.footer-compact {
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.24);
 }
 
+.admin-toast-container {
+  top: calc(var(--ft-nav-shell-h, 74px) + 0.9rem) !important;
+  right: 0.75rem !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 1400;
+  pointer-events: none;
+  width: min(92vw, 360px);
+}
+
+.admin-toast-container .toast {
+  pointer-events: auto;
+  width: 100%;
+}
+
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
   .ft-admin .navbar:not(.ft-nav) {
     background: #1f2937 !important;
@@ -554,10 +569,7 @@ footer.footer-compact {
 .ft-admin #admin-overview .admin-overview-panel {
   width: 100%;
   box-sizing: border-box;
-  display: grid;
-  grid-template-columns: 1.25fr 1fr;
-  gap: 1rem;
-  align-items: center;
+  display: block;
   border-radius: 1.2rem;
   padding: 1.1rem var(--a-panel-pad-x);
   border: 2px solid #d6e1f0;
@@ -567,24 +579,7 @@ footer.footer-compact {
 }
 
 .ft-admin #admin-overview .admin-overview-content {
-  grid-column: 1;
   min-width: 0;
-}
-
-.ft-admin #admin-overview .admin-overview-ghost {
-  grid-column: 2;
-  opacity: 0.42;
-  pointer-events: none;
-}
-
-.ft-admin #admin-overview .admin-overview-ghost .admin-hero-metric {
-  border-color: rgba(148, 163, 184, 0.38);
-  background: rgba(226, 232, 240, 0.36);
-}
-
-.ft-admin #admin-overview .admin-overview-ghost .admin-hero-metric span,
-.ft-admin #admin-overview .admin-overview-ghost .admin-hero-metric strong {
-  color: rgba(100, 116, 139, 0.55);
 }
 
 .ft-admin .admin-hero-shell,
@@ -810,14 +805,6 @@ footer.footer-compact {
 }
 
 @media (max-width: 1200px) {
-  .ft-admin #admin-overview .admin-overview-panel {
-    grid-template-columns: 1fr;
-  }
-
-  .ft-admin #admin-overview .admin-overview-ghost {
-    grid-column: 1;
-  }
-
   .ft-admin .admin-hero-shell {
     grid-template-columns: 1fr;
   }
@@ -869,10 +856,6 @@ footer.footer-compact {
     gap: 0.35rem;
   }
 
-  .ft-admin #admin-overview .admin-overview-ghost {
-    display: none;
-  }
-
   .ft-admin #admin-overview {
     margin-top: 0.6rem !important;
     margin-bottom: 0.95rem !important;
@@ -902,5 +885,13 @@ footer.footer-compact {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.3rem;
+  }
+
+  .admin-toast-container {
+    top: auto !important;
+    right: 0.5rem !important;
+    left: 0.5rem !important;
+    bottom: 0.65rem !important;
+    width: auto;
   }
 }
