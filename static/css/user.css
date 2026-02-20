@@ -733,6 +733,37 @@ footer.footer-compact {
   justify-content: center;
 }
 
+.ft-user .chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  margin-bottom: 0.45rem;
+}
+
+.ft-user .chart-title {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+  font-weight: 700;
+}
+
+.ft-user .chart-nav-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ft-user .chart-nav-controls .btn {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .ft-user .chart-canvas-wrap {
   border-radius: 0.95rem;
   border: 1px solid #e4ebf5;

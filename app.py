@@ -18,6 +18,12 @@ except ImportError:
 
 app = Flask(__name__)
 app.config.from_object(Config)
+# Dev-time reload/cache behavior so template/CSS/JS edits are visible
+# when running directly with `python app.py`.
+if os.environ.get('FLASK_ENV', '').lower() != 'production':
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+    app.jinja_env.auto_reload = True
 db = SQLAlchemy(app)
 if Migrate:
     migrate = Migrate(app, db)
