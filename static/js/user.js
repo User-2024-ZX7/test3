@@ -87,6 +87,56 @@ const escapeHtml = value => String(value || '').replace(/[&<>"']/g, s => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]
 ));
 const isSmallViewport = () => window.matchMedia('(max-width: 576px)').matches;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function toLocalIsoDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function parseIsoDateSafe(value) {
+    const date = new Date(`${String(value || '').slice(0, 10)}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getWeekWindow(weekOffset = 0) {
+    const endDate = new Date();
+    endDate.setHours(0, 0, 0, 0);
+    endDate.setDate(endDate.getDate() - (Math.max(0, weekOffset) * 7));
+
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - 6);
+    return { startDate, endDate };
+}
+
+function getMaxWeekOffset(arr) {
+    let earliest = null;
+    for (const workout of arr || []) {
+        const parsed = parseIsoDateSafe(workout.date);
+        if (!parsed) continue;
+        if (!earliest || parsed < earliest) earliest = parsed;
+    }
+    if (!earliest) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.max(0, Math.floor((today - earliest) / DAY_MS));
+    return Math.floor(diffDays / 7);
+}
+
+function formatWeekRange(startDate, endDate) {
+    const sameYear = startDate.getFullYear() === endDate.getFullYear();
+    const startText = startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const endText = endDate.toLocaleDateString(
+        undefined,
+        sameYear ? { month: 'short', day: 'numeric' } : { year: 'numeric', month: 'short', day: 'numeric' }
+    );
+    return sameYear
+        ? `${startText} - ${endText}, ${endDate.getFullYear()}`
+        : `${startText} - ${endText}`;
+}
 
 function showToast(message, type = 'success') {
     if (!dom.toastContainer || !window.bootstrap?.Toast) return;
@@ -444,24 +494,47 @@ function renderArchive() {
 }
 
 // ------------------- CHART DATA AGGREGATION -------------------
-function aggregateLast7Safe(arr) {
+function aggregateWeekWindow(arr, weekOffset = 0) {
+    const { startDate, endDate } = getWeekWindow(weekOffset);
     const dates = [...Array(7)].map((_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return d.toISOString().slice(0, 10);
+        const day = new Date(startDate);
+        day.setDate(startDate.getDate() + i);
+        return toLocalIsoDate(day);
     });
 
-    const totalsCal = dates.map(d => {
-        const total = arr.filter(w => w.date === d).reduce((s, w) => s + safeNum(w.calories), 0);
-        return Math.max(0, total);
-    });
+    const indexByDate = new Map(dates.map((d, idx) => [d, idx]));
+    const totalsCal = Array(7).fill(0);
+    const totalsDur = Array(7).fill(0);
+    let workoutCount = 0;
 
-    const totalsDur = dates.map(d => {
-        const total = arr.filter(w => w.date === d).reduce((s, w) => s + safeNum(w.duration), 0);
-        return Math.max(0, total);
-    });
+    for (const workout of arr || []) {
+        const key = String(workout.date || '').slice(0, 10);
+        const idx = indexByDate.get(key);
+        if (idx === undefined) continue;
+        totalsCal[idx] += safeNum(workout.calories);
+        totalsDur[idx] += safeNum(workout.duration);
+        workoutCount += 1;
+    }
 
-    return { dates, totalsCal, totalsDur };
+    return {
+        dates,
+        totalsCal: totalsCal.map(v => Math.max(0, v)),
+        totalsDur: totalsDur.map(v => Math.max(0, v)),
+        startDate,
+        endDate,
+        workoutCount
+    };
+}
+
+function updateWeekControls(agg) {
+    const maxOffset = getMaxWeekOffset(activeWorkouts);
+    if (chartWeekOffset > maxOffset) chartWeekOffset = maxOffset;
+
+    if (dom.weekRange) {
+        dom.weekRange.textContent = formatWeekRange(agg.startDate, agg.endDate);
+    }
+    if (dom.weekNext) dom.weekNext.disabled = chartWeekOffset <= 0;
+    if (dom.weekPrev) dom.weekPrev.disabled = chartWeekOffset >= maxOffset;
 }
 
 // ------------------- CHARTS -------------------
