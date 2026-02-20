@@ -49,6 +49,9 @@ const dom = {
     heroTotalWorkouts: document.getElementById('heroTotalWorkoutsUser'),
     heroTotalCalories: document.getElementById('heroTotalCaloriesUser'),
     heroGoal: document.getElementById('heroGoalUser'),
+    weekPrev: document.getElementById('weekPrevUser'),
+    weekNext: document.getElementById('weekNextUser'),
+    weekRange: document.getElementById('weekRangeUser'),
     liveRegion: document.getElementById('userLiveRegion'),
     toastContainer: document.getElementById('userToastContainer'),
 
@@ -75,6 +78,7 @@ const uiState = {
     sort: 'date_desc',
     minCalories: 0
 };
+let chartWeekOffset = 0;
 
 // ------------------- HELPERS -------------------
 const safeNum = v => Math.max(0, Number(v) || 0);
