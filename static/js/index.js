@@ -84,21 +84,57 @@
       sections.forEach((section) => observer.observe(section));
     }
 
+    const calEl = document.getElementById('snapCalories');
+    const totalEl = document.getElementById('snapTotal');
+    const goalEl = document.getElementById('snapGoal');
+    const bars = Array.from(document.querySelectorAll('.snapshot-bars .bar'));
+    const weekRangeEl = document.getElementById('snapWeekRange');
+    const prevWeekBtn = document.getElementById('snapPrevWeek');
+    const nextWeekBtn = document.getElementById('snapNextWeek');
+    const HOME_LOCALE = 'en-GB';
+    let snapshotWeekOffset = 0;
+    let snapshotMaxOffset = 0;
+
+    function formatSnapshotRange(startIso, endIso) {
+      if (!startIso || !endIso) return 'This week (Mon-Sun)';
+      const start = new Date(`${startIso}T00:00:00`);
+      const end = new Date(`${endIso}T00:00:00`);
+      if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 'This week (Mon-Sun)';
+
+      const sameYear = start.getFullYear() === end.getFullYear();
+      const startText = start.toLocaleDateString(HOME_LOCALE, { day: '2-digit', month: 'short' });
+      const endText = end.toLocaleDateString(
+        HOME_LOCALE,
+        sameYear ? { day: '2-digit', month: 'short' } : { day: '2-digit', month: 'short', year: 'numeric' }
+      );
+      return sameYear
+        ? `${startText} - ${endText}, ${end.getFullYear()}`
+        : `${startText} - ${endText}`;
+    }
+
+    function setSnapshotNavState() {
+      if (prevWeekBtn) prevWeekBtn.disabled = snapshotWeekOffset >= snapshotMaxOffset;
+      if (nextWeekBtn) nextWeekBtn.disabled = snapshotWeekOffset <= 0;
+    }
+
+    setSnapshotNavState();
+
     async function loadSnapshot() {
-      const calEl = document.getElementById('snapCalories');
-      const totalEl = document.getElementById('snapTotal');
-      const goalEl = document.getElementById('snapGoal');
-      const bars = Array.from(document.querySelectorAll('.snapshot-bars .bar'));
       if (!calEl || !totalEl || !goalEl || bars.length !== 7) return;
 
       try {
-        const res = await fetch('/api/public-stats', { cache: 'no-store' });
+        const res = await fetch(`/api/public-stats?week_offset=${snapshotWeekOffset}`, { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
 
-        calEl.textContent = Number(data.calories_7d || 0).toLocaleString();
-        totalEl.textContent = Number(data.total_workouts || 0).toLocaleString();
-        goalEl.textContent = Number(data.weekly_goal_pct || 0).toLocaleString();
+        snapshotMaxOffset = Math.max(0, Number(data.max_week_offset || 0));
+        calEl.textContent = Number(data.calories_7d || 0).toLocaleString(HOME_LOCALE);
+        totalEl.textContent = Number(data.weekly_workouts || 0).toLocaleString(HOME_LOCALE);
+        goalEl.textContent = Number(data.weekly_goal_pct || 0).toLocaleString(HOME_LOCALE);
+        if (weekRangeEl) {
+          weekRangeEl.textContent = formatSnapshotRange(data.week_start, data.week_end);
+        }
+        setSnapshotNavState();
 
         const weekly = Array.isArray(data.weekly_calories) ? data.weekly_calories.slice(0, 7) : [];
         const labels = Array.isArray(data.weekly_labels) ? data.weekly_labels.slice(0, 7) : [];
@@ -142,6 +178,18 @@
       }
     });
     startSnapshotPolling();
+
+    prevWeekBtn?.addEventListener('click', () => {
+      if (snapshotWeekOffset >= snapshotMaxOffset) return;
+      snapshotWeekOffset += 1;
+      loadSnapshot();
+    });
+
+    nextWeekBtn?.addEventListener('click', () => {
+      if (snapshotWeekOffset <= 0) return;
+      snapshotWeekOffset -= 1;
+      loadSnapshot();
+    });
 
     document.querySelectorAll('.home-sidebar a[href^="#"]').forEach((link) => {
       link.addEventListener('click', (event) => {

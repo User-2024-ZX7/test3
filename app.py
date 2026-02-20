@@ -932,17 +932,31 @@ def admin_data():
 @app.route('/api/public-stats')
 def public_stats():
     today = date.today()
-    week_start = today - timedelta(days=6)
+    current_week_start = today - timedelta(days=today.weekday())
+
+    try:
+        week_offset = int((request.args.get('week_offset') or '0').strip())
+    except (TypeError, ValueError, AttributeError):
+        week_offset = 0
+    week_offset = max(0, min(week_offset, 520))
+
+    week_start = current_week_start - timedelta(days=7 * week_offset)
+    week_end = week_start + timedelta(days=6)
 
     weekly_workouts = Workout.query.filter(
         Workout.archived == False,
         Workout.date >= week_start,
+        Workout.date <= week_end,
     ).count()
     total_workouts = Workout.query.count()
 
     calories_7d = (
         db.session.query(func.sum(Workout.calories))
-        .filter(Workout.archived == False, Workout.date >= week_start)
+        .filter(
+            Workout.archived == False,
+            Workout.date >= week_start,
+            Workout.date <= week_end,
+        )
         .scalar()
     ) or 0
 
@@ -956,7 +970,7 @@ def public_stats():
         .filter(
             Workout.archived == False,
             Workout.date >= week_start,
-            Workout.date <= today,
+            Workout.date <= week_end,
         )
         .group_by(Workout.date)
         .all()
@@ -964,17 +978,34 @@ def public_stats():
     calories_map = {row[0]: int(row[1] or 0) for row in calories_rows}
     weekly_labels = []
     weekly_calories = []
+    weekday_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     for i in range(7):
         day = week_start + timedelta(days=i)
-        weekly_labels.append(day.strftime('%a'))
+        weekly_labels.append(weekday_labels[day.weekday()])
         weekly_calories.append(calories_map.get(day, 0))
+
+    earliest_workout_date = (
+        db.session.query(func.min(Workout.date))
+        .filter(Workout.archived == False)
+        .scalar()
+    )
+    if earliest_workout_date:
+        earliest_week_start = earliest_workout_date - timedelta(days=earliest_workout_date.weekday())
+        max_week_offset = max(0, (current_week_start - earliest_week_start).days // 7)
+    else:
+        max_week_offset = 0
 
     return jsonify({
         'calories_7d': int(calories_7d),
         'total_workouts': total_workouts,
+        'weekly_workouts': weekly_workouts,
         'weekly_goal_pct': weekly_goal_pct,
         'weekly_labels': weekly_labels,
         'weekly_calories': weekly_calories,
+        'week_start': week_start.isoformat(),
+        'week_end': week_end.isoformat(),
+        'week_offset': week_offset,
+        'max_week_offset': max_week_offset,
     })
 
 @app.route('/user')
