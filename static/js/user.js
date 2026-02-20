@@ -541,8 +541,11 @@ function updateWeekControls(agg) {
 let calChart, durChart;
 
 function renderCharts() {
-    const agg = aggregateLast7Safe(activeWorkouts);
-    const labels = agg.dates.map(d => new Date(d).toLocaleDateString(undefined, { weekday: 'short' }));
+    const maxOffset = getMaxWeekOffset(activeWorkouts);
+    if (chartWeekOffset > maxOffset) chartWeekOffset = maxOffset;
+
+    const agg = aggregateWeekWindow(activeWorkouts, chartWeekOffset);
+    const labels = agg.dates.map(d => new Date(`${d}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' }));
     const calOptions = buildChartOptions();
     const durOptions = buildChartOptions();
 
@@ -572,6 +575,7 @@ function renderCharts() {
         durChart.update();
     }
 
+    updateWeekControls(agg);
     return agg;
 }
 
