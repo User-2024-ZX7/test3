@@ -27,6 +27,9 @@
         sort: 'username_asc'
       }
     };
+    const AUTO_REFRESH_MIN_MS = 15000;
+    const FALLBACK_POLL_MS = 30000;
+    let lastAutoRefreshAt = 0;
 
     const escapeHtml = (value) => String(value || '').replace(/[&<>"']/g, (s) => (
       { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]
@@ -273,6 +276,7 @@
         if (lastSync) {
           lastSync.textContent = `Last sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
         }
+        lastAutoRefreshAt = Date.now();
         announce('Admin data updated.');
       } catch {
         showToast('Could not refresh admin dashboard data.', 'danger');
@@ -282,18 +286,25 @@
       }
     };
 
+    const maybeAutoRefresh = () => {
+      if (document.hidden) return;
+      const now = Date.now();
+      if (now - lastAutoRefreshAt < AUTO_REFRESH_MIN_MS) return;
+      loadAdminData().catch(() => {});
+    };
+
     let fallbackTimer = null;
     const startFallbackPolling = () => {
       if (fallbackTimer) return;
       fallbackTimer = setInterval(() => {
-        loadAdminData().catch(() => {});
-      }, 15000);
+        maybeAutoRefresh();
+      }, FALLBACK_POLL_MS);
     };
 
     if (window.EventSource) {
       const es = new EventSource('/events');
       es.onmessage = () => {
-        loadAdminData().catch(() => {});
+        maybeAutoRefresh();
       };
       es.onerror = () => {
         startFallbackPolling();

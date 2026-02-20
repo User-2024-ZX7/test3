@@ -66,6 +66,10 @@ const viewUserId = document.body?.dataset?.viewUserId;
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 let eventSource = null;
 let loadingWorkouts = false;
+let avatarHydrated = false;
+let lastAutoRefreshAt = 0;
+const AUTO_REFRESH_MIN_MS = 15000;
+const FALLBACK_POLL_MS = 30000;
 const uiState = {
     query: '',
     sort: 'date_desc',
@@ -273,14 +277,16 @@ async function loadWorkouts() {
             : await apiGet('/api/workouts');
         activeWorkouts = data.active || [];
         archivedWorkouts = data.archived || [];
-        if (!adminView) {
+        if (!adminView && !avatarHydrated) {
             const avatar = await apiGet('/api/avatar');
             if (avatar && avatar.avatar_url) {
                 dom.avatar.src = avatar.avatar_url;
             }
+            avatarHydrated = true;
         }
         renderAll();
         updateSyncMeta();
+        lastAutoRefreshAt = Date.now();
         announce('Workout data updated.');
     } catch (err) {
         const code = String(err?.message || '');
@@ -713,16 +719,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loadWorkouts();
     if (eventSource) eventSource.close();
     let fallbackTimer = null;
+    const maybeAutoRefresh = () => {
+        if (document.hidden) return;
+        const now = Date.now();
+        if (now - lastAutoRefreshAt < AUTO_REFRESH_MIN_MS) return;
+        loadWorkouts();
+    };
     const startFallbackPolling = () => {
         if (fallbackTimer) return;
         fallbackTimer = setInterval(() => {
-            loadWorkouts();
-        }, 15000);
+            maybeAutoRefresh();
+        }, FALLBACK_POLL_MS);
     };
     if (window.EventSource) {
         eventSource = new EventSource('/events');
         eventSource.onmessage = () => {
-            loadWorkouts();
+            maybeAutoRefresh();
         };
         eventSource.onerror = () => {
             startFallbackPolling();
