@@ -658,6 +658,21 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable();
     });
 
+    dom.weekPrev?.addEventListener('click', () => {
+        const maxOffset = getMaxWeekOffset(activeWorkouts);
+        if (chartWeekOffset >= maxOffset) return;
+        chartWeekOffset += 1;
+        renderAll();
+        announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
+    });
+
+    dom.weekNext?.addEventListener('click', () => {
+        if (chartWeekOffset <= 0) return;
+        chartWeekOffset -= 1;
+        renderAll();
+        announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
+    });
+
     // Avatar upload (save to DB) - disable in admin view
     if (adminView) {
         if (dom.avatarInput) dom.avatarInput.disabled = true;

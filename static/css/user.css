@@ -718,6 +718,21 @@ footer.footer-compact {
   background: linear-gradient(180deg, #ffffff, #f9fcff);
 }
 
+.ft-user .weekly-range-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ft-user .weekly-range-controls .btn {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .ft-user .chart-canvas-wrap {
   border-radius: 0.95rem;
   border: 1px solid #e4ebf5;
