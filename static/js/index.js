@@ -91,7 +91,9 @@
     const weekRangeEl = document.getElementById('snapWeekRange');
     const prevWeekBtn = document.getElementById('snapPrevWeek');
     const nextWeekBtn = document.getElementById('snapNextWeek');
+    const weekJumpInput = document.getElementById('snapWeekJump');
     const HOME_LOCALE = 'en-GB';
+    const DAY_MS = 24 * 60 * 60 * 1000;
     let snapshotWeekOffset = 0;
     let snapshotMaxOffset = 0;
 
@@ -110,6 +112,54 @@
       return sameYear
         ? `${startText} - ${endText}, ${end.getFullYear()}`
         : `${startText} - ${endText}`;
+    }
+
+    function getWeekStartMonday(sourceDate) {
+      const date = new Date(sourceDate);
+      date.setHours(0, 0, 0, 0);
+      const day = date.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+      const mondayDelta = day === 0 ? -6 : 1 - day;
+      date.setDate(date.getDate() + mondayDelta);
+      return date;
+    }
+
+    function getIsoWeekParts(sourceDate) {
+      const date = new Date(sourceDate);
+      date.setHours(0, 0, 0, 0);
+      const dayIndex = (date.getDay() + 6) % 7; // Mon=0 ... Sun=6
+      date.setDate(date.getDate() - dayIndex + 3); // Thursday of current ISO week
+
+      const isoYear = date.getFullYear();
+      const firstThursday = new Date(isoYear, 0, 4);
+      const firstDayIndex = (firstThursday.getDay() + 6) % 7;
+      firstThursday.setDate(firstThursday.getDate() - firstDayIndex + 3);
+
+      const weekNo = 1 + Math.round((date - firstThursday) / DAY_MS / 7);
+      return { isoYear, weekNo };
+    }
+
+    function formatWeekInputValue(sourceDate) {
+      const { isoYear, weekNo } = getIsoWeekParts(sourceDate);
+      return `${isoYear}-W${String(weekNo).padStart(2, '0')}`;
+    }
+
+    function parseWeekInputValue(value) {
+      const match = /^(\d{4})-W(\d{2})$/.exec(String(value || '').trim());
+      if (!match) return null;
+      const year = Number(match[1]);
+      const week = Number(match[2]);
+      if (!Number.isFinite(year) || !Number.isFinite(week) || week < 1 || week > 53) return null;
+
+      const jan4 = new Date(year, 0, 4);
+      jan4.setHours(0, 0, 0, 0);
+      const jan4Day = (jan4.getDay() + 6) % 7;
+      const week1Monday = new Date(jan4);
+      week1Monday.setDate(jan4.getDate() - jan4Day);
+
+      const monday = new Date(week1Monday);
+      monday.setDate(week1Monday.getDate() + (week - 1) * 7);
+      monday.setHours(0, 0, 0, 0);
+      return monday;
     }
 
     function setSnapshotNavState() {
@@ -133,6 +183,18 @@
         goalEl.textContent = Number(data.weekly_goal_pct || 0).toLocaleString(HOME_LOCALE);
         if (weekRangeEl) {
           weekRangeEl.textContent = formatSnapshotRange(data.week_start, data.week_end);
+        }
+        if (weekJumpInput) {
+          const currentWeekStart = getWeekStartMonday(new Date());
+          const earliestWeekStart = new Date(currentWeekStart);
+          earliestWeekStart.setDate(currentWeekStart.getDate() - (snapshotMaxOffset * 7));
+          const selectedWeekStart = data.week_start
+            ? new Date(`${data.week_start}T00:00:00`)
+            : currentWeekStart;
+          weekJumpInput.max = formatWeekInputValue(currentWeekStart);
+          weekJumpInput.min = formatWeekInputValue(earliestWeekStart);
+          weekJumpInput.value = formatWeekInputValue(selectedWeekStart);
+          weekJumpInput.disabled = false;
         }
         setSnapshotNavState();
 
@@ -188,6 +250,19 @@
     nextWeekBtn?.addEventListener('click', () => {
       if (snapshotWeekOffset <= 0) return;
       snapshotWeekOffset -= 1;
+      loadSnapshot();
+    });
+
+    weekJumpInput?.addEventListener('change', () => {
+      const pickedStart = parseWeekInputValue(weekJumpInput.value);
+      if (!pickedStart) return;
+      const currentWeekStart = getWeekStartMonday(new Date());
+      const diffDays = Math.floor((currentWeekStart - pickedStart) / DAY_MS);
+      let nextOffset = Math.floor(diffDays / 7);
+      if (!Number.isFinite(nextOffset)) return;
+      nextOffset = Math.min(Math.max(nextOffset, 0), snapshotMaxOffset);
+      if (nextOffset === snapshotWeekOffset) return;
+      snapshotWeekOffset = nextOffset;
       loadSnapshot();
     });
 

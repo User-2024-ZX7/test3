@@ -465,6 +465,26 @@
   color: #f2f8ff;
 }
 
+.ft-home .snapshot-week-input {
+  width: 150px;
+  max-width: 100%;
+  border-radius: 999px;
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(7, 17, 29, 0.22);
+  color: #f2f8ff;
+  font-size: 0.78rem;
+}
+
+.ft-home .snapshot-week-input:focus {
+  border-color: rgba(129, 208, 227, 0.78);
+  box-shadow: 0 0 0 0.2rem rgba(129, 208, 227, 0.18);
+}
+
+.ft-home .snapshot-week-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .ft-home .snapshot-nav-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -1047,6 +1067,10 @@
 
   .ft-home .snapshot-week-range {
     font-size: 0.78rem;
+  }
+
+  .ft-home .snapshot-week-input {
+    width: 142px;
   }
 
   .ft-home .snapshot-period-controls {
