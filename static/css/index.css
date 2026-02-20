@@ -62,7 +62,6 @@
   color: var(--ft-slate-900);
   line-height: 1.15;
   letter-spacing: -0.01em;
-  text-wrap: balance;
 }
 
 .ft-home p {
@@ -950,7 +949,7 @@
   }
 
   .ft-home .hero {
-    min-height: auto;
+    min-height: 0;
   }
 
   .ft-home .hero-grid {

@@ -1,6 +1,6 @@
 # FitTrack (5007CEM Web Development)
 
-Flask + MySQL fitness tracking system with user/admin roles, 
+Flask + MySQL fitness tracking system with user/admin roles,
 secure auth, workout management, and progress analytics.
 
 ## Teacher / Checker Run Guide
