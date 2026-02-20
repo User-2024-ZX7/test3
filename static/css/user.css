@@ -737,6 +737,7 @@ footer.footer-compact {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 0.55rem;
   margin-bottom: 0.45rem;
 }
@@ -747,12 +748,15 @@ footer.footer-compact {
   letter-spacing: 0.08em;
   color: #475569;
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .ft-user .chart-nav-controls {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  margin-left: auto;
 }
 
 .ft-user .chart-nav-controls .btn {
@@ -899,6 +903,20 @@ footer.footer-compact {
 }
 
 @media (max-width: 576px) {
+  .ft-user .chart-head {
+    align-items: flex-start;
+  }
+
+  .ft-user .chart-nav-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .ft-user .profile-avatar-col {
+    min-width: 0;
+    width: 100%;
+  }
+
   .ft-user .user-hero-title {
     font-size: 1.25rem;
   }
