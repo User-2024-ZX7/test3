@@ -604,8 +604,9 @@ function updateStats(agg) {
     dom.mostCal.textContent = most && most.activity && most.calories > 0 ? `${most.activity} - ${most.calories} cal` : '—';
 
     const calTotal = agg.totalsCal.reduce((s, v) => s + safeNum(v), 0);
+    const workoutsInWindow = Math.max(0, Number(agg.workoutCount) || 0);
     const calPct = Math.max(0, Math.round(calTotal / CAL_GOAL * 100));
-    const workPct = Math.max(0, Math.round(activeWorkouts.length / WORK_GOAL * 100));
+    const workPct = Math.max(0, Math.round(workoutsInWindow / WORK_GOAL * 100));
     const calFillPct = Math.min(100, calPct);
     const workFillPct = Math.min(100, workPct);
 
