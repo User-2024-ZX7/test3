@@ -404,15 +404,41 @@ async function restoreArchived(id) {
 
 async function restoreAllArchived() {
     if (adminView) return;
-    await apiPost('/workouts/restore-all');
-    await loadWorkouts();
+    const archivedCount = archivedWorkouts.length;
+    if (archivedCount === 0) {
+        showToast('No archived workouts to restore.', 'warning');
+        return;
+    }
+    try {
+        await apiPost('/workouts/restore-all');
+        await loadWorkouts();
+        const msg = archivedCount === 1
+            ? '1 archived workout restored.'
+            : `${archivedCount} archived workouts restored.`;
+        showToast(msg);
+    } catch {
+        showToast('Could not restore archive.', 'danger');
+    }
 }
 
 async function clearArchived() {
     if (adminView) return;
+    const archivedCount = archivedWorkouts.length;
+    if (archivedCount === 0) {
+        showToast('No archived workouts to clear.', 'warning');
+        return;
+    }
     if (!confirm('Clear all archived workouts?')) return;
-    await apiPost('/workouts/clear-archive');
-    await loadWorkouts();
+    try {
+        await apiPost('/workouts/clear-archive');
+        await loadWorkouts();
+        const msg = archivedCount === 1
+            ? '1 archived workout cleared.'
+            : `${archivedCount} archived workouts cleared.`;
+        showToast(msg);
+    } catch {
+        showToast('Could not clear archive.', 'danger');
+    }
 }
 
 function setImportFeedback(msg, isError = false) {
@@ -811,11 +837,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     dom.clearArchive?.addEventListener('click', () => {
-        clearArchived().then(() => showToast('Archive cleared.')).catch(() => showToast('Could not clear archive.', 'danger'));
+        clearArchived();
     });
 
     dom.restoreAll?.addEventListener('click', () => {
-        restoreAllArchived().then(() => showToast('Archived workouts restored.')).catch(() => showToast('Could not restore archive.', 'danger'));
+        restoreAllArchived();
     });
 
     if (adminView) {
