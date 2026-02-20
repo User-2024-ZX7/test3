@@ -1,115 +1,125 @@
 # FitTrack (5007CEM Web Development)
 
-FitTrack is a Flask + Jinja2 + MySQL web app for logging workouts, tracking calories, and viewing progress with role-based access for users and admins.
+Flask + MySQL fitness tracking system with user/admin roles, secure auth, workout management, and progress analytics.
 
-## Stack
+## Teacher / Checker Run Guide
 
-- Backend: Flask, SQLAlchemy, Flask-Migrate
-- Frontend: Jinja2, Bootstrap 5, ES6 JavaScript, Chart.js
-- Database: MySQL (`mysql+pymysql`)
+### Important
 
-## Features Implemented
+- Run the project with `python app.py`.
+- The app boot process automatically:
+  - creates the target MySQL database if missing,
+  - applies Alembic migrations,
+  - seeds deterministic demo data in development mode.
+- You do **not** need to manually create schema/tables by hand.
 
-- User registration/login with hashed passwords
-- Admin login with role-based route protection
-- Workout CRUD with archive/restore
-- User dashboard with search/filter and charts
-- Admin dashboard with aggregated statistics and account management
-- CSV/JSON import log and CSV/PDF export support
-
-## Security Controls
-
-- CSRF protection for form and API `POST` requests
-- Role-based authorization checks on user/admin routes
-- Input validation for auth, workout, and settings payloads
-- Login failure lockout protection
-- Logout by CSRF-protected `POST` only
-- Security headers (CSP, X-Frame-Options, Referrer-Policy, etc.)
-- Session hardening (HttpOnly, SameSite, configurable Secure cookie)
-
-## Checker Quick Start (Recommended)
-
-Prerequisites:
+## Prerequisites
 
 - Python 3.11+
-- MySQL server running locally
-- MySQL user with permission to create/use databases
-- MySQL CLI in `PATH` (recommended for `run_local.ps1`)
+- Local MySQL server running
+- A MySQL account with permission to create/use databases
 
-Steps:
+## Quick Start (Recommended)
 
-1. `python -m venv venv`
-2. `venv\Scripts\Activate.ps1`
-3. `python -m pip install -r requirements.txt`
-4. Copy `.env.example` to `.env` and set `DB_USER` and `DB_PASSWORD`
-5. Run `.\run_local.ps1`
-6. Open `http://127.0.0.1:5000`
-
-What startup does automatically:
-
-- Creates DB (if missing)
-- Applies Alembic migrations
-- Seeds deterministic demo users/workouts in development mode
-
-## Manual Start (Fallback)
-
+1. Create virtual environment:
 ```powershell
-$env:DB_USER="fittrack_user"
-$env:DB_PASSWORD="<your_mysql_password>"
+python -m venv venv
+```
+
+2. Activate environment:
+```powershell
+venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks activation:
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+venv\Scripts\Activate.ps1
+```
+
+3. Install dependencies:
+```powershell
+python -m pip install -r requirements.txt
+```
+
+4. Set DB environment variables (example):
+```powershell
+$env:DB_USER="root"
+$env:DB_PASSWORD="root"
 $env:DB_HOST="localhost"
 $env:DB_PORT="3306"
 $env:DB_NAME="fittrack"
+```
+
+5. Run app:
+```powershell
 python app.py
 ```
 
-If local MySQL only has `root`, replace `fittrack_user` with `root` for local development.
+6. Open:
+- `http://127.0.0.1:5000/`
 
-## Verification URLs
+## Alternative Start Script
 
-- Home: `http://127.0.0.1:5000/`
-- User login: `http://127.0.0.1:5000/login`
-- Admin login: `http://127.0.0.1:5000/admin-login`
-- User dashboard (after login): `http://127.0.0.1:5000/user`
-- Admin dashboard (after login): `http://127.0.0.1:5000/admin`
+You can also use:
+```powershell
+.\run_local.ps1
+```
 
-## Default Admin Account
+This script validates env vars, creates DB if needed, runs migrations, then starts `app.py`.
 
-- Email: `admin@fittrack.com`
+## Demo Credentials
+
+### Admin
+
 - Name: `FitAdmin`
+- Email: `admin@fittrack.com`
 - Password: `SuperSecret123`
 
-## Demo Seed Data
+### Demo Users
 
-- Enabled by default in development mode
-- Demo user password: `StrongPass123`
-- Demo users:
-  - `student@example.com`
-  - `coventry@gmail.com`
-  - `alex.runner@fittrack.demo`
-  - `maya.lift@fittrack.demo`
-- Disable with: `FITTRACK_SEED_DEMO=0`
+- Password for all demo users: `StrongPass123`
+- `student@example.com`
+- `coventry@gmail.com`
+- `alex.runner@fittrack.demo`
+- `maya.lift@fittrack.demo`
+
+## Verification Checklist
+
+1. Home page: `http://127.0.0.1:5000/`
+2. Admin login: `http://127.0.0.1:5000/admin-login`
+3. Admin dashboard: `http://127.0.0.1:5000/admin` (check "Today’s Snapshot")
+4. User login: `http://127.0.0.1:5000/login`
+5. User dashboard: `http://127.0.0.1:5000/user`
+6. Weekly charts on user page support previous/next week navigation.
+7. Home "Today’s Snapshot" supports previous/next week navigation (Mon-Sun week windows).
 
 ## Tests
 
-Set test DB URL first:
+Tests require a dedicated MySQL test database URL:
 
 ```powershell
-$env:TEST_DATABASE_URL="mysql+pymysql://fittrack_user:<your_mysql_password>@localhost:3306/fittrack_test"
+$env:TEST_DATABASE_URL="mysql+pymysql://root:root@localhost:3306/fittrack_test"
+python -m unittest discover -s tests -v
 ```
 
-Run:
+## Security Controls Implemented
 
-- `python -m unittest discover -s tests -v`
+- CSRF protection for form/API state-changing requests
+- Role-based authorization for user/admin routes
+- Input validation and sanitization rules
+- Password hashing
+- Login failure lockout protection
+- Session protections and secure headers (CSP, X-Frame-Options, etc.)
 
-Test suite includes security/role coverage and integration flow.
+## Troubleshooting
 
-## Database Migrations
+- `Access denied for user ...`: verify `DB_USER` / `DB_PASSWORD` / `DB_HOST` / `DB_PORT`.
+- `TEST_DATABASE_URL is required`: set it before running tests.
+- UI not updating after code changes: restart `python app.py` and hard refresh browser (`Ctrl+F5`).
+- Port `5000` busy: stop old Python process and rerun.
 
-- Migrations are in `migrations/`
-- Apply manually (if needed): `python -m flask --app app db upgrade`
-- Runtime schema mutation is disabled; schema changes must go through migrations
-
-## Active Submission Structure
+## Submission Structure
 
 - `app.py`
 - `config.py`
