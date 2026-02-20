@@ -8,7 +8,7 @@
 {% block main_class %}container user-main mb-5{% endblock %}
 
 {% block page_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css', v='2026-02-20-4') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css', v='2026-02-20-5') }}">
 {% endblock %}
 
 {% block content %}
@@ -162,7 +162,11 @@
       <div class="card p-3 charts-card shadow-sm">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h2 id="weekly-progress-title" class="mb-0 h6 fw-semibold panel-title"><i class="fa-solid fa-chart-line me-2 section-meta-icon meta-progress"></i>Weekly Progress</h2>
-          <span id="weekRangeUser" class="small-muted">This week (Mon-Sun)</span>
+          <div class="weekly-range-controls">
+            <span id="weekRangeUser" class="small-muted">This week (Mon-Sun)</span>
+            <label for="weekJumpUser" class="visually-hidden">Jump to week</label>
+            <input id="weekJumpUser" type="week" class="form-control form-control-sm week-jump-input" aria-label="Jump to week">
+          </div>
         </div>
 
         <div class="row g-3 mt-3">
@@ -286,5 +290,5 @@
 {% block page_scripts %}
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{{ url_for('static', filename='js/user.js', v='2026-02-20-5') }}"></script>
+  <script src="{{ url_for('static', filename='js/user.js', v='2026-02-20-6') }}"></script>
 {% endblock %}

@@ -742,16 +742,20 @@ footer.footer-compact {
 .ft-user .weekly-range-controls {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.4rem;
+  min-width: 0;
 }
 
-.ft-user .weekly-range-controls .btn {
-  width: 2rem;
-  height: 2rem;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.ft-user .week-jump-input {
+  width: 170px;
+  max-width: 100%;
+  border-radius: 0.6rem;
+  border-color: #cdd7e5;
+  font-size: 0.82rem;
+  color: #334155;
+  background: #ffffff;
 }
 
 .ft-user .chart-head {
@@ -924,6 +928,15 @@ footer.footer-compact {
 }
 
 @media (max-width: 576px) {
+  .ft-user .weekly-range-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ft-user .week-jump-input {
+    width: 150px;
+  }
+
   .ft-user .chart-head {
     align-items: flex-start;
   }

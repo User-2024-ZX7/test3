@@ -51,6 +51,7 @@ const dom = {
     heroTotalCalories: document.getElementById('heroTotalCaloriesUser'),
     heroGoal: document.getElementById('heroGoalUser'),
     weekRange: document.getElementById('weekRangeUser'),
+    weekJump: document.getElementById('weekJumpUser'),
     weekPrevButtons: Array.from(document.querySelectorAll('.week-prev-btn')),
     weekNextButtons: Array.from(document.querySelectorAll('.week-next-btn')),
     liveRegion: document.getElementById('userLiveRegion'),
@@ -145,6 +146,45 @@ function formatWeekRange(startDate, endDate) {
     return sameYear
         ? `${startText} - ${endText}, ${endDate.getFullYear()}`
         : `${startText} - ${endText}`;
+}
+
+function getIsoWeekParts(sourceDate) {
+    const date = new Date(sourceDate);
+    date.setHours(0, 0, 0, 0);
+    const dayIndex = (date.getDay() + 6) % 7; // Mon=0 ... Sun=6
+    date.setDate(date.getDate() - dayIndex + 3); // Thursday of the same ISO week
+
+    const isoYear = date.getFullYear();
+    const firstThursday = new Date(isoYear, 0, 4);
+    const firstDayIndex = (firstThursday.getDay() + 6) % 7;
+    firstThursday.setDate(firstThursday.getDate() - firstDayIndex + 3);
+
+    const weekNo = 1 + Math.round((date - firstThursday) / DAY_MS / 7);
+    return { isoYear, weekNo };
+}
+
+function formatWeekInputValue(sourceDate) {
+    const { isoYear, weekNo } = getIsoWeekParts(sourceDate);
+    return `${isoYear}-W${String(weekNo).padStart(2, '0')}`;
+}
+
+function parseWeekInputValue(value) {
+    const match = /^(\d{4})-W(\d{2})$/.exec(String(value || '').trim());
+    if (!match) return null;
+    const year = Number(match[1]);
+    const week = Number(match[2]);
+    if (!Number.isFinite(year) || !Number.isFinite(week) || week < 1 || week > 53) return null;
+
+    const jan4 = new Date(year, 0, 4);
+    jan4.setHours(0, 0, 0, 0);
+    const jan4Day = (jan4.getDay() + 6) % 7; // Mon=0 ... Sun=6
+    const week1Monday = new Date(jan4);
+    week1Monday.setDate(jan4.getDate() - jan4Day);
+
+    const monday = new Date(week1Monday);
+    monday.setDate(week1Monday.getDate() + (week - 1) * 7);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
 }
 
 function showToast(message, type = 'success') {
@@ -568,6 +608,14 @@ function updateWeekControls(agg) {
     if (dom.weekRange) {
         dom.weekRange.textContent = formatWeekRange(agg.startDate, agg.endDate);
     }
+    if (dom.weekJump) {
+        const currentWeekStart = getWeekWindow(0).startDate;
+        const earliestWeekStart = getWeekWindow(maxOffset).startDate;
+        dom.weekJump.max = formatWeekInputValue(currentWeekStart);
+        dom.weekJump.min = formatWeekInputValue(earliestWeekStart);
+        dom.weekJump.value = formatWeekInputValue(agg.startDate);
+        dom.weekJump.disabled = activeWorkouts.length === 0;
+    }
     dom.weekNextButtons?.forEach(btn => {
         btn.disabled = chartWeekOffset <= 0;
     });
@@ -716,6 +764,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dom.weekNextButtons?.forEach(btn => {
         btn.addEventListener('click', () => shiftWeekWindow('next'));
+    });
+
+    dom.weekJump?.addEventListener('change', () => {
+        const pickedStart = parseWeekInputValue(dom.weekJump.value);
+        if (!pickedStart) return;
+        const currentWeekStart = getWeekStartMonday(new Date());
+        const diffDays = Math.floor((currentWeekStart - pickedStart) / DAY_MS);
+        let nextOffset = Math.floor(diffDays / 7);
+        if (!Number.isFinite(nextOffset)) return;
+        const maxOffset = getMaxWeekOffset(activeWorkouts);
+        nextOffset = Math.min(Math.max(nextOffset, 0), maxOffset);
+        if (nextOffset === chartWeekOffset) return;
+        chartWeekOffset = nextOffset;
+        renderAll();
+        announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
     });
 
     // Avatar upload (save to DB) - disable in admin view
