@@ -7,13 +7,22 @@
 {% block main_class %}admin-main{% endblock %}
 
 {% block page_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css', v='2026-02-20-18') }}">
 {% endblock %}
 
 {% block content %}
   <header id="admin-overview" class="container admin-shell my-4">
-    <h1 class="h3 mb-1">Admin Dashboard</h1>
-    <p class="text-muted mb-0">Monitor users, workouts, and account lifecycle actions.</p>
+    <div class="admin-overview-panel">
+      <div class="admin-overview-content">
+        <h1 class="h3 mb-1">Admin Dashboard</h1>
+        <p class="text-muted mb-0">Monitor users, workouts, and account lifecycle actions.</p>
+      </div>
+      <div class="admin-hero-metrics admin-overview-ghost" aria-hidden="true">
+        <div class="admin-hero-metric"><span>&nbsp;</span><strong>&nbsp;</strong></div>
+        <div class="admin-hero-metric"><span>&nbsp;</span><strong>&nbsp;</strong></div>
+        <div class="admin-hero-metric"><span>&nbsp;</span><strong>&nbsp;</strong></div>
+      </div>
+    </div>
   </header>
 
   <section class="container admin-shell admin-hero mb-4" aria-label="Admin command center">
