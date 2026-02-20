@@ -604,13 +604,13 @@ function aggregateWeekWindow(arr, weekOffset = 0) {
 function updateWeekControls(agg) {
     const maxOffset = getMaxWeekOffset(activeWorkouts);
     if (chartWeekOffset > maxOffset) chartWeekOffset = maxOffset;
+    const currentWeekStart = getWeekWindow(0).startDate;
+    const earliestWeekStart = getWeekWindow(maxOffset).startDate;
 
     if (dom.weekRange) {
         dom.weekRange.textContent = formatWeekRange(agg.startDate, agg.endDate);
     }
     if (dom.weekJump) {
-        const currentWeekStart = getWeekWindow(0).startDate;
-        const earliestWeekStart = getWeekWindow(maxOffset).startDate;
         dom.weekJump.max = formatWeekInputValue(currentWeekStart);
         dom.weekJump.min = formatWeekInputValue(earliestWeekStart);
         dom.weekJump.value = formatWeekInputValue(agg.startDate);
@@ -633,6 +633,21 @@ function shiftWeekWindow(direction) {
         if (chartWeekOffset <= 0) return;
         chartWeekOffset -= 1;
     }
+    renderAll();
+    announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
+}
+
+function setWeekOffsetFromDate(targetDate) {
+    if (!targetDate) return;
+    const pickedStart = getWeekStartMonday(targetDate);
+    const currentWeekStart = getWeekStartMonday(new Date());
+    const diffDays = Math.floor((currentWeekStart - pickedStart) / DAY_MS);
+    let nextOffset = Math.floor(diffDays / 7);
+    if (!Number.isFinite(nextOffset)) return;
+    const maxOffset = getMaxWeekOffset(activeWorkouts);
+    nextOffset = Math.min(Math.max(nextOffset, 0), maxOffset);
+    if (nextOffset === chartWeekOffset) return;
+    chartWeekOffset = nextOffset;
     renderAll();
     announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
 }
@@ -768,17 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dom.weekJump?.addEventListener('change', () => {
         const pickedStart = parseWeekInputValue(dom.weekJump.value);
-        if (!pickedStart) return;
-        const currentWeekStart = getWeekStartMonday(new Date());
-        const diffDays = Math.floor((currentWeekStart - pickedStart) / DAY_MS);
-        let nextOffset = Math.floor(diffDays / 7);
-        if (!Number.isFinite(nextOffset)) return;
-        const maxOffset = getMaxWeekOffset(activeWorkouts);
-        nextOffset = Math.min(Math.max(nextOffset, 0), maxOffset);
-        if (nextOffset === chartWeekOffset) return;
-        chartWeekOffset = nextOffset;
-        renderAll();
-        announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
+        setWeekOffsetFromDate(pickedStart);
     });
 
     // Avatar upload (save to DB) - disable in admin view

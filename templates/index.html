@@ -5,7 +5,7 @@
 {% block body_class %}ft-home{% endblock %}
 
 {% block page_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css', v='2026-02-20-2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css', v='2026-02-20-3') }}">
 {% endblock %}
 
 {% block content %}
@@ -54,6 +54,8 @@
               <i class="fa-solid fa-chevron-left"></i>
             </button>
             <span id="snapWeekRange" class="snapshot-week-range">This week (Mon-Sun)</span>
+            <label for="snapWeekJump" class="visually-hidden">Jump to week</label>
+            <input id="snapWeekJump" type="week" class="form-control form-control-sm snapshot-week-input" aria-label="Jump to week">
             <button id="snapNextWeek" class="btn btn-outline-light btn-sm snapshot-nav-btn" type="button" aria-label="Show next week">
               <i class="fa-solid fa-chevron-right"></i>
             </button>
@@ -292,5 +294,5 @@
 
 {% block page_scripts %}
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="{{ url_for('static', filename='js/index.js', v='2026-02-20-1') }}"></script>
+  <script src="{{ url_for('static', filename='js/index.js', v='2026-02-20-2') }}"></script>
 {% endblock %}
