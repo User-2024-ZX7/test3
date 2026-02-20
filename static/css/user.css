@@ -318,6 +318,27 @@ footer.footer-compact {
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.24);
 }
 
+.user-toast-container {
+  top: calc(var(--ft-nav-shell-h, 74px) + 0.9rem) !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateX(-50%);
+  width: var(--ft-user-shell-width);
+  max-width: var(--ft-user-shell-width);
+  padding-inline: var(--ft-user-shell-pad);
+  display: flex;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  z-index: 1400;
+  pointer-events: none;
+}
+
+.user-toast-container .toast {
+  pointer-events: auto;
+  width: min(100%, 360px);
+}
+
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
   .ft-user .navbar:not(.ft-nav) {
     background: #1f2937 !important;
