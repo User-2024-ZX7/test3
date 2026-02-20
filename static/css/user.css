@@ -2,6 +2,7 @@
   font-family: "Manrope", "Segoe UI", sans-serif;
   --ft-user-shell-max: 1180px;
   --ft-user-shell-pad: 0.95rem;
+  --ft-user-shell-width: min(calc(100vw - 1.2rem), var(--ft-user-shell-max));
   background:
     radial-gradient(880px 420px at -8% -16%, rgba(30, 64, 175, 0.14), transparent 60%),
     radial-gradient(820px 380px at 112% -24%, rgba(14, 165, 233, 0.14), transparent 56%),
@@ -41,7 +42,9 @@
 
 .ft-user .ft-nav > .container,
 .ft-user .user-main {
-  max-width: var(--ft-user-shell-max);
+  width: var(--ft-user-shell-width);
+  max-width: var(--ft-user-shell-width);
+  margin-inline: auto;
   padding-inline: var(--ft-user-shell-pad);
 }
 
@@ -54,7 +57,8 @@
 
 .user-main {
   width: 100%;
-  max-width: var(--ft-user-shell-max);
+  max-width: var(--ft-user-shell-width);
+  margin-inline: auto;
   padding-top: 1.4rem;
   padding-inline: var(--ft-user-shell-pad);
 }
@@ -278,12 +282,23 @@ label.btn[aria-disabled="true"] {
 .ft-user .navbar .nav-actions .btn,
 .ft-user .navbar .nav-actions form .btn {
   white-space: nowrap;
-  min-height: 38px;
+  min-height: 40px;
+  width: auto;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 991.98px) {
   .ft-user {
     --ft-user-shell-pad: 0.72rem;
+    --ft-user-shell-width: min(calc(100vw - 0.8rem), var(--ft-user-shell-max));
+  }
+
+  .ft-user .ft-nav > .container {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    border-radius: 0;
+    padding-inline: 0.85rem;
   }
 
   .ft-user .navbar > .container {
@@ -502,7 +517,7 @@ footer.footer-compact {
 }
 
 .ft-user .navbar .nav-actions .btn {
-  min-height: 38px;
+  min-height: 40px;
 }
 
 .ft-user .user-main .alert {
