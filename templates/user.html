@@ -8,7 +8,7 @@
 {% block main_class %}container user-main mb-5{% endblock %}
 
 {% block page_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css', v='2026-02-20-1') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css', v='2026-02-20-2') }}">
 {% endblock %}
 
 {% block content %}
@@ -160,26 +160,40 @@
 
     <section id="charts-section" class="col-xl-9 col-lg-8" data-aos="fade-up" data-aos-delay="120" aria-labelledby="weekly-progress-title">
       <div class="card p-3 charts-card shadow-sm">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h2 id="weekly-progress-title" class="mb-0 h6 fw-semibold panel-title"><i class="fa-solid fa-chart-line me-2 section-meta-icon meta-progress"></i>Weekly Progress</h2>
-          <div class="weekly-range-controls">
-            <button id="weekPrevUser" class="btn btn-outline-secondary btn-sm" type="button" aria-label="Show previous 7 days">
-              <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <span id="weekRangeUser" class="small-muted">Last 7 days</span>
-            <button id="weekNextUser" class="btn btn-outline-secondary btn-sm" type="button" aria-label="Show next 7 days">
-              <i class="fa-solid fa-chevron-right"></i>
-            </button>
-          </div>
+          <span id="weekRangeUser" class="small-muted">This week (Mon-Sun)</span>
         </div>
 
         <div class="row g-3 mt-3">
           <div class="col-lg-6">
+            <div class="chart-head">
+              <h3 class="chart-title mb-0">Calories (Weekly Progress)</h3>
+              <div class="chart-nav-controls">
+                <button class="btn btn-outline-secondary btn-sm week-prev-btn" type="button" aria-label="Show previous week in calories chart">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm week-next-btn" type="button" aria-label="Show next week in calories chart">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="chart-canvas-wrap">
               <canvas id="caloriesChartUser"></canvas>
             </div>
           </div>
           <div class="col-lg-6">
+            <div class="chart-head">
+              <h3 class="chart-title mb-0">Minutes (Weekly Progress)</h3>
+              <div class="chart-nav-controls">
+                <button class="btn btn-outline-secondary btn-sm week-prev-btn" type="button" aria-label="Show previous week in minutes chart">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm week-next-btn" type="button" aria-label="Show next week in minutes chart">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="chart-canvas-wrap">
               <canvas id="durationChartUser"></canvas>
             </div>
@@ -272,5 +286,5 @@
 {% block page_scripts %}
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/user.js', v='2026-02-20-4') }}"></script>
 {% endblock %}

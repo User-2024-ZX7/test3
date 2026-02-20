@@ -6,6 +6,7 @@ if (window.AOS) {
 // ------------------- CONSTANTS -------------------
 const CAL_GOAL = 4000;
 const WORK_GOAL = 10;
+const UI_LOCALE = 'en-GB';
 
 // ------------------- DOM ELEMENTS -------------------
 const dom = {
@@ -49,9 +50,9 @@ const dom = {
     heroTotalWorkouts: document.getElementById('heroTotalWorkoutsUser'),
     heroTotalCalories: document.getElementById('heroTotalCaloriesUser'),
     heroGoal: document.getElementById('heroGoalUser'),
-    weekPrev: document.getElementById('weekPrevUser'),
-    weekNext: document.getElementById('weekNextUser'),
     weekRange: document.getElementById('weekRangeUser'),
+    weekPrevButtons: Array.from(document.querySelectorAll('.week-prev-btn')),
+    weekNextButtons: Array.from(document.querySelectorAll('.week-next-btn')),
     liveRegion: document.getElementById('userLiveRegion'),
     toastContainer: document.getElementById('userToastContainer'),
 
@@ -82,7 +83,7 @@ let chartWeekOffset = 0;
 
 // ------------------- HELPERS -------------------
 const safeNum = v => Math.max(0, Number(v) || 0);
-const isoToDisplay = d => new Date(d).toLocaleDateString();
+const isoToDisplay = d => new Date(d).toLocaleDateString(UI_LOCALE);
 const escapeHtml = value => String(value || '').replace(/[&<>"']/g, s => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[s]
 ));
@@ -101,13 +102,21 @@ function parseIsoDateSafe(value) {
     return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function getWeekWindow(weekOffset = 0) {
-    const endDate = new Date();
-    endDate.setHours(0, 0, 0, 0);
-    endDate.setDate(endDate.getDate() - (Math.max(0, weekOffset) * 7));
+function getWeekStartMonday(sourceDate) {
+    const date = new Date(sourceDate);
+    date.setHours(0, 0, 0, 0);
+    const day = date.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+    const mondayDelta = day === 0 ? -6 : 1 - day;
+    date.setDate(date.getDate() + mondayDelta);
+    return date;
+}
 
-    const startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - 6);
+function getWeekWindow(weekOffset = 0) {
+    const baseWeekStart = getWeekStartMonday(new Date());
+    const startDate = new Date(baseWeekStart);
+    startDate.setDate(baseWeekStart.getDate() - (Math.max(0, weekOffset) * 7));
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
     return { startDate, endDate };
 }
 
@@ -120,17 +129,17 @@ function getMaxWeekOffset(arr) {
     }
     if (!earliest) return 0;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diffDays = Math.max(0, Math.floor((today - earliest) / DAY_MS));
+    const currentWeekStart = getWeekStartMonday(new Date());
+    const earliestWeekStart = getWeekStartMonday(earliest);
+    const diffDays = Math.max(0, Math.floor((currentWeekStart - earliestWeekStart) / DAY_MS));
     return Math.floor(diffDays / 7);
 }
 
 function formatWeekRange(startDate, endDate) {
     const sameYear = startDate.getFullYear() === endDate.getFullYear();
-    const startText = startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const startText = startDate.toLocaleDateString(UI_LOCALE, { month: 'short', day: 'numeric' });
     const endText = endDate.toLocaleDateString(
-        undefined,
+        UI_LOCALE,
         sameYear ? { month: 'short', day: 'numeric' } : { year: 'numeric', month: 'short', day: 'numeric' }
     );
     return sameYear
@@ -164,7 +173,7 @@ function announce(message) {
 function updateSyncMeta() {
     if (!dom.workoutLastSync) return;
     const now = new Date();
-    dom.workoutLastSync.textContent = `Last sync: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+    dom.workoutLastSync.textContent = `Last sync: ${now.toLocaleTimeString(UI_LOCALE, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
 }
 
 function getVisibleActiveWorkouts() {
@@ -533,8 +542,25 @@ function updateWeekControls(agg) {
     if (dom.weekRange) {
         dom.weekRange.textContent = formatWeekRange(agg.startDate, agg.endDate);
     }
-    if (dom.weekNext) dom.weekNext.disabled = chartWeekOffset <= 0;
-    if (dom.weekPrev) dom.weekPrev.disabled = chartWeekOffset >= maxOffset;
+    dom.weekNextButtons?.forEach(btn => {
+        btn.disabled = chartWeekOffset <= 0;
+    });
+    dom.weekPrevButtons?.forEach(btn => {
+        btn.disabled = chartWeekOffset >= maxOffset;
+    });
+}
+
+function shiftWeekWindow(direction) {
+    const maxOffset = getMaxWeekOffset(activeWorkouts);
+    if (direction === 'prev') {
+        if (chartWeekOffset >= maxOffset) return;
+        chartWeekOffset += 1;
+    } else {
+        if (chartWeekOffset <= 0) return;
+        chartWeekOffset -= 1;
+    }
+    renderAll();
+    announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
 }
 
 // ------------------- CHARTS -------------------
@@ -545,7 +571,7 @@ function renderCharts() {
     if (chartWeekOffset > maxOffset) chartWeekOffset = maxOffset;
 
     const agg = aggregateWeekWindow(activeWorkouts, chartWeekOffset);
-    const labels = agg.dates.map(d => new Date(`${d}T00:00:00`).toLocaleDateString(undefined, { weekday: 'short' }));
+    const labels = agg.dates.map(d => new Date(`${d}T00:00:00`).toLocaleDateString(UI_LOCALE, { weekday: 'short', day: 'numeric' }));
     const calOptions = buildChartOptions();
     const durOptions = buildChartOptions();
 
@@ -565,7 +591,7 @@ function renderCharts() {
     if (!durChart) {
         durChart = new Chart(dom.charts.duration, {
             type: 'bar',
-            data: { labels, datasets: [{ label: 'Minutes (Last 7 Days)', data: agg.totalsDur, backgroundColor: 'rgba(25,135,84,.25)', borderColor: '#198754', borderWidth: 1, borderRadius: 6 }] },
+            data: { labels, datasets: [{ label: 'Minutes (Weekly Progress)', data: agg.totalsDur, backgroundColor: 'rgba(25,135,84,.25)', borderColor: '#198754', borderWidth: 1, borderRadius: 6 }] },
             options: durOptions
         });
     } else {
@@ -658,19 +684,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTable();
     });
 
-    dom.weekPrev?.addEventListener('click', () => {
-        const maxOffset = getMaxWeekOffset(activeWorkouts);
-        if (chartWeekOffset >= maxOffset) return;
-        chartWeekOffset += 1;
-        renderAll();
-        announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
+    dom.weekPrevButtons?.forEach(btn => {
+        btn.addEventListener('click', () => shiftWeekWindow('prev'));
     });
 
-    dom.weekNext?.addEventListener('click', () => {
-        if (chartWeekOffset <= 0) return;
-        chartWeekOffset -= 1;
-        renderAll();
-        announce(`Showing weekly progress for ${dom.weekRange?.textContent || 'selected week'}.`);
+    dom.weekNextButtons?.forEach(btn => {
+        btn.addEventListener('click', () => shiftWeekWindow('next'));
     });
 
     // Avatar upload (save to DB) - disable in admin view
