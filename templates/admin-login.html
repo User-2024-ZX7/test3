@@ -7,12 +7,20 @@
 {% block main_class %}auth-shell container{% endblock %}
 
 {% block page_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth-common.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-login.css') }}">
 {% endblock %}
 
 {% block content %}
   <section class="card admin-card shadow-lg p-4" aria-labelledby="admin-login-title">
     <header class="text-center mb-4">
+      <div class="d-flex justify-content-center mb-3">
+        <a class="brand-pill ft-brand text-decoration-none" href="{{ url_for('index') }}" aria-label="FitTrack home">
+          <img src="{{ url_for('static', filename='images/FitTrack.jpg') }}" class="ft-logo" alt="FitTrack Logo">
+          <span class="ft-word">FitTrack</span>
+          <span class="ft-word-tag">Home</span>
+        </a>
+      </div>
       <h1 id="admin-login-title" class="h3 fw-bold mb-2">Admin Login</h1>
       <p class="text-muted mb-0">Enter your credentials to access the admin panel</p>
     </header>
@@ -39,7 +47,18 @@
       </div>
       <div class="mb-3">
         <label for="adminPassword" class="form-label">Password</label>
-        <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter password" autocomplete="current-password" required>
+        <div class="input-group">
+          <input type="password" class="form-control" id="adminPassword" name="password" placeholder="Enter password" autocomplete="current-password" required>
+          <button
+            class="btn btn-outline-secondary password-toggle-btn"
+            type="button"
+            data-toggle-password="#adminPassword"
+            aria-label="Show password"
+            aria-pressed="false"
+          >
+            <i class="fa-regular fa-eye" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
 
       <div id="loginFeedback" class="mb-3 text-center text-danger" aria-live="polite"></div>
@@ -51,4 +70,8 @@
       © 2026 FitTrack Admin Access
     </p>
   </section>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/auth-password.js') }}"></script>
 {% endblock %}
