@@ -33,6 +33,12 @@
   box-shadow: 0 0 0 0.2rem rgba(26, 138, 165, 0.18);
 }
 
+.admin-card .brand-pill {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.42rem 0.85rem;
+}
+
 @media (max-width: 576px) {
   .auth-page {
     padding: 0.75rem;

@@ -44,6 +44,12 @@
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.2);
 }
 
+.register-container .brand-pill {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.42rem 0.85rem;
+}
+
 .btn-register {
   background: linear-gradient(135deg, #007bff, #00c6ff);
   border: none;
