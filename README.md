@@ -28,14 +28,14 @@ python -m venv venv
 1. Activate environment.
 
 ```powershell
-venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 If PowerShell blocks activation:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 1. Install dependencies.
@@ -104,6 +104,7 @@ $env:FITTRACK_SEED_DEMO="0"
 ```
 
 - Set a strong custom admin password and strong secrets before deployment.
+- Do not keep `SuperSecret123` or `StrongPass123` in any production environment.
 
 ## Verification Checklist
 
