@@ -144,13 +144,13 @@
         <td data-label="Avg Dur">${u.avg_dur}</td>
         <td data-label="Frequent Activity">${escapeHtml(u.freq_activity)}</td>
         <td data-label="Actions">
-          <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
+          <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View" aria-label="View user details">
             <i class="fa-solid fa-eye"></i>
           </button>
-          <button class="btn btn-sm btn-outline-warning btn-archive" data-user-id="${u.id}" title="Archive">
+          <button class="btn btn-sm btn-outline-warning btn-archive" data-user-id="${u.id}" title="Archive" aria-label="Archive user">
             <i class="fa-solid fa-box-archive"></i>
           </button>
-          <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete">
+          <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete" aria-label="Delete user">
             <i class="fa-solid fa-trash"></i>
           </button>
         </td>
@@ -164,13 +164,13 @@
         <td data-label="Username">${escapeHtml(u.username)}</td>
         <td data-label="Email">${escapeHtml(u.email)}</td>
         <td data-label="Actions">
-          <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View">
+          <button class="btn btn-sm btn-outline-primary btn-view" data-user-id="${u.id}" title="View" aria-label="View user details">
             <i class="fa-solid fa-eye"></i>
           </button>
-          <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="${u.id}" title="Restore">
+          <button class="btn btn-sm btn-outline-success btn-restore-user" data-user-id="${u.id}" title="Restore" aria-label="Restore user">
             <i class="fa-solid fa-rotate-left"></i>
           </button>
-          <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete">
+          <button class="btn btn-sm btn-outline-danger btn-delete" data-user-id="${u.id}" title="Delete" aria-label="Delete user">
             <i class="fa-solid fa-trash"></i>
           </button>
         </td>
