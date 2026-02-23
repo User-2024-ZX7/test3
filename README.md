@@ -28,15 +28,14 @@ python -m venv venv
 1. Activate environment.
 
 ```powershell
-.\venv\Scripts\Activate.ps1
+venv\Scripts\Activate.ps1
 ```
 
 If PowerShell blocks activation:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\venv\Scripts\Activate.ps1
-```
+venv\Scripts\Activate.ps1
 
 1. Install dependencies.
 
@@ -72,14 +71,11 @@ You can also use:
 
 This script validates env vars, creates DB if needed, runs migrations, then starts `app.py`.
 
-## Demo Credentials (Development Only)
-
-These credentials exist only for local demo/testing.
-Do not use them in production, and do not publish real credentials.
+## Demo Credentials
 
 ### Admin
 
-- There is only one seeded admin account.
+- REMEMBER!!! There is only one ADMIN
 
 ### Admin's Data
 
@@ -94,17 +90,6 @@ Do not use them in production, and do not publish real credentials.
 - `coventry@gmail.com`
 - `alex.runner@fittrack.demo`
 - `maya.lift@fittrack.demo`
-
-### Production Safety
-
-- Disable demo seeding in production:
-
-```powershell
-$env:FITTRACK_SEED_DEMO="0"
-```
-
-- Set a strong custom admin password and strong secrets before deployment.
-- Do not keep `SuperSecret123` or `StrongPass123` in any production environment.
 
 ## Verification Checklist
 
