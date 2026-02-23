@@ -540,10 +540,10 @@ function renderTable() {
             <td data-label="Duration">${safeNum(w.duration)} min</td>
             <td data-label="Calories">${safeNum(w.calories)}</td>
             <td data-label="Actions" class="text-end">
-                <button class="btn btn-sm btn-outline-danger del" data-id="${w.id}" title="Delete workout">
+                <button class="btn btn-sm btn-outline-danger del" data-id="${w.id}" title="Delete workout" aria-label="Delete workout">
                     <i class="fa-solid fa-trash"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-secondary arc" data-id="${w.id}" title="Archive workout">
+                <button class="btn btn-sm btn-outline-secondary arc" data-id="${w.id}" title="Archive workout" aria-label="Archive workout">
                     <i class="fa-solid fa-box-archive"></i>
                 </button>
             </td>
@@ -559,7 +559,7 @@ function renderArchive() {
     dom.archiveList.innerHTML = archivedWorkouts.length ? archivedWorkouts.map(w => `
         <li class="list-group-item archive-item">
             <span class="archive-item-text">${escapeHtml(w.activity)} • ${safeNum(w.calories)} cal</span>
-            <button class="btn btn-sm btn-success res" data-id="${w.id}" title="Restore workout">
+            <button class="btn btn-sm btn-success res" data-id="${w.id}" title="Restore workout" aria-label="Restore workout">
                 <i class="fa-solid fa-rotate-left"></i>
             </button>
         </li>`).join('') :
