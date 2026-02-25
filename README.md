@@ -40,6 +40,12 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 python -m pip install -r requirements.txt
 ```
 
+If your MySQL auth plugin requires crypto support (for example `caching_sha2_password` errors), run:
+
+```powershell
+python -m pip install cryptography
+```
+
 ### 4. Set environment variables (example)
 
 ```powershell
@@ -132,6 +138,9 @@ python -m unittest discover -s tests -v
 ## Troubleshooting
 
 - `Access denied for user ...`: verify `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`.
+- `No suitable Python runtime found`: run `py -0p` to list installed versions, then create venv with an available version (for example `py -3.12 -m venv .venv`).
+- `.\venv\Scripts\Activate.ps1 not recognized`: the copied `venv` may be invalid on your machine. Recreate it locally, then activate (`.\.venv\Scripts\Activate.ps1`).
+- MySQL auth/SSL crypto errors from PyMySQL: install `cryptography` (`python -m pip install cryptography`).
 - `TEST_DATABASE_URL is required`: set it before running tests.
 - UI not updating: restart app and hard refresh (`Ctrl+F5`).
 - Port `5000` busy: stop old Python process and rerun.
