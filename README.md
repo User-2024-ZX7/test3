@@ -1,49 +1,46 @@
 # FitTrack (5007CEM Web Development)
 
-Flask + MySQL fitness tracking system with user/admin roles,
-secure auth, workout management, and progress analytics.
+Flask + MySQL fitness tracking system with user/admin roles, secure authentication, workout management, and dashboard analytics.
 
-## Teacher / Checker Run Guide
+## Quick Start for Marker (Windows / PowerShell)
 
-### Important
+The project is designed to run with `python app.py`.
 
-- Run the project with `python app.py`.
-- The app boot process automatically creates the target database (if missing), applies migrations, and seeds demo data in development mode.
-- You do **not** need to manually create schema/tables by hand.
+On startup, the app:
 
-## Prerequisites
+- Creates the target MySQL database if missing.
+- Applies migrations.
+- Seeds demo data in development mode.
+
+You do **not** need to create tables manually.
+
+### 1. Prerequisites
 
 - Python 3.11+
 - Local MySQL server running
-- A MySQL account with permission to create/use databases
+- MySQL user with permission to create/use databases
 
-## Quick Start (Recommended)
-
-1. Create virtual environment.
+### 2. Create and activate virtual environment
 
 ```powershell
 python -m venv venv
-```
-
-1. Activate environment.
-
-```powershell
-venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
 If PowerShell blocks activation:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
+```
 
-1. Install dependencies.
+### 3. Install dependencies
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-1. Set DB environment variables (example).
+### 4. Set environment variables (example)
 
 ```powershell
 $env:DB_USER="root"
@@ -53,31 +50,34 @@ $env:DB_PORT="3306"
 $env:DB_NAME="fittrack"
 ```
 
-1. Run app.
+Optional:
+
+```powershell
+$env:SECRET_KEY="replace-with-random-secret"
+$env:FITTRACK_SEED_DEMO="1"
+```
+
+### 5. Run
 
 ```powershell
 python app.py
 ```
 
-1. Open `http://127.0.0.1:5000/`.
+Open: `http://127.0.0.1:5000/`
 
 ## Alternative Start Script
-
-You can also use:
 
 ```powershell
 .\run_local.ps1
 ```
 
-This script validates env vars, creates DB if needed, runs migrations, then starts `app.py`.
+This script validates environment variables, ensures DB readiness, applies migrations, then starts the app.
 
-## Demo Credentials
+## Demo Accounts (Development/Marking Only)
+
+These credentials are for reproducible coursework demos only, not production.
 
 ### Admin
-
-- REMEMBER!!! There is only one ADMIN
-
-### Admin's Data
 
 - Name: `FitAdmin`
 - Email: `admin@fittrack.com`
@@ -91,19 +91,29 @@ This script validates env vars, creates DB if needed, runs migrations, then star
 - `alex.runner@fittrack.demo`
 - `maya.lift@fittrack.demo`
 
+## Production Safety Note
+
+Disable demo seeding outside development:
+
+```powershell
+$env:FITTRACK_SEED_DEMO="0"
+```
+
+Also use a strong `SECRET_KEY` and real production DB credentials.
+
 ## Verification Checklist
 
 1. Home page: `http://127.0.0.1:5000/`
-1. Admin login: `http://127.0.0.1:5000/admin-login`
-1. Admin dashboard: `http://127.0.0.1:5000/admin` (check "Today’s Snapshot")
-1. User login: `http://127.0.0.1:5000/login`
-1. User dashboard: `http://127.0.0.1:5000/user`
-1. Weekly charts on user page support previous/next week navigation.
-1. Home "Today’s Snapshot" supports previous/next week navigation (Mon-Sun week windows).
+2. Admin login: `http://127.0.0.1:5000/admin-login`
+3. Admin dashboard: `http://127.0.0.1:5000/admin`
+4. User login: `http://127.0.0.1:5000/login`
+5. User dashboard: `http://127.0.0.1:5000/user`
+6. Weekly charts support previous/next week navigation.
+7. Home snapshot supports Mon-Sun week window navigation.
 
-## Tests
+## Running Tests
 
-Tests require a dedicated MySQL test database URL:
+Tests require a dedicated MySQL test database:
 
 ```powershell
 $env:TEST_DATABASE_URL="mysql+pymysql://root:root@localhost:3306/fittrack_test"
@@ -112,18 +122,18 @@ python -m unittest discover -s tests -v
 
 ## Security Controls Implemented
 
-- CSRF protection for form/API state-changing requests
-- Role-based authorization for user/admin routes
-- Input validation and sanitization rules
+- CSRF protection for state-changing requests
+- Role-based route authorization (`user` vs `admin`)
+- Input validation and sanitization
 - Password hashing
-- Login failure lockout protection
-- Session protections and secure headers (CSP, X-Frame-Options, etc.)
+- Login lockout on repeated failures
+- Session validation and secure response headers (CSP, X-Frame-Options, etc.)
 
 ## Troubleshooting
 
-- `Access denied for user ...`: verify `DB_USER` / `DB_PASSWORD` / `DB_HOST` / `DB_PORT`.
+- `Access denied for user ...`: verify `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`.
 - `TEST_DATABASE_URL is required`: set it before running tests.
-- UI not updating after code changes: restart `python app.py` and hard refresh browser (`Ctrl+F5`).
+- UI not updating: restart app and hard refresh (`Ctrl+F5`).
 - Port `5000` busy: stop old Python process and rerun.
 
 ## Submission Structure
@@ -135,4 +145,5 @@ python -m unittest discover -s tests -v
 - `migrations/`
 - `tests/`
 - `requirements.txt`
+- `README.md`
 - `.env.example`
