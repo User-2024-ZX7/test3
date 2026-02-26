@@ -2,6 +2,10 @@
 
 Flask + MySQL fitness tracking system with user/admin roles, secure authentication, workout management, and dashboard analytics.
 
+## Github account/repository link
+
+https://github.com/User-2024-ZX7/test3
+
 ## Quick Start for Marker (Windows / PowerShell)
 
 The project is designed to run with `python app.py`.
