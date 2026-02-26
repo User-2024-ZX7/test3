@@ -1,8 +1,8 @@
 # FitTrack (5007CEM Web Development)
 
-Flask + MySQL fitness tracking system with user/admin roles, secure authentication, workout management, and dashboard analytics.
+Flask + MySQL fitness tracking system with user/admin roles, secure authentication, workout management, and dashboard analytics
 
-## Github account/repository link
+## GitHub account/repository link
 
 https://github.com/User-2024-ZX7/test3
 
@@ -160,3 +160,4 @@ python -m unittest discover -s tests -v
 - `requirements.txt`
 - `README.md`
 - `.env.example`
+
